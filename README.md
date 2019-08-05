@@ -1,5 +1,5 @@
-#Simple Unity Roguelike Game
-##Things to do
+# Simple Unity Roguelike Game
+## Things to do
 ### Dungeon
 - [ ] dungeon generator
 - [ ] special rooms
