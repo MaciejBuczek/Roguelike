@@ -6,6 +6,7 @@
 - [ ] progression
 ### Character
 - [ ] movement
+- [ ] stats
 - [ ] inventory
 - [ ] different classes
 - [ ] skills
