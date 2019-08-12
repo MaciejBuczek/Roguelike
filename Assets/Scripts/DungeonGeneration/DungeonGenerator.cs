@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DungeonGenerator : MonoBehaviour {
+public enum tileType
+{
+    Wall, Floor, Door, Empty,
+}
 
-    public enum tileType
-    {
-        Wall, Floor, Door, Empty,
-    }
+public class DungeonGenerator : MonoBehaviour {
 
     public int rows = 30;
     public int cols = 30;
@@ -23,9 +23,8 @@ public class DungeonGenerator : MonoBehaviour {
     private int roomsAmount;
 
     public tileType[,] dungeon;
-    private List<Room> rooms;
-    private List<Corridor> corridors;
-    private GameObject tiles;
+    public List<Room> rooms;
+    public List<Corridor> corridors;
 
     public bool useSeed = false;
     public int seed=0;
@@ -43,11 +42,11 @@ public class DungeonGenerator : MonoBehaviour {
 
     void initializeValues()
     {
+        new GameObject("dungeonTiles");
         dungeon = new tileType[rows, cols];
         roomsAmount = roomsRange.Random();
         rooms = new List<Room>();
-        corridors = new List<Corridor>();
-        tiles = new GameObject("dungeonTiles");
+        corridors = new List<Corridor>();       
         for(int i=0; i<rows; i++)
         {
             for(int j=0; j<cols; j++)
@@ -58,79 +57,93 @@ public class DungeonGenerator : MonoBehaviour {
     }
     void createRoomsAndCorridors()
     {
-        int roomsIt = 0;
-        int corridorsIt = 0;
+        int roomsIt = 0, roomCount = 0, possibleBranches = 0;
         int entrancesAmount;
-        Position roomPosition=new Position();
+        bool canBeDeadEnd;
         rooms.Add(new Room());
-        roomsIt++;
-        rooms[0].generateRoom(roomWidthRange, roomHeightRange);
+        rooms[0].generateRoom(roomWidthRange, roomHeightRange, true);
         rooms[0].position.setPosition(rows / 2, cols / 2);
         entrancesAmount = rooms[0].entrancesAmount;
-        for (int i = 0; i < entrancesAmount; i++)
+        possibleBranches += rooms[0].entrancesAmount;
+        while (roomCount != roomsAmount)
         {
-            corridors.Add(new Corridor());
-            rooms.Add(new Room());
-            rooms[roomsIt].generateRoom(roomWidthRange, roomHeightRange);
-            if(corridors[corridorsIt].generateCorridor(corridorLengthRange, rooms[roomsIt - 1], rooms[rooms.Count - 1], cols, rows, rooms, corridors))
+            for (int i = 0; i < entrancesAmount; i++)
             {
-                corridorsIt++;
-                roomsIt++;
+                if (possibleBranches > 1)
+                    canBeDeadEnd = true;
+                else
+                    canBeDeadEnd = false;
+                corridors.Add(new Corridor());
+                rooms.Add(new Room());
+                rooms[rooms.Count - 1].generateRoom(roomWidthRange, roomHeightRange, canBeDeadEnd);
+                if (corridors[corridors.Count - 1].generateCorridor(corridorLengthRange, rooms[roomsIt], rooms[rooms.Count - 1], cols, rows, rooms, corridors))
+                {
+                    roomCount++;
+                    if (roomCount == roomsAmount)
+                        break;
+                }
+                else
+                {
+                    corridors.RemoveAt(corridors.Count - 1);
+                    rooms.RemoveAt(rooms.Count - 1);
+                    rooms[roomsIt].entrancesAmount--;
+                    entrancesAmount--;
+                    i--;
+                }
             }
-            else
-            {
-                corridors.RemoveAt(corridors.Count - 1);
-                rooms.RemoveAt(rooms.Count - 1);
-            }
-        }        
-        applayRooms(roomsIt);
-        applayCorridors(corridorsIt);
+            roomsIt++;
+        }
+        applayRooms();
+        applayCorridors();
     }
-    void applayRooms(int roomsIt)
+    void applayRooms()
     {
-        for (int i = 0; i < roomsIt; i++)
+        foreach (Room room in rooms)
         {
-            for (int x = rooms[i].position.x; x < rooms[i].position.x + rooms[i].height; x++)
+            for (int x = room.position.x; x < room.position.x + room.height; x++)
             {
-                for (int y = rooms[i].position.y; y < rooms[i].position.y + rooms[i].width; y++)
+                for (int y = room.position.y; y < room.position.y + room.width; y++)
                 {
                     dungeon[x, y] = tileType.Floor;
                 }
             }
         }
     }
-    void applayCorridors(int corridorsIt)
+    void applayCorridors()
     {
         int corridorX, corridorY;
-        for (int i = 0; i < corridorsIt; i++)
+        Position nextPosition = new Position();
+        foreach (Corridor corridor in corridors)
         {
-            for (int j = 0; j < corridors[i].breakPoints.Count - 1; j++)
+            for (int j = 0; j < corridor.breakPoints.Count - 1; j++)
             {
-                corridorX = corridors[i].breakPoints[j].x;
-                corridorY = corridors[i].breakPoints[j].y;
-                if (corridorX > corridors[i].breakPoints[j + 1].x)
+                corridorX = corridor.breakPoints[j].x;
+                corridorY = corridor.breakPoints[j].y;
+                nextPosition = corridor.breakPoints[j + 1];
+
+                if (corridorX > corridor.breakPoints[j + 1].x)
                 {
                     do
                     {
                         corridorX--;
                         dungeon[corridorX, corridorY] = tileType.Floor;
-                    } while (corridorX != corridors[i].breakPoints[j + 1].x);
+                    } while (corridorX != corridor.breakPoints[j + 1].x);
                 }
-                else if (corridorX < corridors[i].breakPoints[j + 1].x)
+                else if (corridorX < corridor.breakPoints[j + 1].x)
                 {
                     do
                     {
                         corridorX++;
                         dungeon[corridorX, corridorY] = tileType.Floor;
-                    } while (corridorX != corridors[i].breakPoints[j + 1].x);
+                    } while (corridorX != corridor.breakPoints[j + 1].x);
                 }
-                else if (corridorY > corridors[i].breakPoints[j + 1].y)
+                else if (corridorY > corridor.breakPoints[j + 1].y)
                 {
                     do
                     {
                         corridorY--;
                         dungeon[corridorX, corridorY] = tileType.Floor;
-                    } while (corridorY != corridors[i].breakPoints[j + 1].y);
+                    } while (corridorY != corridor.breakPoints[j + 1].y);
                 }
                 else
                 {
@@ -138,12 +151,12 @@ public class DungeonGenerator : MonoBehaviour {
                     {
                         corridorY++;
                         dungeon[corridorX, corridorY] = tileType.Floor;
-                    } while (corridorY != corridors[i].breakPoints[j + 1].y);
+                    } while (corridorY != nextPosition.y);
                 }
             }
-            for(int j=0; j<corridors[i].doorPositions.Count; j++)
+            for (int j = 0; j < corridor.doorPositions.Count; j++)
             {
-                dungeon[corridors[i].doorPositions[j].x, corridors[i].doorPositions[j].y] = tileType.Door;
+                dungeon[corridor.doorPositions[j].x, corridor.doorPositions[j].y] = tileType.Door;
             }
         }
     }

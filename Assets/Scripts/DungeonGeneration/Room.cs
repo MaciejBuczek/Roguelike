@@ -10,19 +10,16 @@ public class Room{
     public int entrancesAmount;
     private Position[] EntrancesPositions;
 
-    public void generateRoom(IntRange widthRange, IntRange heightRange)
+    public void generateRoom(IntRange widthRange, IntRange heightRange, bool canBeDeadEnd)
     {
         width = widthRange.Random();
         height = heightRange.Random();
-        //position.setPosition(dungeonRows / 2, dungeonCols / 2);
-        calculateAmountOfEntrances();
-        //position.setPosition(2, 2);
-        //Debug.Log(position.x + ", " + position.y + "\n");
-        Debug.Log("entrances amount: "+entrancesAmount);
+        calculateAmountOfEntrances(canBeDeadEnd);
     }
-    void calculateAmountOfEntrances()
+    void calculateAmountOfEntrances(bool canBeDeadEnd)
     {
-        int max=0;
+        int max = 0;
+        int min = 1;
         if (width == 2)
             max += 2;
         else
@@ -35,8 +32,10 @@ public class Room{
         {
             max += (width / 3) * 2;
         }
-        Mathf.Clamp(max, 1, 5);
-        entrancesAmount = Random.Range(1, max);
+        if (!canBeDeadEnd)
+            min++;
+        Mathf.Clamp(max, min, 5);
+        entrancesAmount = Random.Range(min, max);
     }
     public bool isCollidingWithOtherEntrances(Position newEntrancePosition, int direction)
     {
@@ -70,14 +69,6 @@ public class Room{
     {
         Position leftTopCorner = new Position(this.position.x - 1, this.position.y - 1);
         Position rightBottomCorner = new Position(this.position.x + height, this.position.y + width);
-        /*for (int i= -1; i<height + 1; i++)
-        {
-            for(int j= -1; j<width + 1; j++)
-            {
-                if (this.position.x + i == position.x && this.position.y + j == position.y)
-                    return true;
-            }
-        }*/
         if (position.x >= leftTopCorner.x && position.x <= rightBottomCorner.x && position.y >= leftTopCorner.y && position.y <= rightBottomCorner.y)
             return true;
         return false;

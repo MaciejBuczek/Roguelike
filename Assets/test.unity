@@ -203,9 +203,10 @@ GameObject:
   m_Component:
   - component: {fileID: 1858445905}
   - component: {fileID: 1858445904}
+  - component: {fileID: 1858445906}
   m_Layer: 0
-  m_Name: GameMenager
-  m_TagString: Untagged
+  m_Name: GameManager
+  m_TagString: GameController
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -244,7 +245,7 @@ MonoBehaviour:
   doorTiles:
   - {fileID: 1225246318418718, guid: 453348a40fb9b8a46985963a8adf2ca0, type: 2}
   useSeed: 0
-  seed: 61
+  seed: 2116
 --- !u!4 &1858445905
 Transform:
   m_ObjectHideFlags: 0
@@ -258,3 +259,15 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1858445906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1858445903}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1da5115c8e0ccee4495edd80e8899d75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 1162799879892796, guid: e7e7ef22dc1157a40babaa33f1e54b79, type: 2}
