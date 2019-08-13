@@ -31,6 +31,7 @@ public class Spawner : MonoBehaviour {
     }
     void spawnPlayer()
     {
+        GameObject playerGameObject;
         int randRoomIndex;
         Position playerPosition = new Position();
         Room randRoom;
@@ -38,6 +39,7 @@ public class Spawner : MonoBehaviour {
         randRoom = rooms[randRoomIndex];
         playerPosition.setPosition(randRoom.position.x + (randRoom.height / 2), randRoom.position.y + (randRoom.width / 2));
         playerPosition.x = dungeonRows - playerPosition.x - 1;
-        Instantiate(player, new Vector3(playerPosition.y, playerPosition.x, 0), transform.rotation);
+        playerGameObject = Instantiate(player, new Vector3(playerPosition.y, playerPosition.x, 0), transform.rotation);
+        playerGameObject.name = "Player";
     }
 }

@@ -245,7 +245,7 @@ MonoBehaviour:
   doorTiles:
   - {fileID: 1225246318418718, guid: 453348a40fb9b8a46985963a8adf2ca0, type: 2}
   useSeed: 0
-  seed: 2116
+  seed: 376
 --- !u!4 &1858445905
 Transform:
   m_ObjectHideFlags: 0
@@ -270,4 +270,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1da5115c8e0ccee4495edd80e8899d75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 1162799879892796, guid: e7e7ef22dc1157a40babaa33f1e54b79, type: 2}
+  player: {fileID: 1519087971422462, guid: e7e7ef22dc1157a40babaa33f1e54b79, type: 2}

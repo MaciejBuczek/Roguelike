@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour {
 
-    tileType[,] dungeonMap;
+    //tileType[,] dungeonMap;
 	// Use this for initialization
 	void Start () {
         initializeValues();
@@ -16,7 +16,7 @@ public class Movement : MonoBehaviour {
     void initializeValues()
     {
         GameObject gameManager = GameObject.Find("GameManager");
-        dungeonMap = gameManager.GetComponent<DungeonGenerator>().dungeon;
+        //dungeonMap = gameManager.GetComponent<DungeonGenerator>().dungeon;
 
     }
 }
