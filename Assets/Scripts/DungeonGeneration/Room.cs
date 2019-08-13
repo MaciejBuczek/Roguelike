@@ -37,7 +37,7 @@ public class Room{
         Mathf.Clamp(max, min, 5);
         entrancesAmount = Random.Range(min, max);
     }
-    public bool isCollidingWithOtherEntrances(Position newEntrancePosition, int direction)
+    public bool isPositionCollidingWithEntrances(Position newEntrancePosition, int direction)
     {
         if (entrancePositions.Count == 0)
             return false;
@@ -65,7 +65,7 @@ public class Room{
         }
         return false;
     }
-    public bool isPositionCollidingWithRoom(Position position)
+    public bool isCollidingWithPosition(Position position)
     {
         Position leftTopCorner = new Position(this.position.x - 1, this.position.y - 1);
         Position rightBottomCorner = new Position(this.position.x + height, this.position.y + width);
