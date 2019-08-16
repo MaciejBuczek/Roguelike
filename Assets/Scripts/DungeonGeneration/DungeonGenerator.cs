@@ -38,6 +38,7 @@ public class DungeonGenerator : MonoBehaviour {
         applayCorridors();
         cropDungeon();
         instantiateDungeon();
+        test();
 	}
 
     void initializeValues()
@@ -51,40 +52,47 @@ public class DungeonGenerator : MonoBehaviour {
     {
         int roomsIt = 0, roomCount = 1, possibleBranches = 0;
         int entrancesAmount;
-        bool canBeDeadEnd;
+        int generation = 0;
+        bool canBeDeadEnd, isGenerated=false;
         rooms.Add(new Room());
         rooms[0].generateRoom(roomWidthRange, roomHeightRange, true);
         rooms[0].position.setPosition(0, 0);
         entrancesAmount = rooms[0].entrancesAmount;
         possibleBranches += rooms[0].entrancesAmount;
-        while (roomCount != roomsAmount)
+        do
         {
-            for (int i = 0; i < entrancesAmount; i++)
+            while (roomCount != roomsAmount && generation < roomsAmount + 1)
             {
-                if (possibleBranches > 1)
-                    canBeDeadEnd = true;
-                else
-                    canBeDeadEnd = false;
-                corridors.Add(new Corridor());
-                rooms.Add(new Room());
-                rooms[rooms.Count - 1].generateRoom(roomWidthRange, roomHeightRange, canBeDeadEnd);
-                if (corridors[corridors.Count - 1].generateCorridor(corridorLengthRange, rooms[roomsIt], rooms[rooms.Count - 1], rooms, corridors))
+                for (int i = 0; i < entrancesAmount; i++)
                 {
-                    roomCount++;
-                    if (roomCount == roomsAmount)
-                        break;
+                    if (possibleBranches > 1)
+                        canBeDeadEnd = true;
+                    else
+                        canBeDeadEnd = false;
+                    corridors.Add(new Corridor());
+                    rooms.Add(new Room());
+                    rooms[rooms.Count - 1].generateRoom(roomWidthRange, roomHeightRange, canBeDeadEnd);
+                    if (corridors[corridors.Count - 1].generateCorridor(corridorLengthRange, rooms[roomsIt], rooms[rooms.Count - 1], rooms, corridors))
+                    {
+                        roomCount++;
+                        if (roomCount == roomsAmount)
+                            break;
+                    }
+                    else
+                    {
+                        corridors.RemoveAt(corridors.Count - 1);
+                        rooms.RemoveAt(rooms.Count - 1);
+                        rooms[roomsIt].entrancesAmount--;
+                        entrancesAmount--;
+                        i--;
+                    }
                 }
-                else
-                {
-                    corridors.RemoveAt(corridors.Count - 1);
-                    rooms.RemoveAt(rooms.Count - 1);
-                    rooms[roomsIt].entrancesAmount--;
-                    entrancesAmount--;
-                    i--;
-                }
+                roomsIt++;
+                generation++;
             }
-            roomsIt++;
-        }       
+            if (generation < roomsAmount + 1)
+                isGenerated = true;
+        } while (!isGenerated);
     }
     void initializeDungeonMap()
     {
@@ -242,4 +250,30 @@ public class DungeonGenerator : MonoBehaviour {
             x++;
         }
     }
+    void test()
+    {
+        string dungeon = "";
+        for (int i = 0; i < rows; i++)
+        {
+            for (int j = 0; j < cols; j++)
+            {
+                switch (dungeonTiles[i, j].tileType)
+                {
+                    case TileType.Door:
+                    case TileType.Floor:
+                        dungeon += '%';
+                        break;
+                    case TileType.Wall:
+                        dungeon += '#';
+                        break;
+                    case TileType.Empty:
+                        dungeon += '@';
+                        break;
+                }
+            }
+            dungeon += '\n';
+        }
+        Debug.Log(dungeon);
+    }
+
 }
