@@ -128,8 +128,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d28391199f12e54b807ce6254e7eca8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  movementTime: 0.07
+  movementTime: 0.2
   waitTime: 0
+  snapRadius: 0.01
+  speed: 9
 --- !u!114 &114871907651424964
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -142,7 +144,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   zoomSpeed: 0.5
-  dragSpeed: 1.5
+  dragSpeed: 25
 --- !u!124 &124236899191822700
 Behaviour:
   m_ObjectHideFlags: 1

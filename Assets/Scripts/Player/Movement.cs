@@ -13,15 +13,10 @@ public class Movement : MonoBehaviour {
     private bool isNewTargetPositionSet = false;
     private bool isMoving = false;   
 
-    private float movementStartTime;
-    public float movementTime = 0.05f;
-    private Vector3 lerpTargetPosition;
-    public float waitTime = 0.05f;
-    private bool hasNewTargetPosition = false;
     private int index=0;
-    private bool canConiuneLerp = true;
-
-    private bool isCameraOnCorrectPosition = true;
+    private bool canContinueMoving = true;
+    public float snapRadius = 0.01f;
+    public float speed = 4;
 
 	// Use this for initialization
 	void Start () {
@@ -50,7 +45,7 @@ public class Movement : MonoBehaviour {
         {
             if (isMoving)
             {
-                canConiuneLerp = false;
+                canContinueMoving = false;
             }
             else
             {
@@ -65,7 +60,7 @@ public class Movement : MonoBehaviour {
                 {
                     targetPosition.setPosition((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
                     isNewTargetPositionSet = true;
-                    canConiuneLerp = true;
+                    canContinueMoving = true;
                     Input.ResetInputAxes();                 
                 }
             }
@@ -81,13 +76,8 @@ public class Movement : MonoBehaviour {
             isNewTargetPositionSet = false;
             if (transform.GetChild(0).transform.position.x != transform.position.x && transform.GetChild(0).transform.position.y != transform.position.y)
             {
-                isCameraOnCorrectPosition = false;
                 transform.GetChild(0).GetComponent<CameraController>().lerpToPosition(transform.position, Time.time, 0.15f);
             }
-        }
-        if (transform.GetChild(0).transform.position.x == transform.position.x && transform.GetChild(0).transform.position.y == transform.position.y)
-        {
-            isCameraOnCorrectPosition = true;
         }
     }
     void findPath()
@@ -157,31 +147,20 @@ public class Movement : MonoBehaviour {
     }
     void movePlayer()
     {
-        if (isMoving && isCameraOnCorrectPosition)
+        if (isMoving)
         {
-            if (!hasNewTargetPosition)
+            if (Vector3.Distance(transform.position, movementPositions[index]) < snapRadius)
             {
-                movementStartTime = Time.time;
-                lerpTargetPosition = movementPositions[index];
+                transform.position = movementPositions[index];
                 index++;
-            }
-            transform.position = lerpToPosition();
-            if (transform.position == movementPositions[index - 1])
-            {
-                hasNewTargetPosition = false;
-                if (!canConiuneLerp)
+                if (index == movementPositions.Count || !canContinueMoving)
                 {
                     isMoving = false;
                     index = 0;
+                    return;
                 }
             }
-            else
-                hasNewTargetPosition = true;
-            if (transform.position == movementPositions[movementPositions.Count - 1])
-            {
-                isMoving = false;
-                index = 0;
-            }
+            transform.position = Vector3.MoveTowards(transform.position, movementPositions[index], speed * Time.deltaTime);
         }
     }
     void createNodeArray()
@@ -201,6 +180,14 @@ public class Movement : MonoBehaviour {
                     nodes[y, x].neighboursPositions.Add(new Vector3Int(x - 1, y, 0));
                 if (x < cols - 1)
                     nodes[y, x].neighboursPositions.Add(new Vector3Int(x + 1, y, 0));
+                if (y > 0 && x > 0)
+                    nodes[y, x].neighboursPositions.Add(new Vector3Int(x - 1, y - 1, 0));
+                if (y > 0 && x < cols - 1)
+                    nodes[y, x].neighboursPositions.Add(new Vector3Int(x + 1, y - 1, 0));
+                if (y < rows - 1 && x > 0)
+                    nodes[y, x].neighboursPositions.Add(new Vector3Int(x - 1, y + 1, 0));
+                if (y < rows - 1 && x < cols - 1)
+                    nodes[y, x].neighboursPositions.Add(new Vector3Int(x + 1, y + 1, 0));
             }
         }
         for (int y = 0; y < rows; y++)
@@ -231,12 +218,5 @@ public class Movement : MonoBehaviour {
     float distance(Node a, Node b)
     {
         return Mathf.Sqrt((a.position.x - b.position.x) * (a.position.x - b.position.x) + (a.position.y - b.position.y) * (a.position.y - b.position.y));
-    }
-    Vector3 lerpToPosition()
-    {
-        float timeSinceStarted = Time.time - movementStartTime;
-        float completePercentage = timeSinceStarted / movementTime;
-        Vector3 result = Vector3.Lerp(transform.position, lerpTargetPosition, completePercentage);
-        return result;
     }
 }

@@ -13,7 +13,6 @@ public class CameraController : MonoBehaviour
     public float dragSpeed = 1.5f;      
     private Vector3 dragOrigin;
     private Vector3 lastMouseCoordinate;
-    Vector3 mouseDelta = Vector3.zero;
     private bool shouldLerp = false;
     private float lerpStartTime;
     private float lerpTime;
@@ -22,9 +21,7 @@ public class CameraController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        playerCamera = GetComponent<Camera>();
-        rows = GameObject.Find("GameManager").GetComponent<DungeonGenerator>().rows;
-        cols = GameObject.Find("GameManager").GetComponent<DungeonGenerator>().cols;
+        initializeValues();
     }
     // Update is called once per frame
     void Update()
@@ -32,6 +29,12 @@ public class CameraController : MonoBehaviour
         zoomCamera();
         dragCamera();
         moveCameraToPlayer();
+    }
+    void initializeValues()
+    {
+        playerCamera = GetComponent<Camera>();
+        rows = GameObject.Find("GameManager").GetComponent<DungeonGenerator>().rows;
+        cols = GameObject.Find("GameManager").GetComponent<DungeonGenerator>().cols;
     }
     void zoomCamera()
     {
@@ -50,26 +53,11 @@ public class CameraController : MonoBehaviour
     }
     void dragCamera()
     {
-
-        if (Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButton(2))
         {
-            lastMouseCoordinate = Input.mousePosition;
-            dragOrigin = Input.mousePosition;
-            return;
+            transform.Translate(-Input.GetAxisRaw("Mouse X") * Time.deltaTime * dragSpeed, -Input.GetAxisRaw("Mouse Y") * Time.deltaTime * dragSpeed, 0);
+            transform.position = new Vector3(Mathf.Clamp(transform.position.x, 0, cols), Mathf.Clamp(transform.position.y, 0, rows), transform.position.z);
         }
-        if (mouseDelta.x == 0 && mouseDelta.y == 0)
-            dragOrigin = Input.mousePosition;
-        mouseDelta = Input.mousePosition - lastMouseCoordinate;
-        if (!Input.GetMouseButton(2) || (mouseDelta.x == 0 && mouseDelta.y == 0)) return;
-
-        Vector3 pos = Camera.main.ScreenToViewportPoint(Input.mousePosition - dragOrigin);
-        Vector3 move = new Vector3(-pos.x, -pos.y, 0);
-        move *= dragSpeed;
-        move.x = Mathf.Clamp(move.x, -2f, 2f);
-        move.y = Mathf.Clamp(move.y, -2f, 2f);
-        transform.Translate(move, Space.World);
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x, 0, cols), Mathf.Clamp(transform.position.y, 0, rows), transform.position.z);
-        lastMouseCoordinate = Input.mousePosition;
     }
     void moveCameraToPlayer()
     {
