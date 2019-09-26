@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class Movement : MonoBehaviour {
 
-    private DungeonTile[,] dungeonTiles;
-    private Position targetPosition;
+    //private TileType[,] dungeonTiles;
+    private bool[,] dungeonMovementLayout;
+    private Vector2Int targetPosition;
     private List<Vector3> movementPositions;
     private Node[,] nodes;
     int rows, cols;
@@ -33,10 +34,10 @@ public class Movement : MonoBehaviour {
     void initializeValues()
     {       
         GameObject gameManager = GameObject.Find("GameManager");
-        dungeonTiles = gameManager.GetComponent<DungeonGenerator>().dungeonTiles;
+        dungeonMovementLayout = gameManager.GetComponent<DungeonGenerator>().dungeonMovementLayout;
         rows = gameManager.GetComponent<DungeonGenerator>().rows;
         cols = gameManager.GetComponent<DungeonGenerator>().cols;
-        targetPosition = new Position();
+        targetPosition = new Vector2Int();
         movementPositions = new List<Vector3>();
     }
     void checkForNewTargetPosition()
@@ -56,9 +57,9 @@ public class Movement : MonoBehaviour {
                 mousePosition.y = Mathf.Round(mousePosition.y);
                 if (mousePosition.y < 0 || mousePosition.y >= rows)
                     return;
-                if (dungeonTiles[rows - (int)mousePosition.y - 1, (int)mousePosition.x].tileType == TileType.Floor)
+                if(dungeonMovementLayout[(int)mousePosition.y,(int)mousePosition.x])
                 {
-                    targetPosition.setPosition((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
+                    targetPosition.Set((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
                     isNewTargetPositionSet = true;
                     canContinueMoving = true;
                     Input.ResetInputAxes();                 
@@ -194,7 +195,7 @@ public class Movement : MonoBehaviour {
         {
             for (int x = 0; x < cols; x++)
             {
-                if (dungeonTiles[rows - 1 - y, x].tileType != TileType.Floor && dungeonTiles[rows - 1 - y, x].tileType != TileType.Door)
+                if(!dungeonMovementLayout[y, x])
                     nodes[y, x].isObstacle = true;
             }
         }

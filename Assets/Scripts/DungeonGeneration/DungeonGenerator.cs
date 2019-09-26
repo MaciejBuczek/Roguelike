@@ -2,172 +2,215 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum TileType
+{
+    Floor,Door,Wall,Empty
+}
 
-
-public class DungeonGenerator : MonoBehaviour {
-
-    public int rows = 30;
-    public int cols = 30;
-    public IntRange roomsRange = new IntRange(4,8);
+public class DungeonGenerator : MonoBehaviour
+{
+    [HideInInspector]
+    public int rows;
+    [HideInInspector]
+    public int cols;
+    public IntRange roomsRange = new IntRange(4, 8);
     public IntRange roomWidthRange = new IntRange(2, 6);
     public IntRange roomHeightRange = new IntRange(2, 6);
     public IntRange corridorLengthRange = new IntRange(0, 5);
-    //private IntRange corridorsRange;
     public GameObject[] floorTiles;
     public GameObject[] wallTiles;
     public GameObject[] emptyTiles;
     public GameObject[] doorTiles;
     private int roomsAmount;
 
-    public DungeonTile[,] dungeonTiles;
+    public TileType[,] dungeonTileTypeLayout;
+    public bool[,] dungeonMovementLayout;
     public List<Room> rooms;
     public List<Corridor> corridors;
 
     public bool useSeed = false;
-    public int seed=0;
+    public int seed = 0;
 
-    void Start ()
-    {      
-        if(!useSeed)
-            seed = Random.Range(-3000, 3000);
-        Random.InitState(seed);
+    private void Start()
+    {
         initializeValues();
-        createRoomsAndCorridors();
-        initializeDungeonMap();
-        applayRooms();
-        applayCorridors();
-        cropDungeon();
-        instantiateDungeon();
-        test();
-	}
-
+        generateRoomsAndCorridors();
+        shiftRoomAndCorridors();
+        generateDungeonTileTypeLayout();
+        generateDungeonMovementLayout();
+    }
     void initializeValues()
     {
-        new GameObject("dungeonTiles");
+        new GameObject("Dungeon");
         roomsAmount = roomsRange.Random();
         rooms = new List<Room>();
-        corridors = new List<Corridor>();       
+        corridors = new List<Corridor>();
+        if (!useSeed)
+            seed = Random.Range(-1000, 1000);
+        Random.seed = seed;
     }
-    void createRoomsAndCorridors()
+    void generateRoomsAndCorridors()
     {
-        int roomsIt = 0, roomCount = 1, possibleBranches = 0;
-        int entrancesAmount;
-        int generation = 0;
-        bool canBeDeadEnd, isGenerated=false;
-        rooms.Add(new Room());
-        rooms[0].generateRoom(roomWidthRange, roomHeightRange, true);
-        rooms[0].position.setPosition(0, 0);
-        entrancesAmount = rooms[0].entrancesAmount;
-        possibleBranches += rooms[0].entrancesAmount;
-        do
-        {
-            while (roomCount != roomsAmount && generation < roomsAmount + 1)
-            {
-                for (int i = 0; i < entrancesAmount; i++)
-                {
-                    if (possibleBranches > 1)
-                        canBeDeadEnd = true;
-                    else
-                        canBeDeadEnd = false;
-                    corridors.Add(new Corridor());
-                    rooms.Add(new Room());
-                    rooms[rooms.Count - 1].generateRoom(roomWidthRange, roomHeightRange, canBeDeadEnd);
-                    if (corridors[corridors.Count - 1].generateCorridor(corridorLengthRange, rooms[roomsIt], rooms[rooms.Count - 1], rooms, corridors))
-                    {
-                        roomCount++;
-                        if (roomCount == roomsAmount)
-                            break;
-                    }
-                    else
-                    {
-                        corridors.RemoveAt(corridors.Count - 1);
-                        rooms.RemoveAt(rooms.Count - 1);
-                        rooms[roomsIt].entrancesAmount--;
-                        entrancesAmount--;
-                        i--;
-                    }
-                }
-                roomsIt++;
-                generation++;
-            }
-            if (generation < roomsAmount + 1)
-                isGenerated = true;
-        } while (!isGenerated);
+        int availablePaths = 0;
+        rooms.Add(new Room(roomWidthRange, roomHeightRange, false));
+        rooms[0].position.Set(0, 0);
+        availablePaths += rooms[0].exitsAmount;
+        generateBranchesForRoom(rooms[0], ref availablePaths);
     }
-    void initializeDungeonMap()
+    void generateBranchesForRoom(Room room, ref int availablePaths)
     {
-        int minX=0, maxX=0, minY=0, maxY=0; 
-        foreach (Room room in rooms)
+        bool canBeDeadEnd;
+        for (int i = 0; i < room.exitsAmount; i++)
         {
-            if (minY > room.position.x)
-                minY = room.position.x;
-            if (maxY < room.position.x + room.height - 1)
-                maxY = room.position.x + room.height - 1;
-            if (minX > room.position.y)
-                minX = room.position.y;
-            if (maxX < room.position.y + room.width - 1)
-                maxX = room.position.y + room.width - 1;
-        }
-        foreach(Corridor corridor in corridors)
-        {
-            foreach(Position breakPoint in corridor.breakPoints)
+            if (rooms.Count == roomsAmount)
+                return;
+            if (availablePaths > 1)
+                canBeDeadEnd = true;
+            else
+                canBeDeadEnd = false;
+            rooms.Add(new Room(roomWidthRange, roomHeightRange, canBeDeadEnd));
+            corridors.Add(new Corridor());
+            if (corridors[corridors.Count - 1].tryToGenerateCorridor(corridorLengthRange, room, rooms[rooms.Count - 1], rooms, corridors))
             {
-                if (minY > breakPoint.x)
-                    minY = breakPoint.x;
-                if (maxY < breakPoint.x)
-                    maxY = breakPoint.x;
-                if (minX > breakPoint.y)
-                    minX = breakPoint.y;
-                if (maxX < breakPoint.y)
-                    maxX = breakPoint.y;
+                if (rooms.Count == roomsAmount)
+                    return;
+                availablePaths--;
+                availablePaths += rooms[rooms.Count - 1].exitsAmount;
+                generateBranchesForRoom(rooms[rooms.Count - 1], ref availablePaths);
             }
-        }
-        rows = Mathf.Abs(minY) + Mathf.Abs(maxY) + 5;
-        cols = Mathf.Abs(minX) + Mathf.Abs(maxX) + 5;
-        dungeonTiles = new DungeonTile[rows, cols];
-        for(int y=0; y<rows; y++)
-        {
-            for (int x = 0; x < cols; x++)
-                dungeonTiles[y, x] = new DungeonTile(TileType.Wall, new Position(x, y));
-        }
-        foreach(Room room in rooms)
-        {
-            room.position.setPosition(room.position.x + Mathf.Abs(minY) + 2, room.position.y + Mathf.Abs(minX) + 2);
-        }
-        foreach(Corridor corridor in corridors)
-        {
-            foreach(Position breakpoint in corridor.breakPoints) {
-                breakpoint.setPosition(breakpoint.x + Mathf.Abs(minY) + 2, breakpoint.y + Mathf.Abs(minX) + 2);
-            }
-            foreach(Position doorPosition in corridor.doorPositions)
+            else
             {
-                doorPosition.setPosition(doorPosition.x + Mathf.Abs(minY) + 2, doorPosition.y + Mathf.Abs(minX) + 2);
+                rooms.RemoveAt(rooms.Count - 1);
+                corridors.RemoveAt(corridors.Count - 1);
+                i--;
+                room.exitsAmount--;
             }
         }
     }
-    void applayRooms()
+    void shiftRoomAndCorridors()
     {
-        foreach (Room room in rooms)
-        {
-            for (int x = room.position.x; x < room.position.x + room.height; x++)
-            {
-                for (int y = room.position.y; y < room.position.y + room.width; y++)
-                {
-                    dungeonTiles[x, y].tileType = TileType.Floor;
-                }
-            }
-        }
-    }
-    void applayCorridors()
-    {
-        Position currentPosition = new Position();
-        Position nextPosition = new Position();       
+        int minX = 0, maxX = 0, minY = 0, maxY = 0;
         foreach (Corridor corridor in corridors)
         {
-            for (int j = 0; j < corridor.breakPoints.Count - 1; j++)
+            foreach (Vector2Int breakPoint in corridor.breakPoints)
             {
-                currentPosition.setPosition(corridor.breakPoints[j]);
-                nextPosition.setPosition(corridor.breakPoints[j + 1]);
+                if (breakPoint.x < minX)
+                    minX = breakPoint.x;
+                if (breakPoint.x > maxX)
+                    maxX = breakPoint.x;
+                if (breakPoint.y < minY)
+                    minY = breakPoint.y;
+                if (breakPoint.y > maxY)
+                    maxY = breakPoint.y;
+            }
+        }
+        foreach (Room room in rooms)
+        {
+            if (room.position.x < minX)
+                minX = room.position.x;
+            if (room.position.x + room.width - 1 > maxX)
+                maxX = room.position.x + room.width - 1;
+            if (room.position.y < minY)
+                minY = room.position.y;
+            if (room.position.y + room.height - 1 > maxY)
+                maxY = room.position.y + room.height - 1;
+        }
+        rows = Mathf.Abs(minY) + Mathf.Abs(maxY) + 3;
+        cols = Mathf.Abs(minX) + Mathf.Abs(maxX) + 3;
+        foreach (Room room in rooms)
+        {
+            room.position = room.position + new Vector2Int(Mathf.Abs(minX) + 1, Mathf.Abs(minY) + 1);
+            for (int i = 0; i < room.doorsPositions.Count; i++)
+            {
+                room.doorsPositions[i] = room.doorsPositions[i] + new Vector2Int(Mathf.Abs(minX) + 1, Mathf.Abs(minY) + 1);
+            }
+        }
+        foreach (Corridor corridor in corridors)
+        {
+            for (int i = 0; i < corridor.breakPoints.Count; i++)
+            {
+                corridor.breakPoints[i] = corridor.breakPoints[i] + new Vector2Int(Mathf.Abs(minX) + 1, Mathf.Abs(minY) + 1);
+            }
+        }
+    }
+    void generateDungeonTileTypeLayout()
+    {
+        dungeonTileTypeLayout = new TileType[rows, cols];
+        for (int y = 0; y < rows; y++)
+        {
+            for (int x = 0; x < cols; x++)
+            {
+                dungeonTileTypeLayout[y, x] = TileType.Wall;
+            }
+        }
+        bool[,] isInstantiated = new bool[rows, cols];       
+        instantiateRooms(isInstantiated);
+        instantiateCorridors(isInstantiated);
+    }
+    void instantiateRooms(bool[,] isInstantiated)
+    {
+        GameObject tile;
+        GameObject newRoom;
+        int roomNo = 0;
+        new GameObject("Rooms").transform.parent=GameObject.Find("Dungeon").transform;
+        foreach (Room room in rooms)
+        {
+            newRoom = new GameObject("Room" + roomNo);
+            newRoom.transform.parent = GameObject.Find("Rooms").transform;
+            foreach (Vector2Int doorPosition in room.doorsPositions)
+            {
+                if (!isInstantiated[doorPosition.y, doorPosition.x])
+                {
+                    tile = Instantiate(doorTiles[Random.Range(0, doorTiles.Length)], new Vector2(doorPosition.x, doorPosition.y), transform.rotation);
+                    tile.transform.parent = newRoom.transform;
+                    dungeonTileTypeLayout[doorPosition.y, doorPosition.x] = TileType.Door;
+                    isInstantiated[doorPosition.y, doorPosition.x] = true;
+                }
+            }
+            for (int y = room.position.y - 1; y <= room.position.y + room.height; y++)
+            {
+                for (int x = room.position.x - 1; x <= room.position.x + room.width; x++)
+                {
+                    if (y == room.position.y - 1 || y == room.position.y + room.height || x == room.position.x - 1 || x == room.position.x + room.width)
+                    {
+                        if (!isInstantiated[y, x])
+                        {
+                            tile = Instantiate(wallTiles[Random.Range(0, wallTiles.Length)], new Vector2(x, y), transform.rotation);
+                            dungeonTileTypeLayout[y, x] = TileType.Wall;
+                            tile.transform.parent = newRoom.transform;
+                            isInstantiated[y, x] = true;
+                        }
+                    }
+                    else
+                    {
+                        if (!isInstantiated[y, x])
+                        {
+                            tile = Instantiate(floorTiles[Random.Range(0, floorTiles.Length)], new Vector2(x, y), transform.rotation);
+                            dungeonTileTypeLayout[y, x] = TileType.Floor;
+                            tile.transform.parent = newRoom.transform;
+                            isInstantiated[y, x] = true;
+                        }
+                    }
+                }
+            }          
+            roomNo++;
+        }
+    }
+    void instantiateCorridors(bool[,] isInstantiated)
+    {
+        GameObject tile;
+        GameObject newCorridor;
+        Vector2Int currentPosition, nextPosition;
+        int corridorNo = 0;
+        new GameObject("Corridors").transform.parent = GameObject.Find("Dungeon").transform;
+        foreach (Corridor corridor in corridors)
+        {
+            newCorridor = new GameObject("Corridor" + corridorNo);
+            newCorridor.transform.parent = GameObject.Find("Corridors").transform;
+            for (int i = 0; i < corridor.breakPoints.Count - 1; i++)
+            {
+                currentPosition = corridor.breakPoints[i];
+                nextPosition = corridor.breakPoints[i + 1];
                 while (currentPosition != nextPosition)
                 {
                     if (currentPosition.x > nextPosition.x)
@@ -178,76 +221,60 @@ public class DungeonGenerator : MonoBehaviour {
                         currentPosition.y--;
                     else
                         currentPosition.y++;
-                    dungeonTiles[currentPosition.x, currentPosition.y].tileType = TileType.Floor;
-                }
-            }
-            for (int j = 0; j < corridor.doorPositions.Count; j++)
-            {
-                dungeonTiles[corridor.doorPositions[j].x, corridor.doorPositions[j].y].tileType = TileType.Door;
-            }
-        }
-    }      
-    void cropDungeon()
-    {
-        bool isWall;
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                isWall = false;
-                if (dungeonTiles[i, j].tileType == TileType.Wall)
-                {
-                    if ((i == 0 || j == 0 || i == rows - 1 || j == cols - 1))
-                        dungeonTiles[i, j].tileType = TileType.Empty;
-                    else
+                    if (!isInstantiated[currentPosition.y, currentPosition.x] && currentPosition != corridor.breakPoints[corridor.breakPoints.Count - 1])
                     {
-                        for (int k = i - 1; k < i + 2; k++)
-                        {
-                            for (int l = j - 1; l < j + 2; l++)
-                            {
-                                if (dungeonTiles[k, l].tileType == TileType.Floor || dungeonTiles[k, l].tileType == TileType.Door)
-                                {
-                                    isWall = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!isWall)
-                            dungeonTiles[i, j].tileType = TileType.Empty;
+                        tile = Instantiate(floorTiles[Random.Range(0, floorTiles.Length)], new Vector2(currentPosition.x, currentPosition.y), transform.rotation);
+                        tile.transform.parent = newCorridor.transform;
+                        dungeonTileTypeLayout[currentPosition.y, currentPosition.x] = TileType.Floor;
+                        isInstantiated[currentPosition.y, currentPosition.x] = true;
                     }
                 }
             }
+            corridorNo++; ;
+        }
+        foreach(Transform corridor in GameObject.Find("Corridors").transform)
+        {
+            List<GameObject> tiles = new List<GameObject>();
+            Transform lastGameObjectTransform = null;
+            foreach(Transform childTile in corridor.transform)
+            {
+                lastGameObjectTransform = childTile;
+                Vector2Int position = new Vector2Int((int)childTile.position.x, (int)childTile.position.y);
+                for (int y = -1; y <= 1; y++)
+                {
+                    for (int x = -1; x <= 1; x++)
+                    {
+                        if (!isInstantiated[position.y + y, position.x + x])
+                        {
+                            tiles.Add(Instantiate(wallTiles[Random.Range(0, wallTiles.Length)], new Vector2(position.x + x, position.y + y), transform.rotation));
+                            dungeonTileTypeLayout[position.y + y, position.x + x] = TileType.Wall;
+                            isInstantiated[position.y + y, position.x + x] = true;
+                        }
+                    }
+                }
+            }
+            foreach (GameObject childTile in tiles)
+                childTile.transform.parent = lastGameObjectTransform;
         }
     }
-    void instantiateDungeon()
+    void generateDungeonMovementLayout()
     {
-        GameObject tile;
-        GameObject randomTile = new GameObject();
-        Destroy(randomTile);
-        int x = 0;
-        for (int i = rows - 1; i >= 0; i--)
+        dungeonMovementLayout = new bool[rows, cols];
+        for(int y=0; y<rows; y++)
         {
-            for (int y = cols - 1; y >= 0; y--)
+            for(int x=0; x<cols; x++)
             {
-                switch (dungeonTiles[i, y].tileType)
+                switch (dungeonTileTypeLayout[y, x])
                 {
-                    case TileType.Wall:
-                        randomTile = wallTiles[Random.Range(0, wallTiles.Length)];
-                        break;
                     case TileType.Floor:
-                        randomTile = floorTiles[Random.Range(0, floorTiles.Length)];
-                        break;
-                    case TileType.Empty:
-                        randomTile = emptyTiles[Random.Range(0, emptyTiles.Length)];
-                        break;
                     case TileType.Door:
-                        randomTile = doorTiles[Random.Range(0, doorTiles.Length)];
+                        dungeonMovementLayout[y, x] = true;
+                        break;
+                    default:
+                        dungeonMovementLayout[y, x] = false;
                         break;
                 }
-                tile = Instantiate(randomTile, new Vector3(y, x, 0), transform.rotation);
-                tile.transform.parent = GameObject.Find("dungeonTiles").transform;
             }
-            x++;
         }
     }
     void test()
@@ -257,17 +284,17 @@ public class DungeonGenerator : MonoBehaviour {
         {
             for (int j = 0; j < cols; j++)
             {
-                switch (dungeonTiles[i, j].tileType)
+                switch (dungeonTileTypeLayout[i, j])
                 {
                     case TileType.Door:
                     case TileType.Floor:
-                        dungeon += '%';
-                        break;
-                    case TileType.Wall:
                         dungeon += '#';
                         break;
-                    case TileType.Empty:
+                    case TileType.Wall:
                         dungeon += '@';
+                        break;
+                    case TileType.Empty:
+                        dungeon += "  ";
                         break;
                 }
             }
@@ -275,5 +302,4 @@ public class DungeonGenerator : MonoBehaviour {
         }
         Debug.Log(dungeon);
     }
-
 }

@@ -5,204 +5,205 @@ public class Corridor
 {
     enum Directions
     {
-        North,West,South,East,
+        North, West, South, East,
     }
-
-    public List<Position> breakPoints = new List<Position>();
-    public List<Position> doorPositions = new List<Position>();
-
-    public bool generateCorridor(IntRange lengthRange, Room startingRoom, Room nextRoom, List<Room> rooms, List<Corridor> corridors)
+    public List<Vector2Int> breakPoints = new List<Vector2Int>();
+    //List<Vector2Int> doorsPositions = new List<Vector2Int>();
+    private Directions direction;
+    public Corridor(){}
+    public bool tryToGenerateCorridor(IntRange lengthRange, Room startingRoom, Room targetRoom, List<Room> rooms, List<Corridor> corridors)
     {
-        Position currentPosition = new Position();
-        List<Position> possibleRoomPositions = new List<Position>();
-        Directions currentDirection = Directions.North;
-        Directions newDirection = Directions.North;
-        int corridorGeneration=0, roomGeneration=0;        
+        int breakPointsGeneration = 0, targetRoomPositionGeneration=0;
+        List<Vector2Int> possibleTargetRoomPositions = new List<Vector2Int>();
+        Directions directionCopy;
         do
         {
-            findCorridorStartingPosition(ref currentDirection, currentPosition, startingRoom);
+            breakPointsGeneration = 0;
+            findStartingPosition(startingRoom);
             do
             {
-                breakPoints.Clear();
-                doorPositions.Clear();
-                generateBreakPoints(currentDirection, ref newDirection, new Position(currentPosition.x, currentPosition.y), lengthRange);
-                corridorGeneration++;
-            } while (corridorGeneration < 1000 && isCorridorCollidingWithRooms(rooms));
-            if (corridorGeneration < 1000)
+                directionCopy = direction;
+                generateBreakPoints(lengthRange, ref directionCopy);
+                breakPointsGeneration++;
+            } while (checkForCorridorCollisionWithRooms(rooms) && breakPointsGeneration < 500);
+            if (breakPointsGeneration < 500)
             {
-                currentDirection = newDirection;
-                possibleRoomPositions = findRoomStartingPositions(currentDirection, nextRoom, rooms, corridors);
-                if (possibleRoomPositions.Count != 0)
+                direction = directionCopy;
+                possibleTargetRoomPositions = getPossibleTargetRoomPositions(targetRoom, rooms, corridors);
+                checkForTargetRoomCollisionWithRooms(possibleTargetRoomPositions, targetRoom, rooms);
+                checkForTargetRoomCollisionWithCorridors(possibleTargetRoomPositions, targetRoom, corridors);
+                if (possibleTargetRoomPositions.Count > 0)
                 {
-                    nextRoom.position.setPosition(possibleRoomPositions[Random.Range(0, possibleRoomPositions.Count)]);
-                    startingRoom.entrancePositions.Add(new Position(breakPoints[0]));
-                    nextRoom.entrancePositions.Add(new Position(breakPoints[breakPoints.Count - 1]));
+                    targetRoom.position = possibleTargetRoomPositions[Random.Range(0, possibleTargetRoomPositions.Count)];
+                    startingRoom.doorsPositions.Add(breakPoints[0]);
+                    targetRoom.doorsPositions.Add(breakPoints[breakPoints.Count - 1]);
                     return true;
                 }
             }
-            else
-                roomGeneration++;
-        } while (roomGeneration < 1000);
+            targetRoomPositionGeneration++;
+        } while (targetRoomPositionGeneration < 500);
         return false;
     }
-    private void findCorridorStartingPosition(ref Directions currentDirection, Position currentPosition, Room startingRoom)
+    private void findStartingPosition(Room startingRoom)
     {
         do
         {
-            currentDirection = (Directions)Random.Range(0, 4);
-            switch (currentDirection)
+            breakPoints.Clear();
+            direction = (Directions)Random.Range(0, 4);
+            switch (direction)
             {
                 case Directions.North:
-                    currentPosition.setPosition(startingRoom.position.x, Random.Range(startingRoom.position.y, startingRoom.position.y + (startingRoom.width - 1)));
+                    breakPoints.Add(new Vector2Int(Random.Range(startingRoom.position.x, startingRoom.position.x + startingRoom.width),
+                        startingRoom.position.y - 1));
                     break;
                 case Directions.South:
-                    currentPosition.setPosition(startingRoom.position.x + startingRoom.height - 1,
-                        Random.Range(startingRoom.position.y, startingRoom.position.y + (startingRoom.width - 1)));
-                    break;
-                case Directions.West:
-                    currentPosition.setPosition(Random.Range(startingRoom.position.x, startingRoom.position.x + (startingRoom.height - 1)), startingRoom.position.y);
+                    breakPoints.Add(new Vector2Int(Random.Range(startingRoom.position.x, startingRoom.position.x + startingRoom.width),
+                        startingRoom.position.y + startingRoom.height));
                     break;
                 case Directions.East:
-                    currentPosition.setPosition(Random.Range(startingRoom.position.x, startingRoom.position.x + (startingRoom.height - 1)),
-                        startingRoom.position.y + startingRoom.width - 1);
+                    breakPoints.Add(new Vector2Int(startingRoom.position.x + startingRoom.width,
+                        Random.Range(startingRoom.position.y, startingRoom.position.y + startingRoom.height)));
+                    break;
+                case Directions.West:
+                    breakPoints.Add(new Vector2Int(startingRoom.position.x - 1,
+                        Random.Range(startingRoom.position.y, startingRoom.position.y + startingRoom.height)));
                     break;
             }
-        } while (startingRoom.isPositionCollidingWithEntrances(currentPosition, (int)currentDirection));
+        } while (startingRoom.isPositionCollidingWithDoors(breakPoints[0]));
     }
-    private List<Position> findRoomStartingPositions(Directions currentDirection, Room nextRoom, List<Room> rooms, List<Corridor> corridors)
+    private void generateBreakPoints(IntRange lengthRange, ref Directions direction)
     {
-        List<Position> possibleRoomPositions = new List<Position>();
-        switch (currentDirection)
+        int length, movesInSameDirection, rand;
+        Directions opositeDirection = (Directions)(((int)direction + 2) % 4);
+        Vector2Int currentPosition = breakPoints[0];
+        length = lengthRange.Random();       
+        movesInSameDirection = 0;
+        if(breakPoints.Count > 1)
+             breakPoints.RemoveRange(1, breakPoints.Count - 1);
+        for (int i=0; i<length; i++)
         {
-            case Directions.North:
-                for(int i=0; i<nextRoom.width; i++)
-                {
-                    possibleRoomPositions.Add(new Position(breakPoints[breakPoints.Count - 1].x - (nextRoom.height - 1), breakPoints[breakPoints.Count - 1].y - i));
-                }
-                break;
-            case Directions.South:
-                for (int i = 0; i < nextRoom.width; i++)
-                {
-                    possibleRoomPositions.Add(new Position(breakPoints[breakPoints.Count - 1].x, breakPoints[breakPoints.Count - 1].y - i));
-                }
-                break;
-            case Directions.West:
-                for (int i = 0; i < nextRoom.height; i++)
-                {
-                    possibleRoomPositions.Add(new Position(breakPoints[breakPoints.Count - 1].x - i, breakPoints[breakPoints.Count - 1].y - (nextRoom.width - 1)));
-                }
-                break;
-            case Directions.East:
-                for (int i = 0; i < nextRoom.height; i++)
-                {
-                    possibleRoomPositions.Add(new Position(breakPoints[breakPoints.Count - 1].x - i, breakPoints[breakPoints.Count - 1].y));
-                }
-                break;
-        }       
-        searchForRoomCollisionWithOtherRooms(possibleRoomPositions, nextRoom, rooms);
-        searchForRoomCollisionWithCorridors(possibleRoomPositions, nextRoom, corridors);
-        return possibleRoomPositions;
-    }
-    private void generateBreakPoints(Directions currentDirection, ref Directions newDirection, Position currentPosition, IntRange lengthRange)
-    {
-        int length, rand, continuedDirection = 0 ;
-        Directions opositeDirection;
-        Directions randomDirection;
-        length = lengthRange.Random();
-        breakPoints.Add(new Position(currentPosition.x, currentPosition.y));
-        opositeDirection = (Directions)(((int)currentDirection + 2) % 4);
-        for (int i = length; i >= 0; i--)
-        {
-            switch (currentDirection)
+            switch (direction)
             {
                 case Directions.North:
-                    currentPosition.x--;
+                    currentPosition.y--;
                     break;
                 case Directions.South:
+                    currentPosition.y++;
+                    break;
+                case Directions.East:
                     currentPosition.x++;
                     break;
                 case Directions.West:
-                    currentPosition.y--;
-                    break;
-                case Directions.East:
-                    currentPosition.y++;
+                    currentPosition.x--;
                     break;
             }
-            continuedDirection++;
-            if (i == 1 || i == length)
-                doorPositions.Add(new Position(currentPosition.x, currentPosition.y));
+            movesInSameDirection++;
             rand = Random.Range(0, 10);
-            if (rand < 2 && i > 1 && i < length && continuedDirection > 1)
+            if(rand<2 && movesInSameDirection > 1 && length - i > 1)
             {
+                Directions randomDirecion;
                 do
                 {
-                    randomDirection = (Directions)Random.Range(0, 4);
-                } while (randomDirection == opositeDirection || randomDirection == currentDirection);
-                currentDirection = randomDirection;
-                opositeDirection = (Directions)(((int)currentDirection + 2) % 4);
-                breakPoints.Add(new Position(currentPosition.x, currentPosition.y));
-                continuedDirection = 0;
+                    randomDirecion = (Directions)Random.Range(0, 4);
+                } while (randomDirecion == direction || randomDirecion == opositeDirection);
+                direction = randomDirecion;
+                opositeDirection= (Directions)(((int)direction + 2) % 4);
+                breakPoints.Add(currentPosition);
+                movesInSameDirection = 0;
             }
         }
-        breakPoints.Add(new Position(currentPosition.x, currentPosition.y));
-        newDirection = currentDirection;
+        breakPoints.Add(currentPosition);
     }
-    private bool isCorridorCollidingWithRooms(List<Room> rooms)
+    private bool checkForCorridorCollisionWithRooms(List<Room> rooms)
     {
-        Position position= new Position();
-        Position nextPosition = new Position();
-        bool isNotFirstIteration;
-        for (int i = 0; i < rooms.Count - 1; i++)
+        Vector2Int currentPosition;
+        Vector2Int nextPosition;
+        for(int i=0; i<rooms.Count-1; i++)
         {
-            isNotFirstIteration = false;
             for(int j=0; j<breakPoints.Count - 1; j++)
             {
-                position.setPosition(breakPoints[j]);
-                nextPosition.setPosition(breakPoints[j + 1]);
-                while (position != nextPosition)
+                currentPosition = breakPoints[j];
+                nextPosition = breakPoints[j + 1];
+                while (currentPosition != nextPosition)
                 {
-                    if (position.x > nextPosition.x)
-                        position.x--;
-                    else if (position.x < nextPosition.x)
-                        position.x++;
-                    else if (position.y > nextPosition.y)
-                        position.y--;
+                    if (currentPosition.x > nextPosition.x)
+                        currentPosition.x--;
+                    else if (currentPosition.x < nextPosition.x)
+                        currentPosition.x++;
+                    else if (currentPosition.y > nextPosition.y)
+                        currentPosition.y--;
                     else
-                        position.y++;
-                    if (isNotFirstIteration && rooms[i].isCollidingWithPosition(position))
+                        currentPosition.y++;
+                    if (rooms[i].isCollidingWitPosition(currentPosition))
                         return true;
-                    isNotFirstIteration = true;
-                }
+                }               
             }
         }
         return false;
     }
-    private void searchForRoomCollisionWithOtherRooms(List<Position> possibleRoomPositions, Room nextRoom, List<Room> rooms)
-    {   
-        for (int i = 0; i < possibleRoomPositions.Count; i++)
+    private List<Vector2Int> getPossibleTargetRoomPositions(Room targetRoom, List<Room> rooms, List<Corridor> corridors)
+    {
+        List<Vector2Int> possibleTargetRoomPositions = new List<Vector2Int>();        
+        switch (direction)
         {
-            nextRoom.position.setPosition(possibleRoomPositions[i]);
-            for (int j = 0; j <= rooms.Count - 2; j++)
-            {
-                if (nextRoom.isColidingWithOtherRoom(rooms[j]))
+            case Directions.North:
+                for (int i = 0; i < targetRoom.width; i++)
                 {
-                    possibleRoomPositions.RemoveAt(i);
+                    possibleTargetRoomPositions.Add(new Vector2Int(breakPoints[breakPoints.Count - 1].x - i,
+                        breakPoints[breakPoints.Count - 1].y - targetRoom.height));
+                }
+                break;
+            case Directions.South:                
+                for (int i = 0; i < targetRoom.width; i++)
+                {
+                    possibleTargetRoomPositions.Add(new Vector2Int(breakPoints[breakPoints.Count - 1].x - i,
+                        breakPoints[breakPoints.Count - 1].y + 1));
+                }
+                break;
+            case Directions.East:
+                for (int i = 0; i < targetRoom.height; i++)
+                {
+                    possibleTargetRoomPositions.Add(new Vector2Int(breakPoints[breakPoints.Count - 1].x + 1,
+                        breakPoints[breakPoints.Count - 1].y - i));
+                }
+                break;
+            case Directions.West:               
+                for (int i = 0; i < targetRoom.height; i++)
+                {
+                    possibleTargetRoomPositions.Add(new Vector2Int(breakPoints[breakPoints.Count - 1].x - targetRoom.width,
+                        breakPoints[breakPoints.Count - 1].y - i));
+                }
+                break;
+        }
+        return possibleTargetRoomPositions;
+    }
+    private void checkForTargetRoomCollisionWithRooms(List<Vector2Int> possibleTargetRoomPositions, Room targetRoom, List<Room> rooms)
+    {
+        for (int i = 0; i < possibleTargetRoomPositions.Count; i++)
+        {
+            targetRoom.position = possibleTargetRoomPositions[i];
+            for (int j = 0; j < rooms.Count - 1; j++)
+            {
+                if (targetRoom.isColidingWithRoom(rooms[j]))
+                {
+                    possibleTargetRoomPositions.RemoveAt(i);
                     i--;
                     break;
                 }
             }
         }
+        targetRoom.position = Vector2Int.zero;
     }
-    private void searchForRoomCollisionWithCorridors(List<Position> possibleRoomPositions, Room nextRoom, List<Corridor> corridors)
+    private void checkForTargetRoomCollisionWithCorridors(List<Vector2Int> possibleTargetRoomPositions, Room targetRoom, List<Corridor> corridors)
     {
-        for (int i = 0; i < possibleRoomPositions.Count; i++)
+        for (int i = 0; i < possibleTargetRoomPositions.Count; i++)
         {
-            nextRoom.position.setPosition(possibleRoomPositions[i]);
-            for (int j = 0; j <= corridors.Count - 2; j++)
+            targetRoom.position = possibleTargetRoomPositions[i];
+            for (int j = 0; j < corridors.Count; j++)
             {
-                if (nextRoom.isCollidingWithCorridor(corridors[j]))
+                if (targetRoom.isCollidingWithCorridor(corridors[j]))
                 {
-                    possibleRoomPositions.RemoveAt(i);
+                    possibleTargetRoomPositions.RemoveAt(i);
                     i--;
                     break;
                 }
