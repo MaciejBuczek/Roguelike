@@ -1,30 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class Room{
+public class Room
+{
 
-    public Position position = new Position();
-    public List<Position> entrancePositions =new List<Position>();
+    public Vector2Int position = new Vector2Int();
+    public List<Vector2Int> doorsPositions = new List<Vector2Int>();
     public int width;
     public int height;
-    public int entrancesAmount;
-    private Position[] EntrancesPositions;
+    public int exitsAmount;
 
-    public void generateRoom(IntRange widthRange, IntRange heightRange, bool canBeDeadEnd)
+    public Room(IntRange widthRange, IntRange heightRange, bool canBeDeadEnd)
     {
+        int rand;
         width = widthRange.Random();
         height = heightRange.Random();
-        calculateAmountOfEntrances(canBeDeadEnd);
+        if (canBeDeadEnd)
+        {
+            rand = Random.Range(0, 10);
+            if (rand < 3)
+            {
+                exitsAmount = 0;
+            }
+            else
+                getExitsAmount();
+        }
+        else
+            getExitsAmount();
     }
-    void calculateAmountOfEntrances(bool canBeDeadEnd)
+    private void getExitsAmount()
     {
         int max = 0;
-        int min = 1;
         if (width == 2)
             max += 2;
         else
         {
-            max += (height/3) * 2;
+            max += (height / 3) * 2;
         }
         if (height == 2)
             max += 2;
@@ -32,59 +43,34 @@ public class Room{
         {
             max += (width / 3) * 2;
         }
-        if (!canBeDeadEnd)
-            min++;
-        Mathf.Clamp(max, min, 5);
-        entrancesAmount = Random.Range(min, max);
+        Mathf.Clamp(max, 1, 5);
+        exitsAmount = Random.Range(1, max);
     }
-    public bool isPositionCollidingWithEntrances(Position newEntrancePosition, int direction)
+    public bool isPositionCollidingWithDoors(Vector2Int position)
     {
-        if (entrancePositions.Count == 0)
-            return false;
-        else
+        foreach(Vector2Int doorPosition in doorsPositions)
         {
-            switch (direction)
-            {
-                case 0:
-                case 2:
-                    foreach(Position entrancePosition in entrancePositions)
-                    {
-                        if (entrancePosition.x == newEntrancePosition.x && Mathf.Abs(newEntrancePosition.y - entrancePosition.y) == 1)
-                            return true;
-                    }
-                    break;
-                case 1:
-                case 3:
-                    foreach (Position entrancePosition in entrancePositions)
-                    {
-                        if (entrancePosition.y == newEntrancePosition.y && Mathf.Abs(newEntrancePosition.x - entrancePosition.x) == 1)
-                            return true;
-                    }
-                    break;
-            }
+            if (Mathf.Abs(doorPosition.x-position.x) == 1 || Mathf.Abs(doorPosition.y - position.y) == 1)
+                return true;
         }
         return false;
     }
-    public bool isCollidingWithPosition(Position position)
+    public bool isCollidingWitPosition(Vector2Int position)
     {
-        Position leftTopCorner = new Position(this.position.x - 1, this.position.y - 1);
-        Position rightBottomCorner = new Position(this.position.x + height, this.position.y + width);
-        if (position.x >= leftTopCorner.x && position.x <= rightBottomCorner.x && position.y >= leftTopCorner.y && position.y <= rightBottomCorner.y)
+        Vector2Int topLeftCorner = new Vector2Int(this.position.x-1, this.position.y-1);
+        Vector2Int bottomRightCorner = new Vector2Int(this.position.x + width, this.position.y+height);
+        if (position.x >= topLeftCorner.x && position.x <= bottomRightCorner.x && position.y >= topLeftCorner.y && position.y <= bottomRightCorner.y)
             return true;
-        return false;
+        else
+            return false;
     }
-    public bool isColidingWithOtherRoom(Room otherRoom)
+    public bool isColidingWithRoom(Room room)
     {
-        Position leftTopCorner = new Position(position.x - 1, position.y - 1);
-        Position rightBottomCorner = new Position(position.x + height, position.y + width);
-        Position tempPosition = new Position();
-        for(int x=0; x<otherRoom.height; x++)
+        for(int y= room.position.y; y<room.position.y+room.height; y++)
         {
-            for(int y=0; y<otherRoom.width; y++)
+            for(int x=room.position.x; x<room.position.x+room.width; x++)
             {
-                tempPosition.setPosition(otherRoom.position.x + x, otherRoom.position.y + y);
-                if (tempPosition.x >= leftTopCorner.x && tempPosition.x <= rightBottomCorner.x &&
-                    tempPosition.y >= leftTopCorner.y && tempPosition.y <= rightBottomCorner.y)
+                if (isCollidingWitPosition(new Vector2Int(x, y)))
                     return true;
             }
         }
@@ -92,34 +78,24 @@ public class Room{
     }
     public bool isCollidingWithCorridor(Corridor corridor)
     {
-        Position RoomTopLeftCorner = new Position(position.x - 1, position.y - 1);
-        Position RoomBottomRightCorner = new Position(position.x + height, position.y + width);
-        Position currentBreakPoint = new Position();
-        Position nextBreakPoint = new Position();
-        for (int j = 0; j < corridor.breakPoints.Count - 1; j++)
+        Vector2Int currentPosition;
+        Vector2Int nextPosition;
+        for (int i = 0; i < corridor.breakPoints.Count - 1; i++)
         {
-            currentBreakPoint.setPosition(corridor.breakPoints[j]);
-            nextBreakPoint.setPosition(corridor.breakPoints[j + 1]);
-            while (currentBreakPoint != nextBreakPoint)
+            currentPosition = corridor.breakPoints[i];
+            nextPosition = corridor.breakPoints[i + 1];
+            while (currentPosition != nextPosition)
             {
-                if (currentBreakPoint.x > nextBreakPoint.x)
-                {
-                    currentBreakPoint.x--;
-                }
-                else if (currentBreakPoint.x < nextBreakPoint.x)
-                {
-                    currentBreakPoint.x++;
-                }
-                else if (currentBreakPoint.y > nextBreakPoint.y)
-                {
-                    currentBreakPoint.y--;
-                }
+                if (currentPosition.x > nextPosition.x)
+                    currentPosition.x--;
+                else if (currentPosition.x < nextPosition.x)
+                    currentPosition.x++;
+                else if (currentPosition.y > nextPosition.y)
+                    currentPosition.y--;
                 else
-                {
-                    currentBreakPoint.y++;
-                }
-                if (currentBreakPoint.x >= RoomTopLeftCorner.x && currentBreakPoint.x <= RoomBottomRightCorner.x 
-                    && currentBreakPoint.y >= RoomTopLeftCorner.y && currentBreakPoint.y <= RoomBottomRightCorner.y)
+                    currentPosition.y++;
+                if (currentPosition != corridor.breakPoints[corridor.breakPoints.Count - 1] &&
+                    isCollidingWitPosition(currentPosition))
                     return true;
             }
         }

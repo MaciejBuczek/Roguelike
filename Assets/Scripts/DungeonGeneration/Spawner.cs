@@ -23,23 +23,17 @@ public class Spawner : MonoBehaviour {
     void initializeValues()
     {
         DungeonGenerator dungeonGenerator = GetComponent<DungeonGenerator>();
-        //dungeonMap = dungeonGenerator.dungeon;
-        dungeonRows = dungeonGenerator.rows;
-        dungeonCols = dungeonGenerator.cols;
         rooms = new List<Room>(dungeonGenerator.rooms);
         corridors = new List<Corridor>(dungeonGenerator.corridors);
     }
     void spawnPlayer()
     {
         GameObject playerGameObject;
-        int randRoomIndex;
-        Position playerPosition = new Position();
+        Vector2 playerPosition = new Vector2Int();
         Room randRoom;
-        randRoomIndex = Random.Range(0, rooms.Count);
-        randRoom = rooms[randRoomIndex];
-        playerPosition.setPosition(randRoom.position.x + (randRoom.height / 2), randRoom.position.y + (randRoom.width / 2));
-        playerPosition.x = dungeonRows - playerPosition.x - 1;
-        playerGameObject = Instantiate(player, new Vector3(playerPosition.y, playerPosition.x, 0), transform.rotation);
+        randRoom = rooms[Random.Range(0, rooms.Count)];
+        playerPosition.Set(randRoom.position.x + (randRoom.width / 2), randRoom.position.y + (randRoom.height / 2));
+        playerGameObject = Instantiate(player, playerPosition, transform.rotation);
         playerGameObject.name = "Player";
     }
 }
