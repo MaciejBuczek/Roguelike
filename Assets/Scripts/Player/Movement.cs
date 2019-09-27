@@ -75,7 +75,8 @@ public class Movement : MonoBehaviour {
             if (movementPositions.Count > 0)
                 isMoving = true;
             isNewTargetPositionSet = false;
-            if (transform.GetChild(0).transform.position.x != transform.position.x && transform.GetChild(0).transform.position.y != transform.position.y)
+            Transform cameraTransform = transform.GetChild(0).transform;
+            if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
             {
                 transform.GetChild(0).GetComponent<CameraController>().lerpToPosition(transform.position, Time.time, 0.15f);
             }

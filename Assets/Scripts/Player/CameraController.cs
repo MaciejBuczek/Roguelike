@@ -13,7 +13,7 @@ public class CameraController : MonoBehaviour
     public float dragSpeed = 1.5f;      
     private Vector3 dragOrigin;
     private Vector3 lastMouseCoordinate;
-    private bool shouldLerp = false;
+    private bool shouldLerpToPlayer = false;
     private float lerpStartTime;
     private float lerpTime;
     Vector3 lerpTargetPosition;
@@ -61,11 +61,12 @@ public class CameraController : MonoBehaviour
     }
     void moveCameraToPlayer()
     {
-        if (shouldLerp)
+        if (shouldLerpToPlayer)
         {
+            lerpTargetPosition = transform.parent.transform.position + new Vector3(0, 0, transform.position.z);
             transform.position = startLerping();
             if (transform.position == lerpTargetPosition)
-                shouldLerp = false;
+                shouldLerpToPlayer = false;
         }
     }
     private Vector3 startLerping()
@@ -79,7 +80,7 @@ public class CameraController : MonoBehaviour
     {
         this.lerpStartTime = lerpStartTime;
         this.lerpTime = lerpTime;
-        this.lerpTargetPosition = new Vector3(lerpTargetPosition.x, lerpTargetPosition.y, transform.position.z);
-        this.shouldLerp = true;
+        this.lerpTargetPosition = lerpTargetPosition - new Vector3(0, 0, transform.position.z);
+        this.shouldLerpToPlayer = true;
     }
 }
