@@ -17,12 +17,10 @@ public class DungeonGenerator : MonoBehaviour
     public IntRange roomWidthRange = new IntRange(2, 6);
     public IntRange roomHeightRange = new IntRange(2, 6);
     public IntRange corridorLengthRange = new IntRange(0, 5);
-    public GameObject[] floorTiles;
-    public GameObject[] wallTiles;
-    public GameObject[] emptyTiles;
-    public GameObject[] doorTiles;
+    public GameObject[] DungeonTiles;
     private int roomsAmount;
 
+    public GameObject[,] dungeonGameObjectArray;
     public TileType[,] dungeonTileTypeLayout;
     public bool[,] dungeonMovementLayout;
     public List<Room> rooms;
@@ -136,6 +134,7 @@ public class DungeonGenerator : MonoBehaviour
     void generateDungeonTileTypeLayout()
     {
         dungeonTileTypeLayout = new TileType[rows, cols];
+        dungeonGameObjectArray = new GameObject[rows, cols];
         for (int y = 0; y < rows; y++)
         {
             for (int x = 0; x < cols; x++)
@@ -161,9 +160,10 @@ public class DungeonGenerator : MonoBehaviour
             {
                 if (!isInstantiated[doorPosition.y, doorPosition.x])
                 {
-                    tile = Instantiate(doorTiles[Random.Range(0, doorTiles.Length)], new Vector2(doorPosition.x, doorPosition.y), transform.rotation);
+                    tile = Instantiate(DungeonTiles[0], new Vector2(doorPosition.x, doorPosition.y), transform.rotation);
                     tile.transform.parent = newRoom.transform;
                     dungeonTileTypeLayout[doorPosition.y, doorPosition.x] = TileType.Door;
+                    dungeonGameObjectArray[doorPosition.y, doorPosition.x] = tile;
                     isInstantiated[doorPosition.y, doorPosition.x] = true;
                 }
             }
@@ -175,22 +175,24 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (!isInstantiated[y, x])
                         {
-                            tile = Instantiate(wallTiles[Random.Range(0, wallTiles.Length)], new Vector2(x, y), transform.rotation);
                             dungeonTileTypeLayout[y, x] = TileType.Wall;
+                            tile = Instantiate(DungeonTiles[0], new Vector2(x, y), transform.rotation);
                             tile.transform.parent = newRoom.transform;
                             isInstantiated[y, x] = true;
+                            dungeonGameObjectArray[y, x] = tile;
                         }
                     }
                     else
                     {
                         if (!isInstantiated[y, x])
                         {
-                            tile = Instantiate(floorTiles[Random.Range(0, floorTiles.Length)], new Vector2(x, y), transform.rotation);
                             dungeonTileTypeLayout[y, x] = TileType.Floor;
+                            tile = Instantiate(DungeonTiles[0], new Vector2(x, y), transform.rotation);
                             tile.transform.parent = newRoom.transform;
                             isInstantiated[y, x] = true;
+                            dungeonGameObjectArray[y,x] = tile;
                         }
-                    }
+                    }                    
                 }
             }          
             roomNo++;
@@ -223,9 +225,10 @@ public class DungeonGenerator : MonoBehaviour
                         currentPosition.y++;
                     if (!isInstantiated[currentPosition.y, currentPosition.x] && currentPosition != corridor.breakPoints[corridor.breakPoints.Count - 1])
                     {
-                        tile = Instantiate(floorTiles[Random.Range(0, floorTiles.Length)], new Vector2(currentPosition.x, currentPosition.y), transform.rotation);
+                        tile = Instantiate(DungeonTiles[0], new Vector2(currentPosition.x, currentPosition.y), transform.rotation);
                         tile.transform.parent = newCorridor.transform;
                         dungeonTileTypeLayout[currentPosition.y, currentPosition.x] = TileType.Floor;
+                        dungeonGameObjectArray[currentPosition.y, currentPosition.x] = tile;
                         isInstantiated[currentPosition.y, currentPosition.x] = true;
                     }
                 }
@@ -246,8 +249,10 @@ public class DungeonGenerator : MonoBehaviour
                     {
                         if (!isInstantiated[position.y + y, position.x + x])
                         {
-                            tiles.Add(Instantiate(wallTiles[Random.Range(0, wallTiles.Length)], new Vector2(position.x + x, position.y + y), transform.rotation));
+                            tile = Instantiate(DungeonTiles[0], new Vector2(position.x + x, position.y + y), transform.rotation);
+                            tiles.Add(tile);
                             dungeonTileTypeLayout[position.y + y, position.x + x] = TileType.Wall;
+                            dungeonGameObjectArray[position.y + y, position.x + x] = tile;
                             isInstantiated[position.y + y, position.x + x] = true;
                         }
                     }

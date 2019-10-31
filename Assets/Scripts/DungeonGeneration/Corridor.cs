@@ -8,7 +8,6 @@ public class Corridor
         North, West, South, East,
     }
     public List<Vector2Int> breakPoints = new List<Vector2Int>();
-    //List<Vector2Int> doorsPositions = new List<Vector2Int>();
     private Directions direction;
     public Corridor(){}
     public bool tryToGenerateCorridor(IntRange lengthRange, Room startingRoom, Room targetRoom, List<Room> rooms, List<Corridor> corridors)

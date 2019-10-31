@@ -12,39 +12,28 @@ public class Room
 
     public Room(IntRange widthRange, IntRange heightRange, bool canBeDeadEnd)
     {
-        int rand;
         width = widthRange.Random();
         height = heightRange.Random();
-        if (canBeDeadEnd)
-        {
-            rand = Random.Range(0, 10);
-            if (rand < 3)
-            {
-                exitsAmount = 0;
-            }
-            else
-                getExitsAmount();
-        }
-        else
-            getExitsAmount();
+        getExitsAmount(canBeDeadEnd);
     }
-    private void getExitsAmount()
+    private void getExitsAmount(bool canBeDeadEnd)
     {
-        int max = 0;
-        if (width == 2)
-            max += 2;
+        int max, min;
+        if (canBeDeadEnd)
+            min = 1;
+        else
+            min = 2;
+        max = min;
+        if (width * height < 8)
+            max = 1;
+        else if (width * height < 16)
+            max = 2;
         else
         {
-            max += (height / 3) * 2;
+            max = 3;
         }
-        if (height == 2)
-            max += 2;
-        else
-        {
-            max += (width / 3) * 2;
-        }
-        Mathf.Clamp(max, 1, 5);
-        exitsAmount = Random.Range(1, max);
+        Mathf.Clamp(max, min, Mathf.Infinity);
+        exitsAmount = Random.Range(min, max);
     }
     public bool isPositionCollidingWithDoors(Vector2Int position)
     {
@@ -57,7 +46,8 @@ public class Room
     }
     public bool isCollidingWitPosition(Vector2Int position)
     {
-        Vector2Int topLeftCorner = new Vector2Int(this.position.x-1, this.position.y-1);
+        //koryterz uwzględnia pokój z którego wychodzi
+        Vector2Int topLeftCorner = new Vector2Int(this.position.x-2, this.position.y-2);
         Vector2Int bottomRightCorner = new Vector2Int(this.position.x + width, this.position.y+height);
         if (position.x >= topLeftCorner.x && position.x <= bottomRightCorner.x && position.y >= topLeftCorner.y && position.y <= bottomRightCorner.y)
             return true;
@@ -66,9 +56,9 @@ public class Room
     }
     public bool isColidingWithRoom(Room room)
     {
-        for(int y= room.position.y; y<room.position.y+room.height; y++)
+        for(int y= room.position.y - 1; y<room.position.y+room.height + 1; y++)
         {
-            for(int x=room.position.x; x<room.position.x+room.width; x++)
+            for(int x=room.position.x -1; x<room.position.x+room.width + 1; x++)
             {
                 if (isCollidingWitPosition(new Vector2Int(x, y)))
                     return true;
