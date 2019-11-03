@@ -133,18 +133,18 @@ public class TextureManager : MonoBehaviour
         SpriteRenderer spriteRenderer;
         foreach(Vector2Int doorPosition in room.doorsPositions)
         {
-            if (doorPosition.y == room.position.y + 1)
+            if (doorPosition.y == room.position.y + room.height)
             {
                 spriteRenderer = dungeonGameObjectArray[doorPosition.y, doorPosition.x - 1].GetComponent<SpriteRenderer>();
                 if (doorPosition.x - 1 == room.position.x - 1)
                     spriteRenderer.sprite = wallSprites[(int)wallIDs.tdCornerTopLeft];
                 else
-                    spriteRenderer.sprite = wallSprites[(int)wallIDs.tdLeft];
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.ldTop];
                 spriteRenderer = dungeonGameObjectArray[doorPosition.y, doorPosition.x + 1].GetComponent<SpriteRenderer>();
-                if (doorPosition.x + 1 == room.position.x + 1)
+                if (doorPosition.x + 1 == room.position.x + room.width)
                     spriteRenderer.sprite = wallSprites[(int)wallIDs.tdCornerTopRight];
                 else
-                    spriteRenderer.sprite = wallSprites[(int)wallIDs.tdRight];
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.rdTop];
             }
 
         }
