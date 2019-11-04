@@ -79,7 +79,7 @@ public class Corridor
         movesInSameDirection = 0;
         if(breakPoints.Count > 1)
              breakPoints.RemoveRange(1, breakPoints.Count - 1);
-        for (int i=0; i<length; i++)
+        for (int i=0; i<=length; i++)
         {
             switch (direction)
             {

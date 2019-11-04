@@ -46,8 +46,7 @@ public class Room
     }
     public bool isCollidingWitPosition(Vector2Int position)
     {
-        //koryterz uwzględnia pokój z którego wychodzi
-        Vector2Int topLeftCorner = new Vector2Int(this.position.x-2, this.position.y-2);
+        Vector2Int topLeftCorner = new Vector2Int(this.position.x-1, this.position.y-1);
         Vector2Int bottomRightCorner = new Vector2Int(this.position.x + width, this.position.y+height);
         if (position.x >= topLeftCorner.x && position.x <= bottomRightCorner.x && position.y >= topLeftCorner.y && position.y <= bottomRightCorner.y)
             return true;

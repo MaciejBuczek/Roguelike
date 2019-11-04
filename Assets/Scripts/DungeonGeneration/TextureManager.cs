@@ -12,7 +12,7 @@ public class TextureManager : MonoBehaviour
     {
         cornerTopLeft, cornerTopRight, cornerBottomLeft, cornerBottomRight, top, bottom, left,right,
         ldCornerTopLeft, rdCornerTopRight, ldCornerBottomLeft, rdCornerBottomRight, tdCornerTopLeft, tdCornerTopRight, bdCornerBottomLeft, bdCorerBottomRight,
-        ldTop, rdTop, ldBot, rdBot, tdLeft, bdLeft, tdRight, bdRight,
+        ldTop, rdTop, ldBottom, rdBottom, tdLeft, bdLeft, tdRight, bdRight,
     };
     public Sprite[] floorSprites;
     public Sprite[] doorSprites;
@@ -25,7 +25,7 @@ public class TextureManager : MonoBehaviour
     {
         initializeValues();
         applayFloorTextures();
-        applyRoomsTextures();
+        applyRoomsSprites();
     }
     void initializeValues()
     {
@@ -45,7 +45,7 @@ public class TextureManager : MonoBehaviour
             }
         }
     }
-    void applyDoorTextures(Room room)
+    void applyDoorsprites(Room room)
     {
         List<Room> rooms = GetComponent<DungeonGenerator>().rooms;
         SpriteRenderer spriteRenderer;
@@ -70,17 +70,17 @@ public class TextureManager : MonoBehaviour
             }
         }
     }
-    void applyRoomsTextures()
+    void applyRoomsSprites()
     {
         List<Room> rooms = GetComponent<DungeonGenerator>().rooms;
         foreach(Room room in rooms)
         {
-            applyDoorTextures(room);
-            applyRoomWallTextures(room);
-            applySpecialWallTextures(room);
+            applyDoorsprites(room);
+            applyRoomWallSprites(room);
+            applyRoomConnectionSprites(room);
         }
     }
-    void applyRoomWallTextures(Room room)
+    void applyRoomWallSprites(Room room)
     {
         Vector2Int position, startingPosition, moveVector;
         SpriteRenderer spriteRenderer;
@@ -128,7 +128,7 @@ public class TextureManager : MonoBehaviour
             position += moveVector;
         } while (position != startingPosition);
     }
-    void applySpecialWallTextures(Room room)
+    void applyRoomConnectionSprites(Room room)
     {
         SpriteRenderer spriteRenderer;
         foreach(Vector2Int doorPosition in room.doorsPositions)
@@ -145,8 +145,45 @@ public class TextureManager : MonoBehaviour
                     spriteRenderer.sprite = wallSprites[(int)wallIDs.tdCornerTopRight];
                 else
                     spriteRenderer.sprite = wallSprites[(int)wallIDs.rdTop];
+            }else if (doorPosition.y == room.position.y - 1)
+            {
+                spriteRenderer = dungeonGameObjectArray[doorPosition.y, doorPosition.x - 1].GetComponent<SpriteRenderer>();
+                if (doorPosition.x - 1 == room.position.x - 1)
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.bdCornerBottomLeft];
+                else
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.ldBottom];
+                spriteRenderer = dungeonGameObjectArray[doorPosition.y, doorPosition.x + 1].GetComponent<SpriteRenderer>();
+                if (doorPosition.x + 1 == room.position.x + room.width)
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.bdCorerBottomRight];
+                else
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.rdBottom];
             }
-
+            else if (doorPosition.x == room.position.x + room.width)
+            {
+                spriteRenderer = dungeonGameObjectArray[doorPosition.y - 1, doorPosition.x].GetComponent<SpriteRenderer>();
+                if (doorPosition.y - 1 == room.position.y - 1)
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.rdCornerBottomRight];
+                else
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.bdRight];
+                spriteRenderer = dungeonGameObjectArray[doorPosition.y + 1, doorPosition.x].GetComponent<SpriteRenderer>();
+                if (doorPosition.y + 1 == room.position.y + room.height)
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.rdCornerTopRight];
+                else
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.tdRight];
+            }
+            else if(doorPosition.x == room.position.x - 1)
+            {
+                spriteRenderer = dungeonGameObjectArray[doorPosition.y - 1, doorPosition.x].GetComponent<SpriteRenderer>();
+                if (doorPosition.y - 1 == room.position.y - 1)
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.ldCornerBottomLeft];
+                else
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.bdLeft];
+                spriteRenderer = dungeonGameObjectArray[doorPosition.y + 1, doorPosition.x].GetComponent<SpriteRenderer>();
+                if (doorPosition.y + 1 == room.position.y + room.height)
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.ldCornerTopLeft];
+                else
+                    spriteRenderer.sprite = wallSprites[(int)wallIDs.tdLeft];
+            }
         }
     }
 }
