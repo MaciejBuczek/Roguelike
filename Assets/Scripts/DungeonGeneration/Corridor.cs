@@ -9,6 +9,7 @@ public class Corridor
     }
     public List<Vector2Int> breakPoints = new List<Vector2Int>();
     private Directions direction;
+    public int length;
     public Corridor(){}
     public bool tryToGenerateCorridor(IntRange lengthRange, Room startingRoom, Room targetRoom, List<Room> rooms, List<Corridor> corridors)
     {
@@ -24,7 +25,8 @@ public class Corridor
                 directionCopy = direction;
                 generateBreakPoints(lengthRange, ref directionCopy);
                 breakPointsGeneration++;
-            } while (checkForCorridorCollisionWithRooms(rooms) && breakPointsGeneration < 500);
+            } while ((checkForCorridorCollisionWithRooms(rooms) || isCollidingWithCorridors(corridors)) 
+                && breakPointsGeneration < 500);
             if (breakPointsGeneration < 500)
             {
                 direction = directionCopy;
@@ -72,7 +74,7 @@ public class Corridor
     }
     private void generateBreakPoints(IntRange lengthRange, ref Directions direction)
     {
-        int length, movesInSameDirection, rand;
+        int movesInSameDirection, rand;
         Directions opositeDirection = (Directions)(((int)direction + 2) % 4);
         Vector2Int currentPosition = breakPoints[0];
         length = lengthRange.Random();       
@@ -117,8 +119,10 @@ public class Corridor
     {
         Vector2Int currentPosition;
         Vector2Int nextPosition;
+        int tempLength;
         for(int i=0; i<rooms.Count-1; i++)
         {
+            tempLength = 0;
             for(int j=0; j<breakPoints.Count - 1; j++)
             {
                 currentPosition = breakPoints[j];
@@ -133,7 +137,9 @@ public class Corridor
                         currentPosition.y--;
                     else
                         currentPosition.y++;
-                    if (rooms[i].isCollidingWitPosition(currentPosition))
+                    tempLength++;
+                    if (tempLength>1 && length-tempLength> 1 &&
+                        rooms[i].isCollidingWitPosition(currentPosition))
                         return true;
                 }               
             }
@@ -208,5 +214,49 @@ public class Corridor
                 }
             }
         }
+    }
+    private bool isCollidingWithCorridors(List<Corridor> corridors)
+    {
+        for (int i = 0; i < corridors.Count - 1; i++)
+        {
+            if (isCollidingWithCorridor(corridors[i]))
+                return true;
+        }
+        return false;
+    }
+    private bool isCollidingWithCorridor(Corridor corridor)
+    {
+        Directions direction1, direction2;
+        for (int i = 0; i < breakPoints.Count - 1; i++)
+        {
+            if (breakPoints[i].x == breakPoints[i + 1].x)
+                direction1 = Directions.North;
+            else
+                direction1 = Directions.East;
+            for (int j = 0; j < corridor.breakPoints.Count - 1; j++)
+            {
+                if (corridor.breakPoints[j].x == corridor.breakPoints[j + 1].x)
+                    direction2 = Directions.North;
+                else
+                    direction2 = Directions.East;
+                if (direction1 == direction2)
+                {
+                    if (direction1 == Directions.North)
+                    {
+                        if (Mathf.Abs(breakPoints[i].x - corridor.breakPoints[j].x) == 1 ||
+                            Mathf.Abs(breakPoints[i].x - corridor.breakPoints[j].x) == 2)
+                            return true;
+                    }
+                    else
+                    {
+                        if (Mathf.Abs(breakPoints[i].y - corridor.breakPoints[j].y) == 1 ||
+                            Mathf.Abs(breakPoints[i].y - corridor.breakPoints[j].y) == 2)
+                            return true;
+                    }
+                }
+            }
+
+        }
+        return false;
     }
 }

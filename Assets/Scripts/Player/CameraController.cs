@@ -41,13 +41,13 @@ public class CameraController : MonoBehaviour
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
             cameraSize -= zoomSpeed;
-            cameraSize = Mathf.Clamp(cameraSize, 5f, 15f);
+            cameraSize = Mathf.Clamp(cameraSize, 2f, 15f);
             playerCamera.orthographicSize = cameraSize;
         }
         if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
             cameraSize += zoomSpeed;
-            cameraSize = Mathf.Clamp(cameraSize, 5f, 15f);
+            cameraSize = Mathf.Clamp(cameraSize, 2f, 15f);
             playerCamera.orthographicSize = cameraSize;
         }
     }

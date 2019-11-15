@@ -37,18 +37,22 @@ public class Room
     }
     public bool isPositionCollidingWithDoors(Vector2Int position)
     {
+        int xDistance, yDistance;
         foreach(Vector2Int doorPosition in doorsPositions)
         {
-            if (Mathf.Abs(doorPosition.x-position.x) == 1 || Mathf.Abs(doorPosition.y - position.y) == 1)
+            xDistance = Mathf.Abs(doorPosition.x - position.x);
+            yDistance = Mathf.Abs(doorPosition.y - position.y);
+            if (xDistance == 1 || xDistance == 2 || yDistance == 1 || yDistance == 2)
                 return true;
         }
         return false;
     }
     public bool isCollidingWitPosition(Vector2Int position)
     {
-        Vector2Int topLeftCorner = new Vector2Int(this.position.x-1, this.position.y-1);
-        Vector2Int bottomRightCorner = new Vector2Int(this.position.x + width, this.position.y+height);
-        if (position.x >= topLeftCorner.x && position.x <= bottomRightCorner.x && position.y >= topLeftCorner.y && position.y <= bottomRightCorner.y)
+        Vector2Int topLeftCorner = new Vector2Int(this.position.x-2, this.position.y-2);
+        Vector2Int bottomRightCorner = new Vector2Int(this.position.x + width + 1, this.position.y+height + 1);
+        if (position.x >= topLeftCorner.x && position.x <= bottomRightCorner.x 
+            && position.y >= topLeftCorner.y && position.y <= bottomRightCorner.y)
             return true;
         else
             return false;
@@ -69,6 +73,7 @@ public class Room
     {
         Vector2Int currentPosition;
         Vector2Int nextPosition;
+        int tempLength = 0;
         for (int i = 0; i < corridor.breakPoints.Count - 1; i++)
         {
             currentPosition = corridor.breakPoints[i];
@@ -83,7 +88,8 @@ public class Room
                     currentPosition.y--;
                 else
                     currentPosition.y++;
-                if (currentPosition != corridor.breakPoints[corridor.breakPoints.Count - 1] &&
+                tempLength++;
+                if (tempLength > 1 && corridor.length - tempLength > 1 &&
                     isCollidingWitPosition(currentPosition))
                     return true;
             }
