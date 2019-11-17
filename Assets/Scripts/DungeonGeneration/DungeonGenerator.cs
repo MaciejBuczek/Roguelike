@@ -259,7 +259,7 @@ public class DungeonGenerator : MonoBehaviour
                 }
             }
             foreach (GameObject childTile in tiles)
-                childTile.transform.parent = lastGameObjectTransform;
+                childTile.transform.parent = corridor.transform;
         }
     }
     void generateDungeonMovementLayout()

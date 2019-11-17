@@ -155,7 +155,7 @@ MonoBehaviour:
   cols: 150
   roomsRange:
     min: 4
-    max: 8
+    max: 4
   roomWidthRange:
     min: 2
     max: 8
@@ -168,7 +168,7 @@ MonoBehaviour:
   DungeonTiles:
   - {fileID: 1004886980486717784, guid: 978b0b7050d385143a7824e0cdddb11c, type: 3}
   useSeed: 1
-  seed: 745
+  seed: -523
 --- !u!4 &1858445905
 Transform:
   m_ObjectHideFlags: 0
@@ -240,3 +240,7 @@ MonoBehaviour:
   - {fileID: -2642393358525368334, guid: 8fd42961ec6d0894eabf1ff6cf78fde6, type: 3}
   - {fileID: -4721245407534591264, guid: 8fd42961ec6d0894eabf1ff6cf78fde6, type: 3}
   - {fileID: 182515998739034355, guid: 8fd42961ec6d0894eabf1ff6cf78fde6, type: 3}
+  - {fileID: 2378500490408573859, guid: 3836c224e08fb9743a3666b513686be6, type: 3}
+  - {fileID: 6095856202300951415, guid: 3836c224e08fb9743a3666b513686be6, type: 3}
+  - {fileID: -1347818584294283942, guid: 3836c224e08fb9743a3666b513686be6, type: 3}
+  - {fileID: 4052924701752499180, guid: 3836c224e08fb9743a3666b513686be6, type: 3}
