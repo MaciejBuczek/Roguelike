@@ -154,21 +154,21 @@ MonoBehaviour:
   rows: 150
   cols: 150
   roomsRange:
-    min: 5
-    max: 5
+    min: 15
+    max: 15
   roomWidthRange:
-    min: 2
-    max: 8
+    min: 3
+    max: 9
   roomHeightRange:
-    min: 2
-    max: 8
+    min: 3
+    max: 9
   corridorLengthRange:
     min: 4
     max: 8
   DungeonTiles:
   - {fileID: 1004886980486717784, guid: 978b0b7050d385143a7824e0cdddb11c, type: 3}
   useSeed: 1
-  seed: 896
+  seed: -125
 --- !u!4 &1858445905
 Transform:
   m_ObjectHideFlags: 0

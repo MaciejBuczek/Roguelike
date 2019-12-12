@@ -141,7 +141,7 @@ public class Corridor
                     if (tempLength>1 && length-tempLength> 1 &&
                         rooms[i].isCollidingWitPosition(currentPosition))
                         return true;
-                    if (currentPosition == breakPoints[j])
+                    if (currentPosition == nextPosition)
                     {
                         if (rooms[i].isCollidingWitPosition(new Vector2Int(currentPosition.x - 1, currentPosition.y + 1)) ||
                             rooms[i].isCollidingWitPosition(new Vector2Int(currentPosition.x + 1, currentPosition.y + 1)) ||

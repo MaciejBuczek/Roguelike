@@ -185,7 +185,6 @@ public class TextureManager : MonoBehaviour
     {
         List<Corridor> corridors = GetComponent<DungeonGenerator>().corridors;
         Vector2Int currentPosition, nextPosition;
-        int vertialDircetion = 0, horizontalDirection = 0;
         foreach (Corridor corridor in corridors)
         {
             for (int i = 0; i < corridor.breakPoints.Count - 1; i++)
@@ -196,34 +195,22 @@ public class TextureManager : MonoBehaviour
                 {
                     
                     if (currentPosition.x > nextPosition.x)
-                    {
                         currentPosition.x--;
-                        horizontalDirection = -1;
-                        vertialDircetion = 0;
-                    }
                     else if (currentPosition.x < nextPosition.x)
-                    {
                         currentPosition.x++;
-                        horizontalDirection = 1;
-                        vertialDircetion = 0;
-                    }
                     else if (currentPosition.y > nextPosition.y)
-                    {
                         currentPosition.y--;
-                        vertialDircetion = 1;
-                        horizontalDirection = 0;
-                    }
                     else
-                    {
                         currentPosition.y++;
-                        vertialDircetion = - 1;
-                        horizontalDirection = 0;
-                    }
-                    applyCorridorInsideCornerSprites(currentPosition.x, currentPosition.y, horizontalDirection, vertialDircetion);
+                    if (currentPosition != corridor.breakPoints[corridor.breakPoints.Count - 1])
+                        applyCorridorInsideCornerSprites(currentPosition.x, currentPosition.y);
                     applyCorridorWallSprites(currentPosition, nextPosition);
                 }
             }
-            for (int i=1; i < corridor.breakPoints.Count - 1; i++)
+        }
+        foreach(Corridor corridor in corridors)
+        {
+            for (int i = 1; i < corridor.breakPoints.Count - 1; i++)
             {
                 applyCorridorOutsideCornerSprites(corridor.breakPoints[i]);
             }
@@ -258,45 +245,52 @@ public class TextureManager : MonoBehaviour
                 setSprite(x + 1, y, wallSprites[(int)wallIDs.right]);
         }
     }
-    void applyCorridorInsideCornerSprites(int x, int y, int horizontalDirection, int verticalDirection)
+    void applyCorridorInsideCornerSprites(int x, int y)
     {
         if (compareWithDungeonTileType(x - 1, y + 1, TileType.Floor))
         {
-            setSprite(x - 1, y, wallSprites[(int)wallIDs.insideCornerLeftBottom]);
-            setSprite(x, y + 1, wallSprites[(int)wallIDs.insideCornerRightTop]);
+            if(compareWithDungeonTileType(x, y + 1, TileType.Wall))
+                changeSprite(x, y + 1, wallSprites[(int)wallIDs.insideCornerRightTop]);
+            else if(compareWithDungeonTileType(x - 1, y, TileType.Wall))
+                changeSprite(x - 1, y, wallSprites[(int)wallIDs.insideCornerLeftBottom]);
         }
         if (compareWithDungeonTileType(x + 1, y + 1, TileType.Floor))
         {
-            setSprite(x + 1, y, wallSprites[(int)wallIDs.insideCornerRightBottom]);
-            setSprite(x, y + 1, wallSprites[(int)wallIDs.insideCornerLeftTop]);
+            if(compareWithDungeonTileType(x, y + 1, TileType.Wall))
+                changeSprite(x, y + 1, wallSprites[(int)wallIDs.insideCornerLeftTop]);
+            else if(compareWithDungeonTileType(x + 1, y, TileType.Wall))
+                changeSprite(x + 1, y, wallSprites[(int)wallIDs.insideCornerRightBottom]);
         }
-        
     }
     void applyCorridorOutsideCornerSprites(Vector2Int position)
     {
-        if (compareWithDungeonTileType(position.x - 1, position.y, TileType.Floor) && compareWithDungeonTileType(position.x, position.y + 1, TileType.Floor)) 
+        if (compareWithDungeonTileType(position.x - 1, position.y, TileType.Floor)) 
         {
-            setSprite(position.x + 1, position.y - 1, wallSprites[(int)wallIDs.cornerBottomRight]);
-            setSprite(position.x, position.y - 1, wallSprites[(int)wallIDs.bottom]);
-            setSprite(position.x + 1, position.y, wallSprites[(int)wallIDs.right]);
+            if (compareWithDungeonTileType(position.x, position.y + 1, TileType.Floor))
+            {
+                setSprite(position.x + 1, position.y - 1, wallSprites[(int)wallIDs.cornerBottomRight]);
+                setSprite(position.x, position.y - 1, wallSprites[(int)wallIDs.bottom]);
+                setSprite(position.x + 1, position.y, wallSprites[(int)wallIDs.right]);
+            }else if(compareWithDungeonTileType(position.x, position.y - 1, TileType.Floor))
+            {
+                setSprite(position.x + 1, position.y + 1, wallSprites[(int)wallIDs.cornerTopRight]);
+                setSprite(position.x, position.y + 1, wallSprites[(int)wallIDs.top]);
+                setSprite(position.x + 1, position.y, wallSprites[(int)wallIDs.right]);
+            }
         }
-        else if (compareWithDungeonTileType(position.x + 1, position.y, TileType.Floor) && compareWithDungeonTileType(position.x, position.y + 1, TileType.Floor)) 
+        else if (compareWithDungeonTileType(position.x + 1, position.y, TileType.Floor)) 
         {
-            setSprite(position.x - 1, position.y - 1, wallSprites[(int)wallIDs.cornerBottomLeft]);
-            setSprite(position.x, position.y - 1, wallSprites[(int)wallIDs.bottom]);
-            setSprite(position.x - 1, position.y, wallSprites[(int)wallIDs.left]);
-        }
-        else if(compareWithDungeonTileType(position.x - 1, position.y, TileType.Floor) && compareWithDungeonTileType(position.x,position.y - 1, TileType.Floor))
-        {
-            setSprite(position.x + 1, position.y + 1, wallSprites[(int)wallIDs.cornerTopRight]);
-            setSprite(position.x, position.y + 1, wallSprites[(int)wallIDs.top]);
-            setSprite(position.x + 1, position.y, wallSprites[(int)wallIDs.right]);
-        }
-        else if(compareWithDungeonTileType(position.x+1, position.y, TileType.Floor) && compareWithDungeonTileType(position.x, position.y - 1, TileType.Floor))
-        {
-            setSprite(position.x - 1, position.y + 1, wallSprites[(int)wallIDs.cornerTopLeft]);
-            setSprite(position.x, position.y + 1, wallSprites[(int)wallIDs.top]);
-            setSprite(position.x - 1, position.y, wallSprites[(int)wallIDs.left]);
+            if (compareWithDungeonTileType(position.x, position.y + 1, TileType.Floor))
+            {
+                setSprite(position.x - 1, position.y - 1, wallSprites[(int)wallIDs.cornerBottomLeft]);
+                setSprite(position.x, position.y - 1, wallSprites[(int)wallIDs.bottom]);
+                setSprite(position.x - 1, position.y, wallSprites[(int)wallIDs.left]);
+            }else if(compareWithDungeonTileType(position.x, position.y - 1, TileType.Floor))
+            {
+                setSprite(position.x - 1, position.y + 1, wallSprites[(int)wallIDs.cornerTopLeft]);
+                setSprite(position.x, position.y + 1, wallSprites[(int)wallIDs.top]);
+                setSprite(position.x - 1, position.y, wallSprites[(int)wallIDs.left]);
+            }
         }
     }
     void setSprite(int x, int y, Sprite sprite)
@@ -306,6 +300,11 @@ public class TextureManager : MonoBehaviour
             dungeonGameObjectArray[y, x].GetComponent<SpriteRenderer>().sprite = sprite;
             hasAssignedSprite[y, x] = true;
         }
+    }
+    void changeSprite(int x, int y, Sprite sprite)
+    {
+        dungeonGameObjectArray[y, x].GetComponent<SpriteRenderer>().sprite = sprite;
+        hasAssignedSprite[y, x] = true;
     }
     bool compareWithDungeonTileType(int x, int y, TileType tileType)
     {
