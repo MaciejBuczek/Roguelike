@@ -9,7 +9,7 @@ public class Interactable : MonoBehaviour
 
     public virtual void Interact()
     {
-        Debug.Log("interacted with " + transform.name);
+        Debug.Log("Interactig with " + transform.name);
     }
     private void OnMouseDown()
     {
