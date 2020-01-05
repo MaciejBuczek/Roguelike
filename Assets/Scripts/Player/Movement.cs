@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Movement : MonoBehaviour {
 
@@ -44,6 +45,8 @@ public class Movement : MonoBehaviour {
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
+            if(EventSystem.current.IsPointerOverGameObject())
+                return;
             if (isMoving)
             {
                 canContinueMoving = false;

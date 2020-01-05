@@ -10,7 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e5aa4f0624ed3d42b570ba2fa951053, type: 3}
-  m_Name: TestItem
+  m_Name: LongSword
   m_EditorClassIdentifier: 
-  name: Dagger
-  icon: {fileID: 0}
+  name: LongSword
+  icon: {fileID: 21300000, guid: ff8d88f433a21bd4c9028091a26d01d7, type: 3}
+  description: Long Boi

@@ -9,6 +9,20 @@ public enum TileType
 
 public class DungeonGenerator : MonoBehaviour
 {
+    #region Singleton
+    public static DungeonGenerator instance;
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.Log("more then one instance of dungeon generator found");
+            return;
+        }
+        instance = this;
+    }
+    #endregion
+
     [HideInInspector]
     public int rows;
     [HideInInspector]

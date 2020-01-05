@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Interactable : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class Interactable : MonoBehaviour
     }
     private void OnMouseDown()
     {
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
         Debug.Log("clicked on " + transform.name);
         isFocused = true;
     }

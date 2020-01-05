@@ -20,7 +20,7 @@ public class TextureManager : MonoBehaviour
     GameObject[,] dungeonGameObjectArray;
     TileType[,] dungeonTileTypeLayout;
     bool[,] hasAssignedSprite;
-    int rows, cols;
+    int cols, rows;
     // Start is called before the first frame update
     void Start()
     {
@@ -31,10 +31,10 @@ public class TextureManager : MonoBehaviour
     }
     void initializeValues()
     {
-        dungeonGameObjectArray = GetComponent<DungeonGenerator>().dungeonGameObjectArray;
-        dungeonTileTypeLayout = GetComponent<DungeonGenerator>().dungeonTileTypeLayout;
-        rows = GetComponent<DungeonGenerator>().rows;
-        cols = GetComponent<DungeonGenerator>().cols;
+        dungeonGameObjectArray = DungeonGenerator.instance.dungeonGameObjectArray;
+        dungeonTileTypeLayout = DungeonGenerator.instance.dungeonTileTypeLayout;
+        rows = DungeonGenerator.instance.rows;
+        cols = DungeonGenerator.instance.cols;
         hasAssignedSprite = new bool[rows, cols];
     }
     void applayFloorSprites()
