@@ -36,7 +36,7 @@ public class ItemDetails : MonoBehaviour
         EventSystem.current.RaycastAll(pointer, raycastResults);
         for(int i=0; i<raycastResults.Count; i++)
         {
-            if (raycastResults[i].gameObject.tag != "ActivePanel")
+            if (!raycastResults[i].gameObject.CompareTag("ActivePanel"))
             {
                 raycastResults.RemoveAt(i);
                 i--;
