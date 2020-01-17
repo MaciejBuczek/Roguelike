@@ -146,7 +146,6 @@ MonoBehaviour:
   canvas: {fileID: 0}
   DragObject: {fileID: 0}
   inventorySlot: {fileID: 7848482979234725001}
-  isDropped: 0
 --- !u!114 &2794475611222657773
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -159,7 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e468b1df7e7287f4fb31bf1efb954e93, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentSlot: {fileID: 7848482979234725001}
+  inventorySlot: {fileID: 7848482979234725001}
 --- !u!1 &4798119821875012031
 GameObject:
   m_ObjectHideFlags: 0

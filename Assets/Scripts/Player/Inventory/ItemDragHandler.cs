@@ -29,7 +29,11 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
             DragObject.GetComponent<CanvasGroup>().alpha = 0.6f;
 
-            inventorySlot.RemoveItem();
+            //inventorySlot.RemoveItem();
+            if (inventorySlot.isEquipmentSlot)
+                inventorySlot.icon.sprite = inventorySlot.defaultIcon;
+            else
+                inventorySlot.icon.enabled = false;
 
             isDragging = true;
             isDropped = false;
@@ -48,8 +52,13 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         if(isDragging)
         {        
             DragObject.GetComponent<Image>().sprite = null;
-            if(!isDropped)
-                inventorySlot.AddItem(item);      
+            if (!isDropped)
+            {
+                if (inventorySlot.isEquipmentSlot)
+                    inventorySlot.icon.sprite = inventorySlot.item.icon;
+                else
+                    inventorySlot.icon.enabled = true;
+            }              
             DragObject.SetActive(false);
             isDragging = false;
             Debug.Log("End Drag");

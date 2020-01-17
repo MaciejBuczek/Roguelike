@@ -10,7 +10,12 @@ public class ItemPickUp : Interactable
         base.Interact();
         PickUp();
     }
-    
+
+    public override void SetSprite()
+    {
+        this.GetComponent<SpriteRenderer>().sprite = item.icon;
+    }
+
     void PickUp()
     {
         Debug.Log("Picking up " + item.name);

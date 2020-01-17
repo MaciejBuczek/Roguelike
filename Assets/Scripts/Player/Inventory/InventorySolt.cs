@@ -25,6 +25,38 @@ public class InventorySolt : MonoBehaviour
             icon.enabled = false;
         slotButton.interactable = false;
     }
+    public void AssignItemToSlot(InventorySolt inventorySlot)
+    {
+        if (inventorySlot.item)    
+            SwapItems(inventorySlot);
+        else
+            MoveItem(inventorySlot);
+    }
+    public void SwapItems(InventorySolt inventorySlot)
+    {
+        if (isEquipmentSlot)
+        {
+            Inventory.instance.items.Remove(inventorySlot.item);
+            Inventory.instance.items.Add(item);
+        }
+        else if (inventorySlot.isEquipmentSlot)
+        {
+            Inventory.instance.items.Remove(item);
+            Inventory.instance.items.Add(inventorySlot.item);
+        }
+        Item tempItem = item;
+        AddItem(inventorySlot.item);
+        inventorySlot.AddItem(tempItem);
+    }
+    public void MoveItem(InventorySolt inventorySolt)
+    {
+        if (isEquipmentSlot)
+            Inventory.instance.items.Add(item);
+        else if(inventorySolt.isEquipmentSlot)
+            Inventory.instance.items.Remove(item);
+        inventorySolt.AddItem(item);
+        RemoveItem();
+    }
     public void OnSlotButton()
     {
         itemDetails.SetActive(true);

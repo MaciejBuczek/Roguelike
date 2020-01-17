@@ -7,6 +7,7 @@ public class Interactable : MonoBehaviour
 
     private bool isFocused = false;
     private Vector3 playerPosition;
+    public virtual void SetSprite() { }
 
     public virtual void Interact()
     {
@@ -21,7 +22,7 @@ public class Interactable : MonoBehaviour
     }
     private void Start()
     {
-        //playerPosition = GameObject.FindGameObjectWithTag("Player").transform.position;
+        SetSprite();
     }
     private void Update()
     {
