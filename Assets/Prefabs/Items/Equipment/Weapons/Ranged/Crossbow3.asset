@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f270568932b452b49b93d530c1fe3349, type: 3}
-  m_Name: Axe2
+  m_Name: Crossbow3
   m_EditorClassIdentifier: 
-  name: Axe2
-  icon: {fileID: 21300000, guid: 581422572c99bca4eb47cc56692e7501, type: 3}
-  description: Axe2
-  inventorySlotType: 0
+  name: Crossbow3
+  icon: {fileID: 21300000, guid: 7ce0d47c79a75bc4384bf4a6fdb10d6f, type: 3}
+  description: Crossbow3
+  inventorySlotType: 1
   damageModifier: 0
   armorModifier: 0
+  critChance: 0

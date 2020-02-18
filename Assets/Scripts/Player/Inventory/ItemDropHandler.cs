@@ -3,15 +3,16 @@ using UnityEngine.EventSystems;
 
 public class ItemDropHandler : MonoBehaviour, IDropHandler
 {
-    public InventorySlotType equipmentSlot;
+    public InventorySlotType inventorySlotType;
     public InventorySolt inventorySlot;
     private ItemDragHandler itemDragHandler;
     public void OnDrop(PointerEventData eventData)
     {
-        Debug.Log("bazinga");
         if (eventData.pointerDrag != null)
         {
             itemDragHandler = eventData.pointerDrag.GetComponent<ItemDragHandler>();
+            if (inventorySlotType != InventorySlotType.Any && itemDragHandler.item.inventorySlotType != inventorySlotType)
+                return;
             if (inventorySlot.item == null)
                 itemDragHandler.inventorySlot.MoveItem(inventorySlot);
             else

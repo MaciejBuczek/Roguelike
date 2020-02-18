@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public enum InventorySlotType { MeleeWeapon, RangedWeapon, AbilityItem, Armor, Ring, Trinket, Misc };
+public enum InventorySlotType { MeleeWeapon, RangedWeapon, AbilityItem, Armor, Ring, Trinket, Any };
 
 [CreateAssetMenu(fileName = "New Item", menuName = "Inventory/Item")]
 public class Item : ScriptableObject

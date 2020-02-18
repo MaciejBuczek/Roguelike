@@ -18,3 +18,4 @@ MonoBehaviour:
   inventorySlotType: 0
   damageModifier: 0
   armorModifier: 0
+  critChance: 0

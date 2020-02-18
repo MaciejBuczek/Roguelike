@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f270568932b452b49b93d530c1fe3349, type: 3}
-  m_Name: Dagger2
+  m_Name: Crossbow1
   m_EditorClassIdentifier: 
-  name: Daggee2
-  icon: {fileID: 21300000, guid: e3988962ef19d8c41895d279964c23a3, type: 3}
-  description: Dagger2
-  equipmentSlot: 0
-  damageModifier: 4
+  name: Crossbow1
+  icon: {fileID: 21300000, guid: cb9d62c95c2e67b4893b4acec4989b4f, type: 3}
+  description: Crossbow1
+  inventorySlotType: 1
+  damageModifier: 0
   armorModifier: 0
+  critChance: 0

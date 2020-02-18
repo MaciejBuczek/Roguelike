@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f270568932b452b49b93d530c1fe3349, type: 3}
-  m_Name: Axe3
+  m_Name: Bow1
   m_EditorClassIdentifier: 
-  name: Axe3
-  icon: {fileID: 21300000, guid: 78c52a9a65aba7a44a2988baf6c9caed, type: 3}
-  description: Axe3
-  inventorySlotType: 0
+  name: Bow 1
+  icon: {fileID: 21300000, guid: 0359ff35b5ae9104aa9afc93933cc54d, type: 3}
+  description: Bow 1
+  inventorySlotType: 1
   damageModifier: 0
   armorModifier: 0
+  critChance: 0
