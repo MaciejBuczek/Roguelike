@@ -28,6 +28,5 @@ public class RandWeapon : MonoBehaviour
             item = Tier3[Random.Range(0, Tier3.Length)];
         }
         ItemPickUp.item = item;
-        Debug.Log("a");
     }
 }

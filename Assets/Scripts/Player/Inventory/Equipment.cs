@@ -23,21 +23,29 @@ public class Equipment : MonoBehaviour
     public delegate void OnEquipmentChanged(Equippable newItem, Equippable oldItem);
     public OnEquipmentChanged onEquipmentChanged;
     
-    public void EquipItem(InventorySolt inventorySlot)
+    public void EquipItemFromSlot(InventorySolt inventorySlot)
     {
-        inventorySlot.AssignItemToSlot(equipmentSlots[(int)inventorySlot.item.inventorySlotType]);
-        if(onEquipmentChanged != null)
-        {
-            onEquipmentChanged.Invoke((Equippable)inventorySlot.item, (Equippable)equipmentSlots[(int)inventorySlot.item.inventorySlotType].item);
-        }
-    }
-    public void Unequip(InventorySolt inventorySlot)
-    {
-        Inventory.instance.Add(inventorySlot.item);
-        inventorySlot.RemoveItem();
+        Equippable newItem, oldItem;
+        InventorySlotType inventorySlotType = inventorySlot.item.inventorySlotType;
+        inventorySlot.AssignItemToSlot(equipmentSlots[(int)inventorySlotType]);
+        newItem = (Equippable)equipmentSlots[(int)inventorySlotType].item;
+        oldItem = (Equippable)inventorySlot.item;
         if (onEquipmentChanged != null)
         {
-            onEquipmentChanged.Invoke((Equippable)inventorySlot.item, (Equippable)equipmentSlots[(int)inventorySlot.item.inventorySlotType].item);
+            onEquipmentChanged.Invoke(newItem, oldItem);
+        }
+    }
+    public void UnequipItemFromSlot(InventorySolt inventorySlot)
+    {
+        Equippable newItem, oldItem;
+        InventorySlotType inventorySlotType = inventorySlot.item.inventorySlotType;
+        oldItem = (Equippable)inventorySlot.item;
+        Inventory.instance.Add(inventorySlot.item);
+        inventorySlot.RemoveItem();
+        newItem = (Equippable)equipmentSlots[(int)inventorySlotType].item;
+        if (onEquipmentChanged != null)
+        {
+            onEquipmentChanged.Invoke(newItem, oldItem);
         }
     }
 }

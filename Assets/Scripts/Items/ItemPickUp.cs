@@ -13,7 +13,6 @@ public class ItemPickUp : Interactable
 
     public override void SetSprite()
     {
-        Debug.Log("b");
         this.GetComponent<SpriteRenderer>().sprite = item.icon;
     }
 

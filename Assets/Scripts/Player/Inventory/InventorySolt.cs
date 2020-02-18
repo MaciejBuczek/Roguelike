@@ -38,11 +38,13 @@ public class InventorySolt : MonoBehaviour
         {
             Inventory.instance.items.Remove(inventorySlot.item);
             Inventory.instance.items.Add(item);
+            //Equipment.instance.EquipItemFromSlot(inventorySlot);
         }
         else if (inventorySlot.isEquipmentSlot)
         {
             Inventory.instance.items.Remove(item);
             Inventory.instance.items.Add(inventorySlot.item);
+            //Equipment.instance.EquipItemFromSlot(inventorySlot);
         }
         Item tempItem = item;
         AddItem(inventorySlot.item);
@@ -52,7 +54,7 @@ public class InventorySolt : MonoBehaviour
     {
         if (isEquipmentSlot)
             Inventory.instance.items.Add(item);
-        else if(inventorySolt.isEquipmentSlot)
+        else if (inventorySolt.isEquipmentSlot)
             Inventory.instance.items.Remove(item);
         inventorySolt.AddItem(item);
         RemoveItem();
