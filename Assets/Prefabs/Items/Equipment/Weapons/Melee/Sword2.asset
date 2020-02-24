@@ -16,8 +16,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 8efd4ebb29b3a4e4894bb8a372bbfebf, type: 3}
   description: Sword2
   inventorySlotType: 0
-  damage:
-    min: 5
-    max: 6
+  damageModifier: 0
   armorModifier: 0
   critChance: 0

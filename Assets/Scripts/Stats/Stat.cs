@@ -10,11 +10,6 @@ public class Stat
 
     public List<int> modifiers = new List<int>();
 
-    public void SetBaseValue(int value)
-    {
-        baseValue = value;
-    }
-
     public void AddModifier(int modifier)
     {
         modifiers.Add(modifier);
