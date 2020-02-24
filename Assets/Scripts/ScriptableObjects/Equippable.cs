@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "New Equipment", menuName = "Inventory/Equipment")]
 public class Equippable : Item
 {
-    public int damageModifier;
+    public IntRange damage;
     public int armorModifier;
     public int critChance;
 

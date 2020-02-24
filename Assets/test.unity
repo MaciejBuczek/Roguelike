@@ -943,6 +943,7 @@ GameObject:
   - component: {fileID: 178814644}
   - component: {fileID: 178814646}
   - component: {fileID: 178814645}
+  - component: {fileID: 178814647}
   m_Layer: 5
   m_Name: CharacterPanel
   m_TagString: Untagged
@@ -1009,6 +1010,28 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 178814643}
   m_CullTransparentMesh: 0
+--- !u!114 &178814647
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 178814643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd6b93e5477e2b40a3625e12ff9b59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statsText:
+  - {fileID: 1132559557}
+  - {fileID: 641903862}
+  - {fileID: 2115387259}
+  - {fileID: 1827017194}
+  - {fileID: 1849773268}
+  - {fileID: 1291449199}
+  - {fileID: 1869721728}
+  - {fileID: 1730816656}
+  - {fileID: 999054594}
 --- !u!1 &240034273
 GameObject:
   m_ObjectHideFlags: 0
@@ -6500,10 +6523,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 588870cd222bec9448f85e1e7581a782, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  damageMelee:
+    min: 0
+    max: 0
+  damageRanged:
+    min: 0
+    max: 0
   armor:
     baseValue: 0
     modifiers: 
-  damage:
+  dodge:
+    baseValue: 0
+    modifiers: 
+  health:
+    baseValue: 0
+    modifiers: 
+  currentHealth: 0
+  mana:
+    baseValue: 0
+    modifiers: 
+  strength:
+    baseValue: 0
+    modifiers: 
+  dexterity:
+    baseValue: 0
+    modifiers: 
+  intelligence:
     baseValue: 0
     modifiers: 
 --- !u!1 &2085805091
