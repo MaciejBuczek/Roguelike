@@ -2,7 +2,8 @@
 public class PlayerStats : CharacterStats
 {
     public Stat mana, strength, dexterity, intelligence;
-
+    public int currentMana, currentExp = 0, nextLevelExp = 100, level;
+    private IntRange unarmedDamage = new IntRange(1,2);
     public delegate void OnStatsChanged();
     public OnStatsChanged onStatsChanged;
     public static PlayerStats instance;
@@ -21,8 +22,41 @@ public class PlayerStats : CharacterStats
         dexterity.SetBaseValue(10);
         intelligence.SetBaseValue(10);
         CalculateAll();
+        currentMana = mana.GetValue();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            TakeDamage(2);
+        }
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            UseMana(2);
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            GainExp(2);
+        }
+    }
+    public override void TakeDamage(int damage)
+    {
+        int damageVal = damage - armor.GetValue();
+        Mathf.Clamp(damageVal, 0, int.MaxValue);
+        base.TakeDamage(damage);
+        CharacterPanel.Instance.SubtractHealth(damageVal);
+    }
+    public void UseMana(int mana)
+    {
+        currentMana -= mana;
+        CharacterPanel.Instance.SubtractMana(mana);
+    }
+    public void GainExp(int exp)
+    {
+        currentExp += exp;
+        CharacterPanel.Instance.AddExp(exp);
+    }
     private void CalculateHealth()
     {
         health.SetBaseValue(strength.GetValue() * 2);
@@ -51,7 +85,7 @@ public class PlayerStats : CharacterStats
         {
             if (newItem.armorModifier != 0)
                 armor.AddModifier(newItem.armorModifier);
-            if (newItem.inventorySlotType == InventorySlotType.MeleeWeapon || newItem.inventorySlotType == InventorySlotType.RangedWeapon)
+            else if (newItem.inventorySlotType == InventorySlotType.MeleeWeapon || newItem.inventorySlotType == InventorySlotType.RangedWeapon)
             {
                 if (newItem.inventorySlotType == InventorySlotType.MeleeWeapon)
                 {
@@ -65,16 +99,16 @@ public class PlayerStats : CharacterStats
                 }
             }
         }
-        if (oldItem != null)
+        else
         {
-            if (oldItem.armorModifier != 0) 
+            if(oldItem.armorModifier!=0)
                 armor.RemoveModifier(oldItem.armorModifier);
-            if(oldItem.inventorySlotType==InventorySlotType.MeleeWeapon || oldItem.inventorySlotType==InventorySlotType.RangedWeapon)
+            else if (oldItem.inventorySlotType == InventorySlotType.MeleeWeapon || oldItem.inventorySlotType == InventorySlotType.RangedWeapon)
             {
                 if (oldItem.inventorySlotType == InventorySlotType.MeleeWeapon)
                 {
-                    damageMelee.min = 0;
-                    damageMelee.max = 0;
+                    damageMelee.min = unarmedDamage.min;
+                    damageMelee.max = unarmedDamage.max;
                 }
                 else
                 {

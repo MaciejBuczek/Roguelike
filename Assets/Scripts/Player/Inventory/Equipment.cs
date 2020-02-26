@@ -27,9 +27,9 @@ public class Equipment : MonoBehaviour
     {
         Equippable newItem, oldItem;
         InventorySlotType inventorySlotType = inventorySlot.item.inventorySlotType;
+        oldItem = (Equippable)equipmentSlots[(int)inventorySlotType].item;
+        newItem = (Equippable)inventorySlot.item;
         inventorySlot.AssignItemToSlot(equipmentSlots[(int)inventorySlotType]);
-        newItem = (Equippable)equipmentSlots[(int)inventorySlotType].item;
-        oldItem = (Equippable)inventorySlot.item;
         if (onEquipmentChanged != null)
         {
             onEquipmentChanged.Invoke(newItem, oldItem);

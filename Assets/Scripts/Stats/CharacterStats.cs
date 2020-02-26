@@ -2,10 +2,6 @@
 
 public class CharacterStats : MonoBehaviour
 {
-    /*public Stat health;
-    public Stat armor;
-    public Stat damage;*/
-
     public IntRange damageMelee, damageRanged;
     public Stat armor, dodge, health;
     public int currentHealth;
@@ -14,7 +10,7 @@ public class CharacterStats : MonoBehaviour
     {
         currentHealth = health.GetValue();
     }
-    void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         damage -= armor.GetValue();
         Mathf.Clamp(damage, 0, int.MaxValue);

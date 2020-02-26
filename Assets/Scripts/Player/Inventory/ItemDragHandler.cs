@@ -29,7 +29,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
             DragObject.GetComponent<CanvasGroup>().alpha = 0.6f;
 
-            //inventorySlot.RemoveItem();
             if (inventorySlot.isEquipmentSlot)
                 inventorySlot.icon.sprite = inventorySlot.defaultIcon;
             else
