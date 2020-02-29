@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Movement : MonoBehaviour {
+public class PMovement : MonoBehaviour {
 
     //private TileType[,] dungeonTiles;
     private bool[,] dungeonMovementLayout;
@@ -222,6 +222,7 @@ public class Movement : MonoBehaviour {
     }
     float distance(Node a, Node b)
     {
-        return Mathf.Sqrt((a.position.x - b.position.x) * (a.position.x - b.position.x) + (a.position.y - b.position.y) * (a.position.y - b.position.y));
+        float aa= Mathf.Sqrt((a.position.x - b.position.x) * (a.position.x - b.position.x) + (a.position.y - b.position.y) * (a.position.y - b.position.y));
+        return aa;
     }
 }
