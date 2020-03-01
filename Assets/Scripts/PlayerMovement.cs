@@ -1,10 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PlayerMovement : Movement
 {
+    public CameraController cameraController;
     // Update is called once per frame
     void Update()
     {
@@ -26,6 +25,12 @@ public class PlayerMovement : Movement
             if (mousePosition.y < 0 || mousePosition.y >= DungeonGenerator.instance.rows)
                 return;
             targetPosition.Set((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y), 0);
+            Transform cameraTransform = transform.GetChild(0).transform;
+            if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
+            {
+                //transform.GetChild(0).GetComponent<CameraController>().lerpToPosition(transform.position, Time.time, 0.15f);
+                cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
+            }
             FindPath(targetPosition);
             Input.ResetInputAxes();
         }

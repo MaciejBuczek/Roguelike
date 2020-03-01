@@ -22,10 +22,7 @@ public class Movement : MonoBehaviour
 
     public virtual void GetDestination()
     {
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            FindPath(new Vector3(9,11,0));
-        }
+
     }
     public void FindPath(Vector3 destination)
     {
@@ -35,10 +32,6 @@ public class Movement : MonoBehaviour
         Vector2Int end = new Vector2Int((int)destination.x, (int)destination.y);
 
         List<Vector3> path = MovementManager.Instance.GeneratePath(start, end);
-        foreach (Vector3 position in path)
-        {
-            Debug.Log(position);
-        }
         coroutine = Move(path);
         StartCoroutine(coroutine);
     }
