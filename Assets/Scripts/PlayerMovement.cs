@@ -3,18 +3,27 @@ using UnityEngine.EventSystems;
 
 public class PlayerMovement : Movement
 {
+    public delegate void OnPlayerTurnEnd();
+    public OnPlayerTurnEnd onPlayerTurnEnd;
     public CameraController cameraController;
+    private bool isPlayerTurn = true;
     // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        GetDestination();
-        CheckForInterupt();
+        TurnController.Instance.onPlayerTurn += OnPlayerTurn;
+    }
+    private void Update()
+    {
+        if (isPlayerTurn)
+        {
+            Move();
+        }
     }
     public override void GetDestination()
     {     
         if (Input.GetKeyDown(KeyCode.Mouse0) && !isMoving)
         {
-            Vector3 targetPosition = new Vector3();
+            targetPosition = new Vector3();
             if (EventSystem.current.IsPointerOverGameObject())
                 return;
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -27,24 +36,33 @@ public class PlayerMovement : Movement
             targetPosition.Set((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y), 0);
             Transform cameraTransform = transform.GetChild(0).transform;
             if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
-            {
-                //transform.GetChild(0).GetComponent<CameraController>().lerpToPosition(transform.position, Time.time, 0.15f);
+            {              
                 cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
             }
-            FindPath(targetPosition);
             Input.ResetInputAxes();
+            isNewTargetSet = true;
         }
     }
-    private void CheckForInterupt()
+    public override void CheckForInterupt()
     {
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            if (isMoving)
-            {
-                StopCoroutine(coroutine);
-                transform.position = currentPosition;
-                isMoving = false;
-            }
+            path.Clear();
+            Debug.Log(path.Count);
+            Debug.Log("movement interupted");
         }
+    }
+    public override void OnMovementEnd()
+    {
+        isPlayerTurn = false;
+        if (onPlayerTurnEnd != null)
+        {
+            onPlayerTurnEnd.Invoke();
+        }
+    }
+    void OnPlayerTurn()
+    {
+        Debug.Log("player turn");
+        isPlayerTurn = true;
     }
 }
