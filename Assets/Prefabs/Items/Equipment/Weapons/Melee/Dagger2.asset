@@ -16,6 +16,8 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: e3988962ef19d8c41895d279964c23a3, type: 3}
   description: Dagger2
   inventorySlotType: 0
-  damageModifier: 4
+  damage:
+    min: 5
+    max: 7
   armorModifier: 0
   critChance: 0

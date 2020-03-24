@@ -16,5 +16,8 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 8fa28698823263440875f327b80199c0, type: 3}
   description: Leather Armor
   inventorySlotType: 3
-  damageModifier: 0
-  armorModifier: 0
+  damage:
+    min: 0
+    max: 0
+  armorModifier: 4
+  critChance: 0

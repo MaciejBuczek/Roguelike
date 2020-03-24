@@ -143,4 +143,12 @@ public class MovementManager : MonoBehaviour
     {
         return Mathf.Sqrt((a.position.x - b.position.x) * (a.position.x - b.position.x) + (a.position.y - b.position.y) * (a.position.y - b.position.y)); ;
     }
+    public void SetObstacle(int x, int y, bool value)
+    {
+        nodes[y, x].isObstacle = value;
+    }
+    public bool IsObstacle(int x, int y)
+    {
+        return nodes[y, x].isObstacle;
+    }
 }

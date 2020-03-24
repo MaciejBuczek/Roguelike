@@ -5,25 +5,20 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
     public float snapRadius = 0.01f;
-    public float speed = 4;
+    public float speed = 16;
     public bool isMoving = false;
     protected IEnumerator moveCoroutine;
     protected List<Vector3> path = new List<Vector3>();
     protected Vector3 targetPosition;
     protected bool isNewTargetSet;
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
+    protected bool skipMove;
+    public delegate void OnMovement(bool state);
+    public OnMovement onMovement;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     public virtual void OnMovementEnd()
     {
-
+        if (onMovement != null)
+            onMovement.Invoke(false);
     }
     public virtual void CheckForInterupt()
     {
@@ -43,42 +38,47 @@ public class Movement : MonoBehaviour
     }
     protected IEnumerator MoveToPosition(Vector3 position)
     {
+        MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
         isMoving = true;
         while (Vector3.Distance(transform.position, position) > snapRadius)
         {
-            //Debug.Log("moving");
             transform.position = Vector3.MoveTowards(transform.position, position, speed * Time.deltaTime);
             yield return null;
         }
         transform.position = position;
         isMoving = false;
         path.Remove(position);
-        //Debug.Log("stopped moving");
         OnMovementEnd();
+        MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, true);
     }
     public void Move()
     {
-        if (path.Count == 0 && !isMoving)
+        skipMove = false;
+        CheckForInterupt();
+        if (!skipMove)
         {
-            //Debug.Log("getting path");
-            isNewTargetSet = false;
             GetDestination();
             if (isNewTargetSet)
                 FindPath(targetPosition);
-        }
-        else
-        {
-            CheckForInterupt();
             if (!isMoving)
             {
-                //Debug.Log("starting coroutine");
                 if (path.Count > 0)
                 {
+                    if (path[0].x < transform.position.x)
+                    {
+                        GetComponent<SpriteRenderer>().flipX = true;
+                    }
+                    else if (path[0].x > transform.position.x)
+                    {
+                        GetComponent<SpriteRenderer>().flipX = false;
+                    }
+
                     moveCoroutine = MoveToPosition(path[0]);
+                    if (onMovement != null)
+                        onMovement.Invoke(true);
                     StartCoroutine(moveCoroutine);
                 }
             }
-            //Debug.Log("waiting for interupt");
         }
     }
 }

@@ -17,7 +17,7 @@ MonoBehaviour:
   description: Sword2
   inventorySlotType: 0
   damage:
-    min: 5
-    max: 6
+    min: 6
+    max: 10
   armorModifier: 0
   critChance: 0

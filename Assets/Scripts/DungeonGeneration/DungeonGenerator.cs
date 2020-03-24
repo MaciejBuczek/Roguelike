@@ -201,7 +201,7 @@ public class DungeonGenerator : MonoBehaviour
                         if (!isInstantiated[y, x])
                         {
                             dungeonTileTypeLayout[y, x] = TileType.Floor;
-                            tile = Instantiate(DungeonTiles[0], new Vector2(x, y), transform.rotation);
+                            tile = Instantiate(DungeonTiles[1], new Vector2(x, y), transform.rotation);
                             tile.transform.parent = newRoom.transform;
                             isInstantiated[y, x] = true;
                             dungeonGameObjectArray[y,x] = tile;
@@ -239,7 +239,7 @@ public class DungeonGenerator : MonoBehaviour
                         currentPosition.y++;
                     if (!isInstantiated[currentPosition.y, currentPosition.x] && currentPosition != corridor.breakPoints[corridor.breakPoints.Count - 1])
                     {
-                        tile = Instantiate(DungeonTiles[0], new Vector2(currentPosition.x, currentPosition.y), transform.rotation);
+                        tile = Instantiate(DungeonTiles[1], new Vector2(currentPosition.x, currentPosition.y), transform.rotation);
                         tile.transform.parent = newCorridor.transform;
                         dungeonTileTypeLayout[currentPosition.y, currentPosition.x] = TileType.Floor;
                         dungeonGameObjectArray[currentPosition.y, currentPosition.x] = tile;
@@ -295,30 +295,5 @@ public class DungeonGenerator : MonoBehaviour
                 }
             }
         }
-    }
-    void test()
-    {
-        string dungeon = "";
-        for (int i = 0; i < rows; i++)
-        {
-            for (int j = 0; j < cols; j++)
-            {
-                switch (dungeonTileTypeLayout[i, j])
-                {
-                    case TileType.Door:
-                    case TileType.Floor:
-                        dungeon += '#';
-                        break;
-                    case TileType.Wall:
-                        dungeon += '@';
-                        break;
-                    case TileType.Empty:
-                        dungeon += "  ";
-                        break;
-                }
-            }
-            dungeon += '\n';
-        }
-        Debug.Log(dungeon);
     }
 }

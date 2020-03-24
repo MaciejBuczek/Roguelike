@@ -9,6 +9,7 @@ public class TurnController : MonoBehaviour
     public delegate void OnPlayerTurn();
     public OnPlayerTurn onPlayerTurn;
     public static TurnController Instance;
+    private bool isMoving;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -18,7 +19,7 @@ public class TurnController : MonoBehaviour
         }
         else
             Instance = this;
-        player.onPlayerTurnEnd += EnemyTurn;
+        player.onPlayerTurnEnd += OnEnemiesTurnStart;
     }
     void Start()
     {
@@ -27,19 +28,34 @@ public class TurnController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
     }
-    void EnemyTurn()
+    private IEnumerator StartEnemyTurn(EnemyMovement enemy)
+    {    
+        enemy.StartMovement();
+        while (enemy.isEnemyTurn)
+        {
+            yield return null;
+        }
+        isMoving = false;
+    }
+    private IEnumerator MoveEnemies()
     {
-        Debug.Log("enemy trun");
         foreach(EnemyMovement enemy in enemies)
         {
-            Debug.Log(enemy.name + "turn");
-            enemy.StartMovement();
+            StartCoroutine(StartEnemyTurn(enemy));
+            isMoving = true;
+            while (isMoving)
+            {
+                yield return null;
+            }
         }
         if (onPlayerTurn != null)
         {
             onPlayerTurn.Invoke();
         }
+    }
+    void OnEnemiesTurnStart()
+    {
+        StartCoroutine(MoveEnemies());
     }
 }

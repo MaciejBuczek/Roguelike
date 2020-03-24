@@ -16,6 +16,8 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: b92cf491971ad194fa517a988e42d559, type: 3}
   description: Axe1
   inventorySlotType: 0
-  damageModifier: 0
+  damage:
+    min: 2
+    max: 7
   armorModifier: 0
   critChance: 0

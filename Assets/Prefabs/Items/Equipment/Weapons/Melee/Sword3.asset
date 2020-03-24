@@ -17,7 +17,7 @@ MonoBehaviour:
   description: Sword3
   inventorySlotType: 0
   damage:
-    min: 7
-    max: 8
+    min: 14
+    max: 16
   armorModifier: 0
   critChance: 0
