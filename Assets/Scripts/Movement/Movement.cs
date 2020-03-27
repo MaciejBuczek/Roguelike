@@ -17,10 +17,6 @@ public class Movement : MonoBehaviour
         if (onMovement != null)
             onMovement.Invoke(false);
     }
-    public virtual void CheckForInterupt()
-    {
-
-    }
     public virtual void GetDestination()
     {
     }

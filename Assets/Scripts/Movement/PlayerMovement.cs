@@ -7,42 +7,12 @@ public class PlayerMovement : Movement
     public delegate void OnPlayerTurnEnd();
     public OnPlayerTurnEnd onPlayerTurnEnd;
     public CameraController cameraController;
+    private bool isCheckingForInterrupt = false;
     // Update is called once per frame
     private void Awake()
     {
         TurnController.Instance.onPlayerTurn += OnPlayerTurn;
     }
-    /*public override void GetDestination()
-    {
-        isNewTargetSet = false;
-        if (isFollowingEnemy)
-        {
-            path.Clear();
-            targetPosition = focusedEnemy.transform.position;
-            isNewTargetSet = true;
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse0) && !isMoving)
-        {
-            RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            if (hitInfo.collider != null && hitInfo.collider.CompareTag("Enemy"))
-            {
-                Debug.Log(hitInfo.collider.name);
-                focusedEnemy = hitInfo.collider.gameObject;
-                if (Vector3.Distance(transform.position, focusedEnemy.transform.position) <= 1.5f)
-                    skipMove = true;
-                else
-                {
-                    isFollowingEnemy = true;
-                    targetPosition = focusedEnemy.transform.position;
-                    isNewTargetSet = true;
-                }
-            }
-            else
-            {
-                GetMouseInput();
-            }         
-        }
-    }*/
     private void GetMouseInput()
     {
         if (EventSystem.current.IsPointerOverGameObject())
@@ -68,24 +38,26 @@ public class PlayerMovement : Movement
         if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
             cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
     }
-    /*public override void CheckForInterupt()
-    {
-        if (isFollowingEnemy)
-        {
-            if (Vector3.Distance(transform.position, focusedEnemy.transform.position) <= 2f)
-            {
-                path.Clear();
-                skipMove = true;
-                isFollowingEnemy = false;
-            }
-        }
-    }*/
     public override void OnMovementEnd()
     {
         if (onPlayerTurnEnd != null)
         {
             onPlayerTurnEnd.Invoke();
         }
+    }
+    IEnumerator CheckForInterupt()
+    {
+        isCheckingForInterrupt = true;
+        while (path.Count>0)
+        {
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                path.Clear();
+                break;              
+            }
+            yield return null;
+        }
+        isCheckingForInterrupt = false;
     }
     void OnPlayerTurn()
     {
@@ -100,13 +72,16 @@ public class PlayerMovement : Movement
                 yield return null;
             }
             GetMouseInput();
-            LockPosition();
         }
         if (path.Count > 0)
+        {
+            LockPosition();
             Move();
+            if(!isCheckingForInterrupt)
+                StartCoroutine(CheckForInterupt());
+        }
         else
         {
-            //while (!TurnController.Instance.test) ;
             yield return new WaitUntil(() => TurnController.Instance.test == true);
             OnMovementEnd();
         }

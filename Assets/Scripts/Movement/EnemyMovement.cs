@@ -112,12 +112,4 @@ public class EnemyMovement : Movement
         Vector2Int end = new Vector2Int(randX, randY);
         path = MovementManager.Instance.GeneratePath(start, end);
     }
-    public override void CheckForInterupt()
-    {
-        if(Vector3.Distance(transform.position, playerTransform.position) <= 1f)
-        {
-            path.Clear();
-            OnMovementEnd();
-        }
-    }
 }
