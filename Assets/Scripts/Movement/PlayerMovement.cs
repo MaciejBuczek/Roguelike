@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PlayerMovement : Movement
@@ -6,22 +7,12 @@ public class PlayerMovement : Movement
     public delegate void OnPlayerTurnEnd();
     public OnPlayerTurnEnd onPlayerTurnEnd;
     public CameraController cameraController;
-    public bool isPlayerTurn = true;
-    private GameObject focusedEnemy;
-    private bool isFollowingEnemy = false;
     // Update is called once per frame
     private void Awake()
     {
         TurnController.Instance.onPlayerTurn += OnPlayerTurn;
     }
-    private void Update()
-    {
-        if (isPlayerTurn)
-        {
-            Move();
-        }
-    }
-    public override void GetDestination()
+    /*public override void GetDestination()
     {
         isNewTargetSet = false;
         if (isFollowingEnemy)
@@ -51,26 +42,33 @@ public class PlayerMovement : Movement
                 GetMouseInput();
             }         
         }
-    }
+    }*/
     private void GetMouseInput()
     {
         if (EventSystem.current.IsPointerOverGameObject())
             return;
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Input.ResetInputAxes();
         mousePosition.x = Mathf.Round(mousePosition.x);
         if (mousePosition.x < 0 || mousePosition.x >= DungeonGenerator.instance.cols)
             return;
         mousePosition.y = Mathf.Round(mousePosition.y);
         if (mousePosition.y < 0 || mousePosition.y >= DungeonGenerator.instance.rows)
             return;
-        targetPosition.Set((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y), 0);
+        if (MovementManager.Instance.IsObstacle((int)mousePosition.x, (int)mousePosition.y))
+            return;
+        Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        Vector2Int end = new Vector2Int((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
+        path = MovementManager.Instance.GeneratePath(start, end);
+        MoveCamera();
+    }
+    void MoveCamera()
+    {
         Transform cameraTransform = transform.GetChild(0).transform;
         if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
             cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
-        Input.ResetInputAxes();
-        isNewTargetSet = true;
     }
-    public override void CheckForInterupt()
+    /*public override void CheckForInterupt()
     {
         if (isFollowingEnemy)
         {
@@ -81,15 +79,9 @@ public class PlayerMovement : Movement
                 isFollowingEnemy = false;
             }
         }
-        if (isMoving && Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            path.Clear();
-            isNewTargetSet = false;
-        }
-    }
+    }*/
     public override void OnMovementEnd()
     {
-        isPlayerTurn = false;
         if (onPlayerTurnEnd != null)
         {
             onPlayerTurnEnd.Invoke();
@@ -97,6 +89,34 @@ public class PlayerMovement : Movement
     }
     void OnPlayerTurn()
     {
-        isPlayerTurn = true;
+        StartCoroutine(PlayerMove());
+    }
+    public  IEnumerator PlayerMove()
+    {
+        if (path.Count == 0)
+        {
+            while (!Input.GetKey(KeyCode.Mouse0))
+            {
+                yield return null;
+            }
+            GetMouseInput();
+            LockPosition();
+        }
+        if (path.Count > 0)
+            Move();
+        else
+        {
+            //while (!TurnController.Instance.test) ;
+            yield return new WaitUntil(() => TurnController.Instance.test == true);
+            OnMovementEnd();
+        }
+    }
+    void LockPosition()
+    {
+        if (path.Count > 0)
+        {
+            MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
+            MovementManager.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
+        }
     }
 }

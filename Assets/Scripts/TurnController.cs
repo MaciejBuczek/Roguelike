@@ -9,7 +9,8 @@ public class TurnController : MonoBehaviour
     public delegate void OnPlayerTurn();
     public OnPlayerTurn onPlayerTurn;
     public static TurnController Instance;
-    private bool isMoving;
+    //public bool enemyTurnEnd = true;
+    public bool test = true;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -19,17 +20,53 @@ public class TurnController : MonoBehaviour
         }
         else
             Instance = this;
-        player.onPlayerTurnEnd += OnEnemiesTurnStart;
+        player.onPlayerTurnEnd += EnemyTurn;
     }
     void Start()
     {
+        StartCoroutine(player.PlayerMove());
     }
-
-    // Update is called once per frame
-    void Update()
+    void EnemyTurn()
     {
+        GetEnemiesDestinations();
+        StartCoroutine(MoveEnemies());
+        StartCoroutine(player.PlayerMove());
     }
-    private IEnumerator StartEnemyTurn(EnemyMovement enemy)
+    void GetEnemiesDestinations()
+    {
+        foreach(EnemyMovement enemy in enemies)
+        {
+            enemy.GetDestination();
+        }
+    }
+    IEnumerator MoveEnemies()
+    {
+        bool areEnemiesMoving = true;
+        foreach(EnemyMovement enemy in enemies)
+        {
+            enemy.Move();
+        }
+        test = false;
+        while (true)
+        {
+            foreach(EnemyMovement enemy2 in enemies)
+            {
+                areEnemiesMoving = false;
+                if (enemy2.isMoving)
+                {
+                    areEnemiesMoving = true;
+                    break;
+                }
+            }
+            if (!areEnemiesMoving)
+            {
+                break;
+            }
+            yield return null;
+        }
+        test = true;
+    }
+    /*private IEnumerator StartEnemyTurn(EnemyMovement enemy)
     {    
         enemy.StartMovement();
         while (enemy.isEnemyTurn)
@@ -37,25 +74,5 @@ public class TurnController : MonoBehaviour
             yield return null;
         }
         isMoving = false;
-    }
-    private IEnumerator MoveEnemies()
-    {
-        foreach(EnemyMovement enemy in enemies)
-        {
-            StartCoroutine(StartEnemyTurn(enemy));
-            isMoving = true;
-            while (isMoving)
-            {
-                yield return null;
-            }
-        }
-        if (onPlayerTurn != null)
-        {
-            onPlayerTurn.Invoke();
-        }
-    }
-    void OnEnemiesTurnStart()
-    {
-        StartCoroutine(MoveEnemies());
-    }
+    }*/
 }

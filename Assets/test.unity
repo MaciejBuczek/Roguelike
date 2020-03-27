@@ -1953,6 +1953,7 @@ MonoBehaviour:
   enemies:
   - {fileID: 527980183}
   - {fileID: 1225651436}
+  enemyTurnEnd: 0
 --- !u!1001 &394804613
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2612,8 +2613,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snapRadius: 0.01
-  speed: 16
+  speed: 4
   isMoving: 0
+  path: []
   playerTransform: {fileID: 2066577020}
   sightDistance: 4
   layerMask:
@@ -4826,8 +4828,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snapRadius: 0.01
-  speed: 16
+  speed: 4
   isMoving: 0
+  path: []
   playerTransform: {fileID: 2066577020}
   sightDistance: 4
   layerMask:
@@ -8343,10 +8346,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   snapRadius: 0.01
-  speed: 16
+  speed: 4
   isMoving: 0
+  path: []
   cameraController: {fileID: 1056068412}
-  isPlayerTurn: 1
 --- !u!4 &2066577020 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2556163405436946314, guid: e7e7ef22dc1157a40babaa33f1e54b79,

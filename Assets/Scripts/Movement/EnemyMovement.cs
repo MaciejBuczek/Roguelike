@@ -11,12 +11,9 @@ public class EnemyMovement : Movement
     // Update is called once per frame
     private void Update()
     {     
-        if (isEnemyTurn)
-        {
-            Move();
-        }
+
     }
-    public override void GetDestination()
+    /*public override void GetDestination()
     {
         if (isPlayerTargeted && Vector3.Distance(playerTransform.position, transform.position) > sightDistance)
             isPlayerTargeted = false;
@@ -44,6 +41,43 @@ public class EnemyMovement : Movement
         {
             GetRandomDestination();
             isNewTargetSet = true;
+        }
+    }*/
+    public override void GetDestination()
+    {
+        if (!isPlayerTargeted && IsPlayerInSight())
+            isPlayerTargeted = true;
+        else if (isPlayerTargeted && !IsPlayerInSight())
+            isPlayerTargeted = false;
+        if(isPlayerTargeted)
+        {
+            path.Clear();
+            if (Vector3.Distance(playerTransform.position, transform.position) < 1.5f)
+            {
+                if (!MovementManager.Instance.IsObstacle((int)transform.position.x, (int)playerTransform.position.y))
+                    path.Add(new Vector3(transform.position.x, playerTransform.position.y));
+                else if (!MovementManager.Instance.IsObstacle((int)playerTransform.position.x, (int)transform.position.y))
+                    path.Add(new Vector3(playerTransform.position.x, transform.position.y));
+            }
+            else
+            {
+                Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+                Vector2Int end = new Vector2Int((int)playerTransform.position.x, (int)playerTransform.position.y);
+                path = MovementManager.Instance.GeneratePath(start, end);
+            }           
+        }
+        else if (path.Count == 0)
+            GetRandomDestination();
+        LockPosition();
+    }
+    void LockPosition()
+    {
+        if (path.Count > 0)
+        {
+            //Debug.Log(transform.name + " " + transform.position + " unlock ");
+            MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
+            //Debug.Log(transform.name + " " + path[0] + " lock ");
+            MovementManager.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
         }
     }
     private bool IsPlayerInSight()
@@ -74,22 +108,14 @@ public class EnemyMovement : Movement
             randX = Mathf.Clamp(randX, 0, DungeonGenerator.instance.cols - 1);
             randY = Mathf.Clamp(randY, 0, DungeonGenerator.instance.rows - 1);
         } while (!DungeonGenerator.instance.dungeonMovementLayout[randY, randX]);
-        targetPosition = new Vector3(randX, randY, 0);
-    }
-    public void StartMovement()
-    {
-        isEnemyTurn = true;
-    }
-    public override void OnMovementEnd()
-    {
-        base.OnMovementEnd();
-        isEnemyTurn = false;
+        Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        Vector2Int end = new Vector2Int(randX, randY);
+        path = MovementManager.Instance.GeneratePath(start, end);
     }
     public override void CheckForInterupt()
     {
         if(Vector3.Distance(transform.position, playerTransform.position) <= 1f)
         {
-            skipMove = true;
             path.Clear();
             OnMovementEnd();
         }
