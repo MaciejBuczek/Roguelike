@@ -8,49 +8,32 @@ public class EnemyMovement : Movement
     public LayerMask layerMask;
     public bool isEnemyTurn = false;
     private bool isPlayerTargeted=false;
+    private Vector3 lastPlayerPosition;
     // Update is called once per frame
     private void Update()
     {     
 
     }
-    /*public override void GetDestination()
-    {
-        if (isPlayerTargeted && Vector3.Distance(playerTransform.position, transform.position) > sightDistance)
-            isPlayerTargeted = false;
-        else if(!isPlayerTargeted && Vector3.Distance(playerTransform.position, transform.position) <= sightDistance)
-        {
-            if (IsPlayerInSight())
-            {
-                isPlayerTargeted = true;
-            }
-        }
-        if (isPlayerTargeted)
-        {
-            if (Vector3.Distance(transform.position, playerTransform.position) <= 1.5f)
-            {
-                path.Clear();
-                if(!MovementManager.Instance.IsObstacle((int)transform.position.x, (int)playerTransform.position.y))
-                    targetPosition = new Vector3(transform.position.x, playerTransform.position.y);
-                else if (!MovementManager.Instance.IsObstacle((int)playerTransform.position.x,(int)transform.position.y))
-                    targetPosition = new Vector3(playerTransform.position.x, transform.position.y);
-            }else
-                targetPosition = playerTransform.position;
-            isNewTargetSet = true;
-        }
-        else if (path.Count == 0)
-        {
-            GetRandomDestination();
-            isNewTargetSet = true;
-        }
-    }*/
     public override void GetDestination()
     {
         if (!isPlayerTargeted && IsPlayerInSight())
+        {
             isPlayerTargeted = true;
+            lastPlayerPosition = playerTransform.position;
+        }
         else if (isPlayerTargeted && !IsPlayerInSight())
+        {
             isPlayerTargeted = false;
+            if (path.Count == 0)
+            {
+                Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+                Vector2Int end = new Vector2Int((int)lastPlayerPosition.x, (int)lastPlayerPosition.y);
+                path = MovementManager.Instance.GeneratePath(start, end);
+            }
+        }
         if(isPlayerTargeted)
         {
+            lastPlayerPosition = playerTransform.position;
             path.Clear();
             if (Vector3.Distance(playerTransform.position, transform.position) < 1.5f)
             {
@@ -74,6 +57,11 @@ public class EnemyMovement : Movement
     {
         if (path.Count > 0)
         {
+            if(MovementManager.Instance.IsObstacle((int)path[0].x, (int)path[0].y))
+            {
+                path.Clear();
+                return;
+            }
             //Debug.Log(transform.name + " " + transform.position + " unlock ");
             MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
             //Debug.Log(transform.name + " " + path[0] + " lock ");

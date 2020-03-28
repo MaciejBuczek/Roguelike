@@ -174,7 +174,7 @@ public class DungeonGenerator : MonoBehaviour
             {
                 if (!isInstantiated[doorPosition.y, doorPosition.x])
                 {
-                    tile = Instantiate(DungeonTiles[0], new Vector2(doorPosition.x, doorPosition.y), transform.rotation);
+                    tile = Instantiate(DungeonTiles[2], new Vector2(doorPosition.x, doorPosition.y), transform.rotation);
                     tile.transform.parent = newRoom.transform;
                     dungeonTileTypeLayout[doorPosition.y, doorPosition.x] = TileType.Door;
                     dungeonGameObjectArray[doorPosition.y, doorPosition.x] = tile;
