@@ -53,21 +53,6 @@ public class EnemyMovement : Movement
             GetRandomDestination();
         LockPosition();
     }
-    void LockPosition()
-    {
-        if (path.Count > 0)
-        {
-            if(MovementManager.Instance.IsObstacle((int)path[0].x, (int)path[0].y))
-            {
-                path.Clear();
-                return;
-            }
-            //Debug.Log(transform.name + " " + transform.position + " unlock ");
-            MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
-            //Debug.Log(transform.name + " " + path[0] + " lock ");
-            MovementManager.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
-        }
-    }
     private bool IsPlayerInSight()
     {
         Vector3 direction = GetDirection();

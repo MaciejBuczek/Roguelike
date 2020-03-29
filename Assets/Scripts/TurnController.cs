@@ -36,7 +36,8 @@ public class TurnController : MonoBehaviour
     {
         foreach(EnemyMovement enemy in enemies)
         {
-            enemy.GetDestination();
+            if(!enemy.isMoving)
+                enemy.GetDestination();
         }
     }
     IEnumerator MoveEnemies()
@@ -44,12 +45,14 @@ public class TurnController : MonoBehaviour
         bool areEnemiesMoving = true;
         foreach(EnemyMovement enemy in enemies)
         {
-            enemy.Move();
+            if(!enemy.isMoving)
+                enemy.Move();
         }
         test = false;
-        while (true)
+        while (AreEnemiesMoving())
         {
-            foreach(EnemyMovement enemy2 in enemies)
+                yield return null;
+            /*foreach(EnemyMovement enemy2 in enemies)
             {
                 areEnemiesMoving = false;
                 if (enemy2.isMoving)
@@ -62,9 +65,18 @@ public class TurnController : MonoBehaviour
             {
                 break;
             }
-            yield return null;
+            yield return null;*/
         }
         test = true;
+    }
+    public bool AreEnemiesMoving()
+    {
+        foreach(EnemyMovement enemy in enemies)
+        {
+            if (enemy.isMoving)
+                return true;
+        }
+        return false;
     }
     /*private IEnumerator StartEnemyTurn(EnemyMovement enemy)
     {    

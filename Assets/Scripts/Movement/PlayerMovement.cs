@@ -77,6 +77,7 @@ public class PlayerMovement : Movement
         {
             LockPosition();
             Move();
+            yield return new WaitUntil(() => TurnController.Instance.test == true);
             if(!isCheckingForInterrupt)
                 StartCoroutine(CheckForInterupt());
         }
@@ -84,14 +85,6 @@ public class PlayerMovement : Movement
         {
             yield return new WaitUntil(() => TurnController.Instance.test == true);
             OnMovementEnd();
-        }
-    }
-    void LockPosition()
-    {
-        if (path.Count > 0)
-        {
-            MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
-            MovementManager.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
         }
     }
 }

@@ -31,6 +31,7 @@ public class Movement : MonoBehaviour
     }
     protected IEnumerator MoveToPosition(Vector3 position)
     {
+        isMoving = true;
         while (Vector3.Distance(transform.position, position) > snapRadius)
         {
             transform.position = Vector3.MoveTowards(transform.position, position, speed * Time.deltaTime);
@@ -57,8 +58,27 @@ public class Movement : MonoBehaviour
             moveCoroutine = MoveToPosition(path[0]);
             if (onMovement != null)
                 onMovement.Invoke(true);
-            isMoving = true;
+            Debug.Log(transform.name + "Moving");
             StartCoroutine(moveCoroutine);
+        }
+        else
+        {
+            Debug.Log(transform.position + "waiting");
+        }
+    }
+    protected void LockPosition()
+    {
+        if (path.Count > 0)
+        {
+            if (MovementManager.Instance.IsObstacle((int)path[0].x, (int)path[0].y))
+            {
+                path.Clear();
+                return;
+            }
+            //Debug.Log(transform.name + " " + transform.position + " unlock ");
+            MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
+            //Debug.Log(transform.name + " " + path[0] + " lock ");
+            MovementManager.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
         }
     }
 }
