@@ -1,1 +1,2 @@
-# Simple Unity Roguelike Game
+#Roguelike
+Simple unity pixel-art rogue like game.
