@@ -7,7 +7,9 @@ public class PlayerMovement : Movement
     public delegate void OnPlayerTurnEnd();
     public OnPlayerTurnEnd onPlayerTurnEnd;
     public CameraController cameraController;
+    private GameObject focusedEnemy;
     private bool isCheckingForInterrupt = false;
+    Vector2Int start, end;
     // Update is called once per frame
     private void Awake()
     {
@@ -17,22 +19,40 @@ public class PlayerMovement : Movement
     {
         if (EventSystem.current.IsPointerOverGameObject())
             return;
+
+        CheckIfEnemyIsFocused();
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        end = new Vector2Int((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
         Input.ResetInputAxes();
-        mousePosition.x = Mathf.Round(mousePosition.x);
-        if (mousePosition.x < 0 || mousePosition.x >= DungeonGenerator.instance.cols)
+
+        if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && MovementManager.Instance.IsObstacle(end)))
             return;
-        mousePosition.y = Mathf.Round(mousePosition.y);
-        if (mousePosition.y < 0 || mousePosition.y >= DungeonGenerator.instance.rows)
-            return;
-        if (MovementManager.Instance.IsObstacle((int)mousePosition.x, (int)mousePosition.y))
-            return;
-        Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-        Vector2Int end = new Vector2Int((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
+        start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
         path = MovementManager.Instance.GeneratePath(start, end);
         MoveCamera();
     }
-    void MoveCamera()
+    private void CheckIfEnemyIsFocused()
+    {
+        RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+        if (hitInfo.collider != null && hitInfo.collider.CompareTag("Enemy"))
+        {
+            Debug.Log(hitInfo.collider.name);
+            focusedEnemy = hitInfo.collider.gameObject;
+        }
+    }
+    private bool CheckIfEnemyIsReached() {
+        if (Vector3.Distance(transform.position, focusedEnemy.transform.position) < 2)
+            return true;
+        return false;
+    }
+    private void SetPathToEnemyPosition()
+    {
+        start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        end = new Vector2Int((int)focusedEnemy.transform.position.x, (int)focusedEnemy.transform.position.y);
+        path = MovementManager.Instance.GeneratePath(start, end);
+        path.RemoveAt(path.Count - 1);
+    }
+    private void MoveCamera()
     {
         Transform cameraTransform = transform.GetChild(0).transform;
         if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
@@ -52,6 +72,7 @@ public class PlayerMovement : Movement
         {
             if (Input.GetKey(KeyCode.Mouse0))
             {
+                focusedEnemy = null;
                 path.Clear();
                 break;              
             }
@@ -75,15 +96,27 @@ public class PlayerMovement : Movement
         }
         if (path.Count > 0)
         {
-            LockPosition();
-            Move();
-            yield return new WaitUntil(() => TurnController.Instance.test == true);
-            if(!isCheckingForInterrupt)
-                StartCoroutine(CheckForInterupt());
+            if (focusedEnemy != null && CheckIfEnemyIsReached())
+            {
+                focusedEnemy = null;
+                path.Clear();
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                OnMovementEnd();
+            }
+            else
+            {
+                if(focusedEnemy != null)
+                    SetPathToEnemyPosition();
+                LockPosition();
+                Move();
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                if (!isCheckingForInterrupt)
+                    StartCoroutine(CheckForInterupt());
+            }
         }
         else
         {
-            yield return new WaitUntil(() => TurnController.Instance.test == true);
+            yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
             OnMovementEnd();
         }
     }

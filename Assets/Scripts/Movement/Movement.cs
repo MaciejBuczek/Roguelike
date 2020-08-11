@@ -58,12 +58,7 @@ public class Movement : MonoBehaviour
             moveCoroutine = MoveToPosition(path[0]);
             if (onMovement != null)
                 onMovement.Invoke(true);
-            Debug.Log(transform.name + "Moving");
             StartCoroutine(moveCoroutine);
-        }
-        else
-        {
-            Debug.Log(transform.position + "waiting");
         }
     }
     protected void LockPosition()

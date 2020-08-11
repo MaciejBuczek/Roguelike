@@ -10,7 +10,7 @@ public class TurnController : MonoBehaviour
     public OnPlayerTurn onPlayerTurn;
     public static TurnController Instance;
     //public bool enemyTurnEnd = true;
-    public bool test = true;
+    public bool areEnemiesMoving = true;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -42,32 +42,17 @@ public class TurnController : MonoBehaviour
     }
     IEnumerator MoveEnemies()
     {
-        bool areEnemiesMoving = true;
         foreach(EnemyMovement enemy in enemies)
         {
             if(!enemy.isMoving)
                 enemy.Move();
         }
-        test = false;
+        areEnemiesMoving = false;
         while (AreEnemiesMoving())
         {
                 yield return null;
-            /*foreach(EnemyMovement enemy2 in enemies)
-            {
-                areEnemiesMoving = false;
-                if (enemy2.isMoving)
-                {
-                    areEnemiesMoving = true;
-                    break;
-                }
-            }
-            if (!areEnemiesMoving)
-            {
-                break;
-            }
-            yield return null;*/
         }
-        test = true;
+        areEnemiesMoving = true;
     }
     public bool AreEnemiesMoving()
     {
@@ -78,13 +63,4 @@ public class TurnController : MonoBehaviour
         }
         return false;
     }
-    /*private IEnumerator StartEnemyTurn(EnemyMovement enemy)
-    {    
-        enemy.StartMovement();
-        while (enemy.isEnemyTurn)
-        {
-            yield return null;
-        }
-        isMoving = false;
-    }*/
 }

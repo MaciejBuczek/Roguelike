@@ -151,4 +151,8 @@ public class MovementManager : MonoBehaviour
     {
         return nodes[y, x].isObstacle;
     }
+    public bool IsObstacle(Vector2Int position)
+    {
+        return nodes[position.y, position.x].isObstacle;
+    }
 }
