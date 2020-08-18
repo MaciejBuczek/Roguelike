@@ -10,11 +10,23 @@ public class PlayerMovement : Movement
     private GameObject focusedEnemy;
     private bool isCheckingForInterrupt = false;
     Vector2Int start, end;
-    // Update is called once per frame
+    public Animator headAnimator, bodyAnimator;
     private void Awake()
     {
         TurnController.Instance.onPlayerTurn += OnPlayerTurn;
     }
+
+    protected override void SetAnimationDirection(bool isRight)
+    {
+        headAnimator.SetBool("isRight", isRight);
+        bodyAnimator.SetBool("isRight", isRight);
+    }
+    protected override void SetAnimationMoving(bool isMoving)
+    {
+        headAnimator.SetBool("isMoving", isMoving);
+        bodyAnimator.SetBool("isMoving", isMoving);
+    }
+
     private void GetMouseInput()
     {
         if (EventSystem.current.IsPointerOverGameObject())
@@ -35,10 +47,7 @@ public class PlayerMovement : Movement
     {
         RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
         if (hitInfo.collider != null && hitInfo.collider.CompareTag("Enemy"))
-        {
-            Debug.Log(hitInfo.collider.name);
             focusedEnemy = hitInfo.collider.gameObject;
-        }
     }
     private bool CheckIfEnemyIsReached() {
         if (Vector3.Distance(transform.position, focusedEnemy.transform.position) < 2)
@@ -60,6 +69,7 @@ public class PlayerMovement : Movement
     }
     public override void OnMovementEnd()
     {
+        SetAnimationMoving(false);
         if (onPlayerTurnEnd != null)
         {
             onPlayerTurnEnd.Invoke();

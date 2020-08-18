@@ -9,10 +9,15 @@ public class EnemyMovement : Movement
     public bool isEnemyTurn = false;
     private bool isPlayerTargeted=false;
     private Vector3 lastPlayerPosition;
-    // Update is called once per frame
-    private void Update()
-    {     
+    public Animator animator;
 
+    protected override void SetAnimationDirection(bool isRight)
+    {
+        //animator.SetBool("isRight", isRight);
+    }
+    protected override void SetAnimationMoving(bool isMoving)
+    {
+        //animator.SetBool("isMoving", isMoving);
     }
     public override void GetDestination()
     {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public abstract class Movement : MonoBehaviour
 {
     public float snapRadius = 0.01f;
     public float speed = 16;
@@ -12,8 +12,13 @@ public class Movement : MonoBehaviour
     public delegate void OnMovement(bool state);
     public OnMovement onMovement;
 
+    protected abstract void SetAnimationMoving(bool isMoving);
+
+    protected abstract void SetAnimationDirection(bool isRight);
+
     public virtual void OnMovementEnd()
     {
+        SetAnimationMoving(false);
         if (onMovement != null)
             onMovement.Invoke(false);
     }
@@ -48,12 +53,16 @@ public class Movement : MonoBehaviour
         {
             if (path[0].x < transform.position.x)
             {
-                GetComponent<SpriteRenderer>().flipX = true;
+                SetAnimationDirection(false);
+                //GetComponent<SpriteRenderer>().flipX = true;
             }
             else if (path[0].x > transform.position.x)
             {
-                GetComponent<SpriteRenderer>().flipX = false;
+                SetAnimationDirection(true);
+                //GetComponent<SpriteRenderer>().flipX = false;
             }
+
+            SetAnimationMoving(true);
 
             moveCoroutine = MoveToPosition(path[0]);
             if (onMovement != null)
@@ -70,9 +79,7 @@ public class Movement : MonoBehaviour
                 path.Clear();
                 return;
             }
-            //Debug.Log(transform.name + " " + transform.position + " unlock ");
             MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
-            //Debug.Log(transform.name + " " + path[0] + " lock ");
             MovementManager.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
         }
     }
