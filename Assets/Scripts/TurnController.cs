@@ -9,7 +9,8 @@ public class TurnController : MonoBehaviour
     public delegate void OnPlayerTurn();
     public OnPlayerTurn onPlayerTurn;
     public static TurnController Instance;
-    private bool isMoving;
+    //public bool enemyTurnEnd = true;
+    public bool areEnemiesMoving = true;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -19,43 +20,53 @@ public class TurnController : MonoBehaviour
         }
         else
             Instance = this;
-        player.onPlayerTurnEnd += OnEnemiesTurnStart;
+        player.onPlayerTurnEnd += EnemyTurn;
     }
     void Start()
     {
+        StartCoroutine(player.PlayerMove());
     }
-
-    // Update is called once per frame
-    void Update()
+    void EnemyTurn()
     {
+        GetEnemiesDestinations();
+        StartCoroutine(MoveEnemies());
+        StartCoroutine(player.PlayerMove());
     }
-    private IEnumerator StartEnemyTurn(EnemyMovement enemy)
-    {    
-        enemy.StartMovement();
-        while (enemy.isEnemyTurn)
-        {
-            yield return null;
-        }
-        isMoving = false;
-    }
-    private IEnumerator MoveEnemies()
+    void GetEnemiesDestinations()
     {
         foreach(EnemyMovement enemy in enemies)
         {
-            StartCoroutine(StartEnemyTurn(enemy));
-            isMoving = true;
-            while (isMoving)
-            {
-                yield return null;
-            }
-        }
-        if (onPlayerTurn != null)
-        {
-            onPlayerTurn.Invoke();
+            if(!enemy.isMoving && !enemy.isIdle)
+                enemy.GetDestination();
         }
     }
-    void OnEnemiesTurnStart()
+    IEnumerator MoveEnemies()
     {
-        StartCoroutine(MoveEnemies());
+        foreach(EnemyMovement enemy in enemies)
+        {
+            if (enemy.isIdle)
+            {
+                enemy.idleTurns--;
+                if (enemy.idleTurns == 0)
+                    enemy.isIdle = false;
+            }
+            if (!enemy.isMoving && !enemy.isIdle)
+                enemy.Move();
+        }
+        areEnemiesMoving = false;
+        while (AreEnemiesMoving())
+        {
+                yield return null;
+        }
+        areEnemiesMoving = true;
+    }
+    public bool AreEnemiesMoving()
+    {
+        foreach(EnemyMovement enemy in enemies)
+        {
+            if (enemy.isMoving)
+                return true;
+        }
+        return false;
     }
 }

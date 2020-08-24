@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class PlayerMovement : Movement
@@ -6,97 +7,133 @@ public class PlayerMovement : Movement
     public delegate void OnPlayerTurnEnd();
     public OnPlayerTurnEnd onPlayerTurnEnd;
     public CameraController cameraController;
-    public bool isPlayerTurn = true;
     private GameObject focusedEnemy;
-    private bool isFollowingEnemy = false;
-    // Update is called once per frame
+    private bool isCheckingForInterrupt = false;
+    Vector2Int start, end;
+    public Animator headAnimator, bodyAnimator;
+    public bool isMovingContinuously = false;
     private void Awake()
     {
         TurnController.Instance.onPlayerTurn += OnPlayerTurn;
     }
-    private void Update()
+
+    protected override void SetAnimationDirection(bool isRight)
     {
-        if (isPlayerTurn)
-        {
-            Move();
-        }
+        headAnimator.SetBool("isRight", isRight);
+        bodyAnimator.SetBool("isRight", isRight);
     }
-    public override void GetDestination()
+    protected override void SetAnimationMoving(bool isMoving)
     {
-        isNewTargetSet = false;
-        if (isFollowingEnemy)
-        {
-            path.Clear();
-            targetPosition = focusedEnemy.transform.position;
-            isNewTargetSet = true;
-        }
-        if (Input.GetKeyDown(KeyCode.Mouse0) && !isMoving)
-        {
-            RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-            if (hitInfo.collider != null && hitInfo.collider.CompareTag("Enemy"))
-            {
-                Debug.Log(hitInfo.collider.name);
-                focusedEnemy = hitInfo.collider.gameObject;
-                if (Vector3.Distance(transform.position, focusedEnemy.transform.position) <= 1.5f)
-                    skipMove = true;
-                else
-                {
-                    isFollowingEnemy = true;
-                    targetPosition = focusedEnemy.transform.position;
-                    isNewTargetSet = true;
-                }
-            }
-            else
-            {
-                GetMouseInput();
-            }         
-        }
+        headAnimator.SetBool("isMoving", isMoving);
+        bodyAnimator.SetBool("isMoving", isMoving);
     }
+
     private void GetMouseInput()
     {
         if (EventSystem.current.IsPointerOverGameObject())
             return;
+
+        CheckIfEnemyIsFocused();
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        mousePosition.x = Mathf.Round(mousePosition.x);
-        if (mousePosition.x < 0 || mousePosition.x >= DungeonGenerator.instance.cols)
+        end = new Vector2Int((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
+        Input.ResetInputAxes();
+
+        if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && MovementManager.Instance.IsObstacle(end)))
             return;
-        mousePosition.y = Mathf.Round(mousePosition.y);
-        if (mousePosition.y < 0 || mousePosition.y >= DungeonGenerator.instance.rows)
-            return;
-        targetPosition.Set((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y), 0);
+        start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        path = MovementManager.Instance.GeneratePath(start, end);
+        MoveCamera();
+    }
+    private void CheckIfEnemyIsFocused()
+    {
+        RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+        if (hitInfo.collider != null && hitInfo.collider.CompareTag("Enemy"))
+            focusedEnemy = hitInfo.collider.gameObject;
+    }
+    private bool CheckIfEnemyIsReached() {
+        if (Vector3.Distance(transform.position, focusedEnemy.transform.position) < 2)
+            return true;
+        return false;
+    }
+    private void SetPathToEnemyPosition()
+    {
+        start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+        end = new Vector2Int((int)focusedEnemy.transform.position.x, (int)focusedEnemy.transform.position.y);
+        path = MovementManager.Instance.GeneratePath(start, end);
+        path.RemoveAt(path.Count - 1);
+    }
+    private void MoveCamera()
+    {
         Transform cameraTransform = transform.GetChild(0).transform;
         if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
             cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
-        Input.ResetInputAxes();
-        isNewTargetSet = true;
     }
-    public override void CheckForInterupt()
+    protected override void OnMovementEnd()
     {
-        if (isFollowingEnemy)
-        {
-            if (Vector3.Distance(transform.position, focusedEnemy.transform.position) <= 2f)
-            {
-                path.Clear();
-                skipMove = true;
-                isFollowingEnemy = false;
-            }
-        }
-        if (isMoving && Input.GetKeyDown(KeyCode.Mouse0))
-        {
-            path.Clear();
-            isNewTargetSet = false;
-        }
-    }
-    public override void OnMovementEnd()
-    {
-        isPlayerTurn = false;
+        if(!isMovingContinuously)
+            SetAnimationMoving(false);
         if (onPlayerTurnEnd != null)
         {
             onPlayerTurnEnd.Invoke();
         }
     }
+    IEnumerator CheckForInterupt()
+    {
+        isCheckingForInterrupt = true;
+        while (path.Count>0)
+        {
+            if (Input.GetKey(KeyCode.Mouse0))
+            {
+                focusedEnemy = null;
+                path.Clear();
+                break;              
+            }
+            yield return null;
+        }
+        isCheckingForInterrupt = false;
+    }
     void OnPlayerTurn()
     {
-        isPlayerTurn = true;
+        StartCoroutine(PlayerMove());
+    }
+    public  IEnumerator PlayerMove()
+    {
+        if (path.Count == 0)
+        {
+            while (!Input.GetKey(KeyCode.Mouse0))
+            {
+                yield return null;
+            }
+            GetMouseInput();
+        }
+        if (path.Count > 0)
+        {
+            if (path.Count > 1)
+                isMovingContinuously = true;
+            else
+                isMovingContinuously = false;
+            if (focusedEnemy != null && CheckIfEnemyIsReached())
+            {
+                focusedEnemy = null;
+                path.Clear();
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                OnMovementEnd();
+            }
+            else
+            {
+                if(focusedEnemy != null)
+                    SetPathToEnemyPosition();
+                LockPosition();
+                Move();
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                if (!isCheckingForInterrupt)
+                    StartCoroutine(CheckForInterupt());
+            }
+        }
+        else
+        {
+            yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+            OnMovementEnd();
+        }
     }
 }

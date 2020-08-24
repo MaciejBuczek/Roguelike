@@ -43,6 +43,15 @@ public class DungeonGenerator : MonoBehaviour
     public bool useSeed = false;
     public int seed = 0;
 
+    public bool IsPositionOutOfBounds(Vector2Int position)
+    {
+        if (position.x < 0 || position.x >= DungeonGenerator.instance.cols)
+            return true;
+        if (position.y < 0 || position.y >= DungeonGenerator.instance.rows)
+            return true;
+        return false;
+    }
+
     private void Start()
     {
         initializeValues();
@@ -174,7 +183,7 @@ public class DungeonGenerator : MonoBehaviour
             {
                 if (!isInstantiated[doorPosition.y, doorPosition.x])
                 {
-                    tile = Instantiate(DungeonTiles[0], new Vector2(doorPosition.x, doorPosition.y), transform.rotation);
+                    tile = Instantiate(DungeonTiles[2], new Vector2(doorPosition.x, doorPosition.y), transform.rotation);
                     tile.transform.parent = newRoom.transform;
                     dungeonTileTypeLayout[doorPosition.y, doorPosition.x] = TileType.Door;
                     dungeonGameObjectArray[doorPosition.y, doorPosition.x] = tile;

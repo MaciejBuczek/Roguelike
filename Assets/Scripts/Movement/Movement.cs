@@ -2,28 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public abstract class Movement : MonoBehaviour
 {
     public float snapRadius = 0.01f;
     public float speed = 16;
     public bool isMoving = false;
     protected IEnumerator moveCoroutine;
-    protected List<Vector3> path = new List<Vector3>();
-    protected Vector3 targetPosition;
-    protected bool isNewTargetSet;
-    protected bool skipMove;
+    public List<Vector3> path = new List<Vector3>();
     public delegate void OnMovement(bool state);
     public OnMovement onMovement;
 
-    public virtual void OnMovementEnd()
-    {
-        if (onMovement != null)
-            onMovement.Invoke(false);
-    }
-    public virtual void CheckForInterupt()
-    {
+    protected abstract void SetAnimationMoving(bool isMoving);
 
-    }
+    protected abstract void SetAnimationDirection(bool isRight);
+
+    protected abstract void OnMovementEnd();
+    
     public virtual void GetDestination()
     {
     }
@@ -38,47 +32,49 @@ public class Movement : MonoBehaviour
     }
     protected IEnumerator MoveToPosition(Vector3 position)
     {
-        MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
         isMoving = true;
         while (Vector3.Distance(transform.position, position) > snapRadius)
         {
             transform.position = Vector3.MoveTowards(transform.position, position, speed * Time.deltaTime);
             yield return null;
         }
-        transform.position = position;
-        isMoving = false;
+        transform.position = position;       
         path.Remove(position);
         OnMovementEnd();
-        MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, true);
+        isMoving = false;
     }
     public void Move()
-    {
-        skipMove = false;
-        CheckForInterupt();
-        if (!skipMove)
+    {      
+        if (path.Count > 0)
         {
-            GetDestination();
-            if (isNewTargetSet)
-                FindPath(targetPosition);
-            if (!isMoving)
+            if (path[0].x < transform.position.x)
             {
-                if (path.Count > 0)
-                {
-                    if (path[0].x < transform.position.x)
-                    {
-                        GetComponent<SpriteRenderer>().flipX = true;
-                    }
-                    else if (path[0].x > transform.position.x)
-                    {
-                        GetComponent<SpriteRenderer>().flipX = false;
-                    }
-
-                    moveCoroutine = MoveToPosition(path[0]);
-                    if (onMovement != null)
-                        onMovement.Invoke(true);
-                    StartCoroutine(moveCoroutine);
-                }
+                SetAnimationDirection(false);
             }
+            else if (path[0].x > transform.position.x)
+            {
+                SetAnimationDirection(true);
+            }
+
+            SetAnimationMoving(true);
+
+            moveCoroutine = MoveToPosition(path[0]);
+            if (onMovement != null)
+                onMovement.Invoke(true);
+            StartCoroutine(moveCoroutine);
+        }
+    }
+    protected void LockPosition()
+    {
+        if (path.Count > 0)
+        {
+            if (MovementManager.Instance.IsObstacle((int)path[0].x, (int)path[0].y))
+            {
+                path.Clear();
+                return;
+            }
+            MovementManager.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
+            MovementManager.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
         }
     }
 }
