@@ -11,6 +11,7 @@ public class PlayerMovement : Movement
     private bool isCheckingForInterrupt = false;
     Vector2Int start, end;
     public Animator headAnimator, bodyAnimator;
+    public bool isMovingContinuously = false;
     private void Awake()
     {
         TurnController.Instance.onPlayerTurn += OnPlayerTurn;
@@ -67,9 +68,10 @@ public class PlayerMovement : Movement
         if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
             cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
     }
-    public override void OnMovementEnd()
+    protected override void OnMovementEnd()
     {
-        SetAnimationMoving(false);
+        if(!isMovingContinuously)
+            SetAnimationMoving(false);
         if (onPlayerTurnEnd != null)
         {
             onPlayerTurnEnd.Invoke();
@@ -106,6 +108,10 @@ public class PlayerMovement : Movement
         }
         if (path.Count > 0)
         {
+            if (path.Count > 1)
+                isMovingContinuously = true;
+            else
+                isMovingContinuously = false;
             if (focusedEnemy != null && CheckIfEnemyIsReached())
             {
                 focusedEnemy = null;

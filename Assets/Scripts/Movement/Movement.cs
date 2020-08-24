@@ -16,12 +16,8 @@ public abstract class Movement : MonoBehaviour
 
     protected abstract void SetAnimationDirection(bool isRight);
 
-    public virtual void OnMovementEnd()
-    {
-        SetAnimationMoving(false);
-        if (onMovement != null)
-            onMovement.Invoke(false);
-    }
+    protected abstract void OnMovementEnd();
+    
     public virtual void GetDestination()
     {
     }
@@ -54,12 +50,10 @@ public abstract class Movement : MonoBehaviour
             if (path[0].x < transform.position.x)
             {
                 SetAnimationDirection(false);
-                //GetComponent<SpriteRenderer>().flipX = true;
             }
             else if (path[0].x > transform.position.x)
             {
                 SetAnimationDirection(true);
-                //GetComponent<SpriteRenderer>().flipX = false;
             }
 
             SetAnimationMoving(true);

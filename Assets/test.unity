@@ -2626,7 +2626,6 @@ GameObject:
   - component: {fileID: 527980181}
   - component: {fileID: 527980183}
   - component: {fileID: 527980184}
-  - component: {fileID: 527980185}
   - component: {fileID: 527980186}
   - component: {fileID: 527980182}
   m_Layer: 0
@@ -2738,12 +2737,15 @@ MonoBehaviour:
   isMoving: 0
   path: []
   playerTransform: {fileID: 2066577020}
+  playerMovement: {fileID: 2066577017}
   sightDistance: 4
   layerMask:
     serializedVersion: 2
     m_Bits: 1280
   isEnemyTurn: 0
-  animator: {fileID: 0}
+  isIdle: 0
+  idleTurns: 0
+  idleChance: 4
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
@@ -2763,20 +2765,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &527980185
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 527980179}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17c9de478a75d6d4d9d9791f32516368, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 527980184}
-  movement: {fileID: 527980183}
 --- !u!61 &527980186
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4970,7 +4958,6 @@ GameObject:
   - component: {fileID: 1225651437}
   - component: {fileID: 1225651436}
   - component: {fileID: 1225651435}
-  - component: {fileID: 1225651434}
   - component: {fileID: 1225651433}
   - component: {fileID: 1225651439}
   m_Layer: 0
@@ -5006,20 +4993,6 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
---- !u!114 &1225651434
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1225651432}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 17c9de478a75d6d4d9d9791f32516368, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  animator: {fileID: 1225651435}
-  movement: {fileID: 1225651436}
 --- !u!95 &1225651435
 Animator:
   serializedVersion: 3
@@ -5056,12 +5029,15 @@ MonoBehaviour:
   isMoving: 0
   path: []
   playerTransform: {fileID: 2066577020}
+  playerMovement: {fileID: 2066577017}
   sightDistance: 4
   layerMask:
     serializedVersion: 2
     m_Bits: 1280
   isEnemyTurn: 0
-  animator: {fileID: 0}
+  isIdle: 0
+  idleTurns: 0
+  idleChance: 4
 --- !u!212 &1225651437
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8707,6 +8683,7 @@ MonoBehaviour:
   cameraController: {fileID: 1056068412}
   headAnimator: {fileID: 1275732139}
   bodyAnimator: {fileID: 746026524}
+  isMovingContinuously: 0
 --- !u!212 &2066577019
 SpriteRenderer:
   m_ObjectHideFlags: 0

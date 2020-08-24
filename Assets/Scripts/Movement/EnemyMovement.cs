@@ -4,21 +4,41 @@ using UnityEngine;
 public class EnemyMovement : Movement
 {
     public Transform playerTransform;
+    public PlayerMovement playerMovement;
     public float sightDistance = 4;
     public LayerMask layerMask;
     public bool isEnemyTurn = false;
     private bool isPlayerTargeted=false;
+    public bool isIdle = false;
     private Vector3 lastPlayerPosition;
-    public Animator animator;
+    private Animator animator;
+    public int idleTurns = 0;
+    public int idleChance = 4;
+
+    private void Start()
+    {
+        animator = gameObject.GetComponent<Animator>();
+    }
 
     protected override void SetAnimationDirection(bool isRight)
     {
-        //animator.SetBool("isRight", isRight);
+        animator.SetBool("isRight", isRight);
     }
     protected override void SetAnimationMoving(bool isMoving)
     {
-        //animator.SetBool("isMoving", isMoving);
+        animator.SetBool("isMoving", isMoving);
     }
+     
+    protected override void OnMovementEnd()
+    {
+        if (!playerMovement.isMovingContinuously)
+        {
+            SetAnimationMoving(false);
+        }
+        if (onMovement != null)
+            onMovement.Invoke(false);
+    }
+
     public override void GetDestination()
     {
         if (!isPlayerTargeted && IsPlayerInSight())
@@ -55,8 +75,17 @@ public class EnemyMovement : Movement
             }           
         }
         else if (path.Count == 0)
-            GetRandomDestination();
-        LockPosition();
+        {
+            if (Random.Range(0, 10) < idleChance)
+            {
+                idleTurns = Random.Range(1, 8);
+                isIdle = true;
+            }
+            else
+                GetRandomDestination();
+        }
+        if(!isIdle)
+            LockPosition();
     }
     private bool IsPlayerInSight()
     {
