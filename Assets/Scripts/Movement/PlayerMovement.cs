@@ -13,10 +13,6 @@ public class PlayerMovement : Movement
     public Animator headAnimator, bodyAnimator;
     public bool isMovingContinuously = false;
     public Cursor cursor;
-    private void Awake()
-    {
-        TurnController.Instance.onPlayerTurn += OnPlayerTurn;
-    }
 
     protected override void SetAnimationDirection(bool isRight)
     {
@@ -27,24 +23,6 @@ public class PlayerMovement : Movement
     {
         headAnimator.SetBool("isMoving", isMoving);
         bodyAnimator.SetBool("isMoving", isMoving);
-    }
-
-    private void GetMouseInput()
-    {
-        if (EventSystem.current.IsPointerOverGameObject())
-            return;
-
-        if (cursor.PointingAt != null && cursor.PointingAt.CompareTag("Enemy"))
-            focusedEnemy = cursor.PointingAt;
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        end = new Vector2Int((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
-        Input.ResetInputAxes();
-
-        if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && MovementManager.Instance.IsObstacle(end)))
-            return;
-        start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-        path = MovementManager.Instance.GeneratePath(start, end);
-        MoveCamera();
     }
     private bool CheckIfEnemyIsReached() {
         if (Vector3.Distance(transform.position, focusedEnemy.transform.position) < 2)
@@ -58,7 +36,7 @@ public class PlayerMovement : Movement
         path = MovementManager.Instance.GeneratePath(start, end);
         path.RemoveAt(path.Count - 1);
     }
-    private void MoveCamera()
+    public void MoveCamera()
     {
         Transform cameraTransform = transform.GetChild(0).transform;
         if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
@@ -81,6 +59,8 @@ public class PlayerMovement : Movement
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 focusedEnemy = null;
+                SetAnimationMoving(false);
+                isMovingContinuously = false;
                 path.Clear();
                 break;              
             }
@@ -94,14 +74,6 @@ public class PlayerMovement : Movement
     }
     public  IEnumerator PlayerMove()
     {
-        if (path.Count == 0)
-        {
-            while (!Input.GetKey(KeyCode.Mouse0))
-            {
-                yield return null;
-            }
-            GetMouseInput();
-        }
         if (path.Count > 0)
         {
             if (path.Count > 1)

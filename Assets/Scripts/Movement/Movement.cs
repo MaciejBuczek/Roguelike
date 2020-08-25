@@ -10,7 +10,6 @@ public abstract class Movement : MonoBehaviour
     protected IEnumerator moveCoroutine;
     public List<Vector3> path = new List<Vector3>();
     public delegate void OnMovement(bool state);
-    public OnMovement onMovement;
 
     protected abstract void SetAnimationMoving(bool isMoving);
 
@@ -40,8 +39,8 @@ public abstract class Movement : MonoBehaviour
         }
         transform.position = position;       
         path.Remove(position);
-        OnMovementEnd();
         isMoving = false;
+        OnMovementEnd();
     }
     public void Move()
     {      
@@ -59,8 +58,6 @@ public abstract class Movement : MonoBehaviour
             SetAnimationMoving(true);
 
             moveCoroutine = MoveToPosition(path[0]);
-            if (onMovement != null)
-                onMovement.Invoke(true);
             StartCoroutine(moveCoroutine);
         }
     }

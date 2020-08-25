@@ -35,8 +35,6 @@ public class EnemyMovement : Movement
         {
             SetAnimationMoving(false);
         }
-        if (onMovement != null)
-            onMovement.Invoke(false);
     }
 
     public override void GetDestination()

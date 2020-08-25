@@ -2054,6 +2054,7 @@ MonoBehaviour:
   - {fileID: 527980183}
   - {fileID: 1225651436}
   areEnemiesMoving: 0
+  cursor: {fileID: 79415946}
 --- !u!1001 &394804613
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2746,7 +2747,7 @@ MonoBehaviour:
   isEnemyTurn: 0
   isIdle: 0
   idleTurns: 0
-  idleChance: 4
+  idleChance: 0
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
@@ -5038,7 +5039,7 @@ MonoBehaviour:
   isEnemyTurn: 0
   isIdle: 0
   idleTurns: 0
-  idleChance: 4
+  idleChance: 0
 --- !u!212 &1225651437
 SpriteRenderer:
   m_ObjectHideFlags: 0
