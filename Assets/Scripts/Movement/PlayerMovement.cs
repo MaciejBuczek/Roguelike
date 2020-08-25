@@ -12,6 +12,7 @@ public class PlayerMovement : Movement
     Vector2Int start, end;
     public Animator headAnimator, bodyAnimator;
     public bool isMovingContinuously = false;
+    public Cursor cursor;
     private void Awake()
     {
         TurnController.Instance.onPlayerTurn += OnPlayerTurn;
@@ -33,7 +34,9 @@ public class PlayerMovement : Movement
         if (EventSystem.current.IsPointerOverGameObject())
             return;
 
-        CheckIfEnemyIsFocused();
+        //CheckIfEnemyIsFocused();
+        if (cursor.PointingAt != null && cursor.PointingAt.CompareTag("Enemy"))
+            focusedEnemy = cursor.PointingAt;
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         end = new Vector2Int((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
         Input.ResetInputAxes();

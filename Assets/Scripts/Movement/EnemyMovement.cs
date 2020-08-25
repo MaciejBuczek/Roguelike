@@ -41,51 +41,59 @@ public class EnemyMovement : Movement
 
     public override void GetDestination()
     {
-        if (!isPlayerTargeted && IsPlayerInSight())
+        if (isIdle && IsPlayerInSight())
         {
-            isPlayerTargeted = true;
-            lastPlayerPosition = playerTransform.position;
+            isIdle = false;
+            idleTurns = 0;
         }
-        else if (isPlayerTargeted && !IsPlayerInSight())
+        if (!isIdle)
         {
-            isPlayerTargeted = false;
-            if (path.Count == 0)
+            if (!isPlayerTargeted && IsPlayerInSight())
             {
-                Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-                Vector2Int end = new Vector2Int((int)lastPlayerPosition.x, (int)lastPlayerPosition.y);
-                path = MovementManager.Instance.GeneratePath(start, end);
+                isPlayerTargeted = true;
+                lastPlayerPosition = playerTransform.position;
             }
-        }
-        if(isPlayerTargeted)
-        {
-            lastPlayerPosition = playerTransform.position;
-            path.Clear();
-            if (Vector3.Distance(playerTransform.position, transform.position) < 1.5f)
+            else if (isPlayerTargeted && !IsPlayerInSight())
             {
-                if (!MovementManager.Instance.IsObstacle((int)transform.position.x, (int)playerTransform.position.y))
-                    path.Add(new Vector3(transform.position.x, playerTransform.position.y));
-                else if (!MovementManager.Instance.IsObstacle((int)playerTransform.position.x, (int)transform.position.y))
-                    path.Add(new Vector3(playerTransform.position.x, transform.position.y));
+                isPlayerTargeted = false;
+                if (path.Count == 0)
+                {
+                    Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+                    Vector2Int end = new Vector2Int((int)lastPlayerPosition.x, (int)lastPlayerPosition.y);
+                    path = MovementManager.Instance.GeneratePath(start, end);
+                }
             }
-            else
+            if (isPlayerTargeted)
             {
-                Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-                Vector2Int end = new Vector2Int((int)playerTransform.position.x, (int)playerTransform.position.y);
-                path = MovementManager.Instance.GeneratePath(start, end);
-            }           
-        }
-        else if (path.Count == 0)
-        {
-            if (Random.Range(0, 10) < idleChance)
-            {
-                idleTurns = Random.Range(1, 8);
-                isIdle = true;
+                lastPlayerPosition = playerTransform.position;
+                path.Clear();
+                if (Vector3.Distance(playerTransform.position, transform.position) < 1.5f)
+                {
+                    if (!MovementManager.Instance.IsObstacle((int)transform.position.x, (int)playerTransform.position.y))
+                        path.Add(new Vector3(transform.position.x, playerTransform.position.y));
+                    else if (!MovementManager.Instance.IsObstacle((int)playerTransform.position.x, (int)transform.position.y))
+                        path.Add(new Vector3(playerTransform.position.x, transform.position.y));
+                }
+                else
+                {
+                    Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
+                    Vector2Int end = new Vector2Int((int)playerTransform.position.x, (int)playerTransform.position.y);
+                    path = MovementManager.Instance.GeneratePath(start, end);
+                }
             }
-            else
-                GetRandomDestination();
+            else if (path.Count == 0)
+            {
+                if (Random.Range(0, 10) < idleChance)
+                {
+                    idleTurns = Random.Range(1, 8);
+                    isIdle = true;
+                }
+                else
+                    GetRandomDestination();
+            }
+            if (!isIdle)
+                LockPosition();
         }
-        if(!isIdle)
-            LockPosition();
     }
     private bool IsPlayerInSight()
     {

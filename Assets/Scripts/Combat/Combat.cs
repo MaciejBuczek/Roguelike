@@ -15,4 +15,12 @@ public class Combat : MonoBehaviour
     {
         
     }
+    void Attack(Combat enemy)
+    {
+
+    }
+    void ReceiveDamage(int Damage)
+    {
+
+    }
 }

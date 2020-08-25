@@ -828,6 +828,7 @@ MonoBehaviour:
   - {fileID: 3060705968746904616, guid: edd2c8e78befef945987744f80033ca6, type: 3}
   - {fileID: -145427233909520477, guid: edd2c8e78befef945987744f80033ca6, type: 3}
   - {fileID: 701717323513910023, guid: edd2c8e78befef945987744f80033ca6, type: 3}
+  PointingAt: {fileID: 0}
 --- !u!212 &79415947
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8684,6 +8685,7 @@ MonoBehaviour:
   headAnimator: {fileID: 1275732139}
   bodyAnimator: {fileID: 746026524}
   isMovingContinuously: 0
+  cursor: {fileID: 79415946}
 --- !u!212 &2066577019
 SpriteRenderer:
   m_ObjectHideFlags: 0

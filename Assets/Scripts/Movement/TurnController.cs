@@ -36,7 +36,7 @@ public class TurnController : MonoBehaviour
     {
         foreach(EnemyMovement enemy in enemies)
         {
-            if(!enemy.isMoving && !enemy.isIdle)
+            if(!enemy.isMoving)
                 enemy.GetDestination();
         }
     }
