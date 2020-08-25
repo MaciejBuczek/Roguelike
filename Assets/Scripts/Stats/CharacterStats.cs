@@ -3,7 +3,7 @@
 public class CharacterStats : MonoBehaviour
 {
     public IntRange damageMelee, damageRanged;
-    public Stat armor, dodge, health;
+    public Stat armor, dodge, health, mana;
     public int currentHealth;
 
     private void Start()

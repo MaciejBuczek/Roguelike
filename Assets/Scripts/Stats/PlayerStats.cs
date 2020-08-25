@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 public class PlayerStats : CharacterStats
 {
-    public Stat mana, strength, dexterity, intelligence;
+    public Stat strength, dexterity, intelligence;
     public int currentMana, currentExp = 0, nextLevelExp = 100, level;
     private IntRange unarmedDamage = new IntRange(1,2);
     public delegate void OnStatsChanged();

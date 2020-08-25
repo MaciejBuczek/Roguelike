@@ -34,7 +34,6 @@ public class PlayerMovement : Movement
         if (EventSystem.current.IsPointerOverGameObject())
             return;
 
-        //CheckIfEnemyIsFocused();
         if (cursor.PointingAt != null && cursor.PointingAt.CompareTag("Enemy"))
             focusedEnemy = cursor.PointingAt;
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -46,12 +45,6 @@ public class PlayerMovement : Movement
         start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
         path = MovementManager.Instance.GeneratePath(start, end);
         MoveCamera();
-    }
-    private void CheckIfEnemyIsFocused()
-    {
-        RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-        if (hitInfo.collider != null && hitInfo.collider.CompareTag("Enemy"))
-            focusedEnemy = hitInfo.collider.gameObject;
     }
     private bool CheckIfEnemyIsReached() {
         if (Vector3.Distance(transform.position, focusedEnemy.transform.position) < 2)
@@ -119,7 +112,7 @@ public class PlayerMovement : Movement
             {
                 focusedEnemy = null;
                 path.Clear();
-                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == false);
                 OnMovementEnd();
             }
             else
@@ -128,14 +121,14 @@ public class PlayerMovement : Movement
                     SetPathToEnemyPosition();
                 LockPosition();
                 Move();
-                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == false);
                 if (!isCheckingForInterrupt)
                     StartCoroutine(CheckForInterupt());
             }
         }
         else
         {
-            yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+            yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == false);
             OnMovementEnd();
         }
     }

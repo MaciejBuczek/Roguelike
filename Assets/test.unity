@@ -2053,7 +2053,7 @@ MonoBehaviour:
   enemies:
   - {fileID: 527980183}
   - {fileID: 1225651436}
-  areEnemiesMoving: 1
+  areEnemiesMoving: 0
 --- !u!1001 &394804613
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8601,10 +8601,10 @@ MonoBehaviour:
   health:
     baseValue: 0
     modifiers: 
-  currentHealth: 0
   mana:
     baseValue: 0
     modifiers: 
+  currentHealth: 0
   strength:
     baseValue: 0
     modifiers: 

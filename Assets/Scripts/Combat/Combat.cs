@@ -4,23 +4,21 @@ using UnityEngine;
 
 public class Combat : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public CharacterStats stats;
+    protected void AttackMeele(Combat enemy)
     {
-        
+        int damage = stats.damageMelee.Random();
+        DealDamage(enemy, damage);
     }
-
-    // Update is called once per frame
-    void Update()
+    protected void DealDamage(Combat enemy, int damage)
     {
-        
+        enemy.ReceiveDamage(damage);
     }
-    void Attack(Combat enemy)
+    protected void ReceiveDamage(int Damage)
     {
-
-    }
-    void ReceiveDamage(int Damage)
-    {
-
+        if (Random.Range(0, 100) <= stats.dodge.GetValue())
+            Debug.Log(transform.name + " dodged");
+        else
+            stats.TakeDamage(Damage);
     }
 }

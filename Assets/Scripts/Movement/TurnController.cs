@@ -9,9 +9,7 @@ public class TurnController : MonoBehaviour
     public delegate void OnPlayerTurn();
     public OnPlayerTurn onPlayerTurn;
     public static TurnController Instance;
-    //public bool enemyTurnEnd = true;
-    public bool areEnemiesMoving = true;
-    // Start is called before the first frame update
+    public bool areEnemiesMoving = false;
     private void Awake()
     {
         if (Instance != null)
@@ -53,12 +51,12 @@ public class TurnController : MonoBehaviour
             if (!enemy.isMoving && !enemy.isIdle)
                 enemy.Move();
         }
-        areEnemiesMoving = false;
+        areEnemiesMoving = true;
         while (AreEnemiesMoving())
         {
                 yield return null;
         }
-        areEnemiesMoving = true;
+        areEnemiesMoving = false;
     }
     public bool AreEnemiesMoving()
     {
