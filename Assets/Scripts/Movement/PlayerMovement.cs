@@ -13,10 +13,6 @@ public class PlayerMovement : Movement
     public Animator headAnimator, bodyAnimator;
     public bool isMovingContinuously = false;
     public Cursor cursor;
-    private void Awake()
-    {
-        TurnController.Instance.onPlayerTurn += OnPlayerTurn;
-    }
 
     protected override void SetAnimationDirection(bool isRight)
     {
@@ -27,31 +23,6 @@ public class PlayerMovement : Movement
     {
         headAnimator.SetBool("isMoving", isMoving);
         bodyAnimator.SetBool("isMoving", isMoving);
-    }
-
-    private void GetMouseInput()
-    {
-        if (EventSystem.current.IsPointerOverGameObject())
-            return;
-
-        //CheckIfEnemyIsFocused();
-        if (cursor.PointingAt != null && cursor.PointingAt.CompareTag("Enemy"))
-            focusedEnemy = cursor.PointingAt;
-        Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        end = new Vector2Int((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y));
-        Input.ResetInputAxes();
-
-        if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && MovementManager.Instance.IsObstacle(end)))
-            return;
-        start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-        path = MovementManager.Instance.GeneratePath(start, end);
-        MoveCamera();
-    }
-    private void CheckIfEnemyIsFocused()
-    {
-        RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
-        if (hitInfo.collider != null && hitInfo.collider.CompareTag("Enemy"))
-            focusedEnemy = hitInfo.collider.gameObject;
     }
     private bool CheckIfEnemyIsReached() {
         if (Vector3.Distance(transform.position, focusedEnemy.transform.position) < 2)
@@ -65,7 +36,7 @@ public class PlayerMovement : Movement
         path = MovementManager.Instance.GeneratePath(start, end);
         path.RemoveAt(path.Count - 1);
     }
-    private void MoveCamera()
+    public void MoveCamera()
     {
         Transform cameraTransform = transform.GetChild(0).transform;
         if (cameraTransform.position.x != transform.position.x || cameraTransform.position.y != transform.position.y)
@@ -88,6 +59,8 @@ public class PlayerMovement : Movement
             if (Input.GetKey(KeyCode.Mouse0))
             {
                 focusedEnemy = null;
+                SetAnimationMoving(false);
+                isMovingContinuously = false;
                 path.Clear();
                 break;              
             }
@@ -101,14 +74,6 @@ public class PlayerMovement : Movement
     }
     public  IEnumerator PlayerMove()
     {
-        if (path.Count == 0)
-        {
-            while (!Input.GetKey(KeyCode.Mouse0))
-            {
-                yield return null;
-            }
-            GetMouseInput();
-        }
         if (path.Count > 0)
         {
             if (path.Count > 1)
@@ -119,7 +84,7 @@ public class PlayerMovement : Movement
             {
                 focusedEnemy = null;
                 path.Clear();
-                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == false);
                 OnMovementEnd();
             }
             else
@@ -128,14 +93,14 @@ public class PlayerMovement : Movement
                     SetPathToEnemyPosition();
                 LockPosition();
                 Move();
-                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+                yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == false);
                 if (!isCheckingForInterrupt)
                     StartCoroutine(CheckForInterupt());
             }
         }
         else
         {
-            yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == true);
+            yield return new WaitUntil(() => TurnController.Instance.areEnemiesMoving == false);
             OnMovementEnd();
         }
     }

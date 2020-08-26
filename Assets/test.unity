@@ -2053,7 +2053,8 @@ MonoBehaviour:
   enemies:
   - {fileID: 527980183}
   - {fileID: 1225651436}
-  areEnemiesMoving: 1
+  areEnemiesMoving: 0
+  cursor: {fileID: 79415946}
 --- !u!1001 &394804613
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2748,7 +2749,7 @@ MonoBehaviour:
   isEnemyTurn: 0
   isIdle: 0
   idleTurns: 0
-  idleChance: 4
+  idleChance: 0
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
@@ -5146,7 +5147,7 @@ MonoBehaviour:
   isEnemyTurn: 0
   isIdle: 0
   idleTurns: 0
-  idleChance: 4
+  idleChance: 0
 --- !u!212 &1225651437
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -8882,16 +8883,13 @@ MonoBehaviour:
   health:
     baseValue: 0
     modifiers: 
-  currentHealth: 0
   mana:
     baseValue: 0
     modifiers: 
-<<<<<<< Updated upstream
-=======
   currentHealth: 0
   healthBar: {fileID: 0}
-  healthBarCanvas: {fileID: 0}
->>>>>>> Stashed changes
+  healthBarCanvas: {fileID: 0
+  currentHealth: 0
   strength:
     baseValue: 0
     modifiers: 

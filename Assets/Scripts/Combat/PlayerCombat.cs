@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,4 +19,5 @@ public class PlayerCombat : Combat
     {
         throw new System.NotImplementedException();
     }
+
 }
