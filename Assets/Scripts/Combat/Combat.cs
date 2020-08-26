@@ -2,9 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Combat : MonoBehaviour
+public abstract class Combat : MonoBehaviour
 {
+
+    // Start is called before the first frame update
     public CharacterStats stats;
+
+    public abstract void SetAnimationAttack();
+    public abstract void SetAnimationHit();
+    public abstract void SetAnimationDie();
+    
     protected void AttackMeele(Combat enemy)
     {
         int damage = stats.damageMelee.Random();
