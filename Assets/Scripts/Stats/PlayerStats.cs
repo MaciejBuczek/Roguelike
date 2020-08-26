@@ -40,13 +40,13 @@ public class PlayerStats : CharacterStats
             GainExp(2);
         }
     }
-    public override void TakeDamage(int damage)
+    /*public override void TakeDamage(int damage)
     {
         int damageVal = damage - armor.GetValue();
         Mathf.Clamp(damageVal, 0, int.MaxValue);
         base.TakeDamage(damage);
         CharacterPanel.Instance.SubtractHealth(damageVal);
-    }
+    }*/
     public void UseMana(int mana)
     {
         currentMana -= mana;
