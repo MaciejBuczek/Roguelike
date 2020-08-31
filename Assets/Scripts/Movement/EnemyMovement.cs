@@ -7,9 +7,6 @@ public class EnemyMovement : Movement
     // Start is called before the first frame update
     public int sightDistance = 4;
     // Update is called once per frame
-    void Update()
-    {
-    }
     public void MoveEnemy()
     {
         while(path.Count == 0)

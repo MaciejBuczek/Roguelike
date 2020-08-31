@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TurnManager : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class TurnManager : MonoBehaviour
 
     public List<GameObject> enemies;
     public GameObject player;
+    private PlayerMovement playerMovement;
 
     public static TurnManager Instance;
 
@@ -20,7 +22,8 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PlayerTurn();
+        playerMovement = player.GetComponent<PlayerMovement>();
+        StartCoroutine(PlayerTurn());
     }
     // Update is called once per frame
     /*void Update()
@@ -38,11 +41,20 @@ public class TurnManager : MonoBehaviour
     void EnemyTurn()
     {
         StartCoroutine(MoveEnemies());
-        PlayerTurn();
+        StartCoroutine(PlayerTurn());
     }
-    void PlayerTurn()
+    IEnumerator PlayerTurn()
     {
-        StartCoroutine(player.GetComponent<PlayerMovement>().StartMovement());
+        while(playerMovement.path.Count == 0)
+        {
+            while (!Input.GetKey(KeyCode.Mouse0))
+            {
+                yield return null;
+            }
+            GetPlayerInput();
+            yield return null;
+        }
+        StartCoroutine(playerMovement.StartMovement());
     }
     IEnumerator MoveEnemies()
     {
@@ -69,5 +81,25 @@ public class TurnManager : MonoBehaviour
                 return true;
         }
         return false;
+    }
+    private void GetPlayerInput()
+    {
+        Input.ResetInputAxes();
+        GameObject focusedEnemy = null;
+        Vector2 end;
+
+        if (EventSystem.current.IsPointerOverGameObject())
+            return;
+        if (Cursor.Instance.PointingAt != null && Cursor.Instance.PointingAt.CompareTag("Enemy"))
+            focusedEnemy = Cursor.Instance.PointingAt;
+
+        end = Cursor.Instance.position;
+
+        if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && PathFinder.Instance.IsObstacle((int)end.x, (int)end.y)))
+            return;
+
+        playerMovement.SetPath(PathFinder.Instance.GeneratePath(player.transform.position, end));
+
+        //player.MoveCamera();
     }
 }

@@ -43,7 +43,7 @@ public class DungeonGenerator : MonoBehaviour
     public bool useSeed = false;
     public int seed = 0;
 
-    public bool IsPositionOutOfBounds(Vector2Int position)
+    public bool IsPositionOutOfBounds(Vector2 position)
     {
         if (position.x < 0 || position.x >= DungeonGenerator.instance.cols)
             return true;
