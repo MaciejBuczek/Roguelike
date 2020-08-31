@@ -8,9 +8,16 @@ public class Cursor : MonoBehaviour
     public GameObject PointingAt;
     private SpriteRenderer spriteRenderer;
 
+    public static Cursor Instance;
+
     enum Cursors { defaultCursor, enemy, targetRanged, targetMagic};
+    public Vector2 position;
 
     // Start is called before the first frame update
+    private void Awake()
+    {
+        Instance = this;
+    }
     void Start()
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
@@ -20,7 +27,11 @@ public class Cursor : MonoBehaviour
     void Update()
     {
         Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        transform.position = new Vector3((int)Mathf.Round(mousePosition.x), (int)Mathf.Round(mousePosition.y), 0);
+        int x, y;
+        x = Mathf.RoundToInt(mousePosition.x);
+        y = Mathf.RoundToInt(mousePosition.y);
+        position = new Vector2(x, y);
+        transform.position = position;
 
         RaycastHit2D hitInfo = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
         if (hitInfo.collider != null)

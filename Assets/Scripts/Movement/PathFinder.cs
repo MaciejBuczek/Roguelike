@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MovementManager : MonoBehaviour
+public class PathFinder : MonoBehaviour
 {
     private Node[,] nodes;
     private DungeonGenerator dungeonGenerator;
 
     #region Singleton
-    public static MovementManager Instance;
+    public static PathFinder Instance;
     private void Awake()
     {
         if (Instance != null)
@@ -42,14 +42,14 @@ public class MovementManager : MonoBehaviour
                     nodes[y, x].neighboursPositions.Add(new Vector3Int(x - 1, y, 0));
                 if (x < dungeonGenerator.cols - 1)
                     nodes[y, x].neighboursPositions.Add(new Vector3Int(x + 1, y, 0));
-                if (y > 0 && x > 0)
+                /*if (y > 0 && x > 0)
                     nodes[y, x].neighboursPositions.Add(new Vector3Int(x - 1, y - 1, 0));
                 if (y > 0 && x < dungeonGenerator.cols - 1)
                     nodes[y, x].neighboursPositions.Add(new Vector3Int(x + 1, y - 1, 0));
                 if (y < dungeonGenerator.rows - 1 && x > 0)
                     nodes[y, x].neighboursPositions.Add(new Vector3Int(x - 1, y + 1, 0));
                 if (y < dungeonGenerator.rows - 1 && x < dungeonGenerator.cols - 1)
-                    nodes[y, x].neighboursPositions.Add(new Vector3Int(x + 1, y + 1, 0));
+                    nodes[y, x].neighboursPositions.Add(new Vector3Int(x + 1, y + 1, 0));*/
             }
         }
         for (int y = 0; y < dungeonGenerator.rows; y++)
@@ -77,7 +77,7 @@ public class MovementManager : MonoBehaviour
             }
         }
     }
-    public List<Vector3> GeneratePath(Vector2Int start, Vector2Int destination)
+    public List<Vector3> GeneratePath(Vector2 start, Vector2 destination)
     {
         Node currentNode;
         List<Vector3> path = new List<Vector3>();
@@ -93,11 +93,11 @@ public class MovementManager : MonoBehaviour
                 nodes[y, x].hasParent = false;
             }
         }
-        currentNode = nodes[start.y, start.x];
-        nodes[start.y, start.x].localGoal = 0;
-        nodes[start.y, start.x].globalGoal = GetDistance(nodes[start.y, start.x], nodes[start.y, start.x]);
-        notTestedNodes.Add(nodes[start.y, start.x]);
-        while (notTestedNodes.Count != 0 && currentNode != nodes[destination.y, destination.x])
+        currentNode = nodes[(int)start.y, (int)start.x];
+        nodes[(int)start.y, (int)start.x].localGoal = 0;
+        nodes[(int)start.y, (int)start.x].globalGoal = GetDistance(nodes[(int)start.y, (int)start.x], nodes[(int)start.y, (int)start.x]);
+        notTestedNodes.Add(nodes[(int)start.y, (int)start.x]);
+        while (notTestedNodes.Count != 0 && currentNode != nodes[(int)destination.y, (int)destination.x])
         {
             SortNodeList(notTestedNodes);
             foreach (Node node in notTestedNodes)
@@ -125,12 +125,12 @@ public class MovementManager : MonoBehaviour
                     nodes[nodePosition.y, nodePosition.x].parentPosition = currentNode.position;
                     nodes[nodePosition.y, nodePosition.x].localGoal = newLocalGoal;
                     nodes[nodePosition.y, nodePosition.x].globalGoal = newLocalGoal +
-                        GetDistance(nodes[nodePosition.y, nodePosition.x], nodes[destination.y, destination.x]);
+                        GetDistance(nodes[nodePosition.y, nodePosition.x], nodes[(int)destination.y, (int)destination.x]);
 
                 }
             }
         }
-        currentNode = nodes[destination.y, destination.x];
+        currentNode = nodes[(int)destination.y, (int)destination.x];
         while (currentNode.hasParent)
         {
             path.Add(currentNode.position);
