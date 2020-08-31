@@ -39,6 +39,14 @@ public class PlayerMovement : Movement
             Debug.Log("player turn end");
         }
     }
+    protected override bool CheckForInterupt()
+    {
+        if (Input.GetKey(KeyCode.Mouse0))
+        {
+            return true;
+        }
+        return false;
+    }
     private void OnMovementEnd()
     {
         TurnManager.Instance.OnPlayerTurnEnd();

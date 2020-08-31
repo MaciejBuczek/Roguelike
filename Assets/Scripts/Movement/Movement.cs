@@ -16,33 +16,42 @@ public abstract class Movement : MonoBehaviour
 
     protected IEnumerator MoveToPosition(Vector2 end)
     {
-        if (!LockPosition())
+        path.Remove(path[0]);
+        if (!LockPosition(end))
         {
-            path.Remove(path[0]);
+            //path.Remove(path[0]);
             yield break;
         }
         Debug.Log(transform.name + " start");
+        
         isMoving = true;
         float distance = ((Vector2)(transform.position) - end).sqrMagnitude;
         while(distance > float.Epsilon)
         {
             transform.position = Vector2.MoveTowards(transform.position, end, speed * Time.deltaTime);
             distance = ((Vector2)(transform.position) - end).sqrMagnitude;
+            if (CheckForInterupt())
+            {
+                path.Clear();
+            }
             yield return null;
         }
         isMoving = false;
-        path.Remove(path[0]);
         Debug.Log(transform.name + " end");
     }
-    protected bool LockPosition()
+    protected virtual bool CheckForInterupt()
     {
-        if (PathFinder.Instance.IsObstacle((int)path[0].x, (int)path[0].y))
+        return false;
+    }
+    protected bool LockPosition(Vector2 position)
+    {
+        if (PathFinder.Instance.IsObstacle((int)position.x, (int)position.y))
         {
             path.Clear();
             return false;
         }
         PathFinder.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, false);
-        PathFinder.Instance.SetObstacle((int)path[0].x, (int)path[0].y, true);
+        PathFinder.Instance.SetObstacle((int)position.x, (int)position.y, true);
         return true;
     }
 
