@@ -19,10 +19,9 @@ public abstract class Movement : MonoBehaviour
         path.Remove(path[0]);
         if (!LockPosition(end))
         {
-            //path.Remove(path[0]);
+            path.Clear();
             yield break;
         }
-        Debug.Log(transform.name + " start");
         
         isMoving = true;
         float distance = ((Vector2)(transform.position) - end).sqrMagnitude;
@@ -37,7 +36,6 @@ public abstract class Movement : MonoBehaviour
             yield return null;
         }
         isMoving = false;
-        Debug.Log(transform.name + " end");
     }
     protected virtual bool CheckForInterupt()
     {

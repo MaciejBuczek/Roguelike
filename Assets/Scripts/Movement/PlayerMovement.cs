@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class PlayerMovement : Movement
 {
+    public CameraController cameraController;
     // Update is called once per frame
     public IEnumerator StartMovement()
     {
+        MoveCamera();
         yield return new WaitUntil(() => isMoving == false);
         StartCoroutine(MoveToPosition(path[0]));
         yield return new WaitUntil(() => TurnManager.Instance.enemiesTurn == false);
         TurnManager.Instance.playerTurn = false;
         OnMovementEnd();
-        Debug.Log("player turn end");
     }
     protected override bool CheckForInterupt()
     {
@@ -29,5 +30,10 @@ public class PlayerMovement : Movement
     public void SetPath(List<Vector3> path)
     {
         this.path = path;
+    }
+    public void MoveCamera()
+    {
+        if((Vector2)cameraController.transform.position != (Vector2)transform.position)
+            cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
     }
 }
