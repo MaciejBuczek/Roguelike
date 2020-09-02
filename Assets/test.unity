@@ -2585,7 +2585,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 527980179}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15, y: 15, z: 0}
+  m_LocalPosition: {x: 9, y: 15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1962000126}
@@ -2678,11 +2678,13 @@ MonoBehaviour:
   speed: 5
   path: []
   isMoving: 0
-  sightDistance: 4
+  sightDistance: 6
   playerTransform: {fileID: 2066577020}
   layerMask:
     serializedVersion: 2
     m_Bits: 2304
+  idleTurns: 0
+  idleChance: 10
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
@@ -5051,11 +5053,13 @@ MonoBehaviour:
   speed: 5
   path: []
   isMoving: 0
-  sightDistance: 4
+  sightDistance: 6
   playerTransform: {fileID: 2066577020}
   layerMask:
     serializedVersion: 2
     m_Bits: 2304
+  idleTurns: 0
+  idleChance: 2
 --- !u!95 &1225651435
 Animator:
   serializedVersion: 3
@@ -8841,6 +8845,7 @@ MonoBehaviour:
   path: []
   isMoving: 0
   cameraController: {fileID: 1032950049}
+  focuesedEnemy: {fileID: 0}
 --- !u!50 &2066577015
 Rigidbody2D:
   serializedVersion: 4

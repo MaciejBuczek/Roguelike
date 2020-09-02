@@ -25,14 +25,6 @@ public class TurnManager : MonoBehaviour
         playerMovement = player.GetComponent<PlayerMovement>();
         StartCoroutine(PlayerTurn());
     }
-    // Update is called once per frame
-    /*void Update()
-    {
-        if (playerTurn || enemiesTurn)
-            return;
-        Debug.Log("a");
-        StartCoroutine(MoveEnemies());
-    }*/
     
     public void OnPlayerTurnEnd()
     {
@@ -45,21 +37,26 @@ public class TurnManager : MonoBehaviour
     }
     IEnumerator PlayerTurn()
     {
-        while(playerMovement.path.Count == 0)
+        if (playerMovement.path.Count == 0 && playerMovement.focuesedEnemy == null) 
         {
-            while (!Input.GetKey(KeyCode.Mouse0))
+            do
             {
+                while (!Input.GetKey(KeyCode.Mouse0))
+                {
+                    yield return null;
+                }
+                GetPlayerInput();
                 yield return null;
-            }
-            GetPlayerInput();
-            yield return null;
+            } while (!GetPlayerInput());
         }
-        StartCoroutine(playerMovement.StartMovement());
+        if (playerMovement.path.Count > 0 || playerMovement.focuesedEnemy != null)
+            StartCoroutine(playerMovement.StartMovement());
+        else
+            EnemyTurn();
     }
     IEnumerator MoveEnemies()
     {
         enemiesTurn = true;
-        //Debug.Log("enemies turn start");
         foreach (GameObject enemy in enemies)
         {
             enemy.GetComponent<EnemyMovement>().MoveEnemy();
@@ -71,7 +68,6 @@ public class TurnManager : MonoBehaviour
         }
         enemiesTurn = false;
         playerTurn = true;
-        //Debug.Log("enemies turn end");
     }
     private bool AreEnemiesMoving()
     {
@@ -82,24 +78,30 @@ public class TurnManager : MonoBehaviour
         }
         return false;
     }
-    private void GetPlayerInput()
+    bool GetPlayerInput()
     {
         Input.ResetInputAxes();
         GameObject focusedEnemy = null;
         Vector2 end;
 
         if (EventSystem.current.IsPointerOverGameObject())
-            return;
+            return false;
         if (Cursor.Instance.PointingAt != null && Cursor.Instance.PointingAt.CompareTag("Enemy"))
+        {
             focusedEnemy = Cursor.Instance.PointingAt;
+            playerMovement.focuesedEnemy = focusedEnemy;
+            return true;
+        }
 
         end = Cursor.Instance.position;
 
+        if (end == (Vector2)playerMovement.transform.position)
+            return true;
+
         if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && PathFinder.Instance.IsObstacle((int)end.x, (int)end.y)))
-            return;
+            return false;
 
         playerMovement.SetPath(PathFinder.Instance.GeneratePath(player.transform.position, end));
-
-        //player.MoveCamera();
+        return true;
     }
 }

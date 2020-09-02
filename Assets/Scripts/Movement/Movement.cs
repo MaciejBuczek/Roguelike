@@ -12,6 +12,7 @@ public abstract class Movement : MonoBehaviour
     protected void Start()
     {
         path = new List<Vector3>();
+        PathFinder.Instance.SetObstacle((int)transform.position.x, (int)transform.position.y, true);
     }
 
     protected IEnumerator MoveToPosition(Vector2 end)

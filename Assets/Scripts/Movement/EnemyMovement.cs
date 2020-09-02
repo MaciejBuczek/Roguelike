@@ -10,6 +10,8 @@ public class EnemyMovement : Movement
     private bool isFollowing = false;
     private Vector2 lastPlayerPosition;
     public LayerMask layerMask;
+    public int idleTurns;
+    public int idleChance = 2;
     // Update is called once per frame
     public void MoveEnemy()
     {
@@ -29,17 +31,29 @@ public class EnemyMovement : Movement
         if (isFollowing)
         {
             path = PathFinder.Instance.GeneratePath(transform.position, playerTransform.position);
-            lastPlayerPosition = playerTransform.position;
+            lastPlayerPosition = new Vector2(Mathf.Ceil(playerTransform.position.x), Mathf.Ceil(playerTransform.position.y));
         }
         else
         {
-            while (path.Count == 0)
+            if (path.Count == 0)
             {
-                path = PathFinder.Instance.GeneratePath(transform.position, GetRandomPosition());
+                if (Random.Range(0, 10) <= idleChance)
+                {
+                    idleTurns = Random.Range(1, 10);
+                }
+                while (path.Count == 0 && idleTurns == 0)
+                {
+                    path = PathFinder.Instance.GeneratePath(transform.position, GetRandomPosition());
+                }
             }
         }
-        if(path.Count != 0)
-            StartCoroutine(MoveToPosition(path[0]));
+        if (idleTurns > 0)
+            idleTurns--;
+        else
+        {
+            if (path.Count != 0)
+                StartCoroutine(MoveToPosition(path[0]));
+        }
     }
     private Vector2 GetRandomPosition()
     {

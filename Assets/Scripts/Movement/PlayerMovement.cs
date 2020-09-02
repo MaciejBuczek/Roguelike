@@ -5,14 +5,21 @@ using UnityEngine;
 public class PlayerMovement : Movement
 {
     public CameraController cameraController;
+    public GameObject focuesedEnemy;
     // Update is called once per frame
     public IEnumerator StartMovement()
     {
-        MoveCamera();
         yield return new WaitUntil(() => isMoving == false);
+        if (focuesedEnemy != null)
+        {
+            path = PathFinder.Instance.GeneratePath(transform.position, focuesedEnemy.transform.position);
+        }
+        MoveCamera();
         StartCoroutine(MoveToPosition(path[0]));
         yield return new WaitUntil(() => TurnManager.Instance.enemiesTurn == false);
         TurnManager.Instance.playerTurn = false;
+        if (focuesedEnemy != null && Vector2.Distance(transform.position, focuesedEnemy.transform.position) == 1)
+            focuesedEnemy = null;
         OnMovementEnd();
     }
     protected override bool CheckForInterupt()
