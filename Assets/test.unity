@@ -2570,7 +2570,7 @@ GameObject:
   - component: {fileID: 527980182}
   - component: {fileID: 527980185}
   - component: {fileID: 527980183}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Enemy
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -2684,7 +2684,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2304
   idleTurns: 0
-  idleChance: 10
+  idleChance: 2
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
@@ -4301,7 +4301,7 @@ GameObject:
   - component: {fileID: 886674327}
   - component: {fileID: 886674329}
   - component: {fileID: 886674328}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: Bar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5011,7 +5011,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!61 &1225651433
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -7165,7 +7165,7 @@ GameObject:
   - component: {fileID: 1810707853}
   - component: {fileID: 1810707855}
   - component: {fileID: 1810707854}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7915,7 +7915,6 @@ MonoBehaviour:
   enemiesTurn: 0
   enemies:
   - {fileID: 527980179}
-  - {fileID: 1225651432}
   player: {fileID: 2066577013}
 --- !u!1 &1860227730
 GameObject:
@@ -8398,7 +8397,7 @@ GameObject:
   - component: {fileID: 1962000125}
   - component: {fileID: 1962000124}
   - component: {fileID: 1962000123}
-  m_Layer: 5
+  m_Layer: 10
   m_Name: EnemyHealthInfoCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

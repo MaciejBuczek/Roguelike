@@ -20,18 +20,22 @@ public class EnemyMovement : Movement
         {
             if (IsPlayerInSight())
             {
+                idleTurns = 0;
                 isFollowing = true;
+                Debug.Log("T");
             }
             else
             {
                 isFollowing = false;
-                path = PathFinder.Instance.GeneratePath(transform.position, lastPlayerPosition);
+                if(lastPlayerPosition != null)
+                    path = PathFinder.Instance.GeneratePath(transform.position, lastPlayerPosition);
+                Debug.Log("N");
             }
         }
         if (isFollowing)
         {
-            path = PathFinder.Instance.GeneratePath(transform.position, playerTransform.position);
             lastPlayerPosition = new Vector2(Mathf.Ceil(playerTransform.position.x), Mathf.Ceil(playerTransform.position.y));
+            path = PathFinder.Instance.GeneratePath(transform.position, lastPlayerPosition);
         }
         else
         {
