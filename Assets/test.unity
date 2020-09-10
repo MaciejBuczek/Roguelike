@@ -2679,13 +2679,13 @@ MonoBehaviour:
   path: []
   isMoving: 0
   sightDistance: 6
-  player: {fileID: 0}
+  player: {fileID: 2066577013}
+  animator: {fileID: 527980184}
   layerMask:
     serializedVersion: 2
     m_Bits: 2304
   idleTurns: 0
   idleChance: 2
-  animator: {fileID: 527980184}
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
