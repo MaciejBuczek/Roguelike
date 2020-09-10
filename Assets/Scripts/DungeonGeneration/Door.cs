@@ -4,12 +4,17 @@ using UnityEngine;
 
 public class Door : MonoBehaviour
 {
+    Collider2D lastCollision;
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        lastCollision = collision;
         gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
-        gameObject.layer = LayerMask.NameToLayer("Background");
+        if (collision == lastCollision)
+        {
+            gameObject.layer = LayerMask.NameToLayer("Background");
+        }
     }
 }

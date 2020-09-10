@@ -1,97 +1,78 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class EnemyMovement : Movement
 {
-    public Transform playerTransform;
-    public PlayerMovement playerMovement;
-    public float sightDistance = 4;
+    // Start is called before the first frame update
+    public int sightDistance = 4;
+    public GameObject player;
+    public Animator animator;
     public LayerMask layerMask;
-    public bool isEnemyTurn = false;
-    private bool isPlayerTargeted=false;
-    public bool isIdle = false;
-    private Vector3 lastPlayerPosition;
-    private Animator animator;
-    public int idleTurns = 0;
-    public int idleChance = 4;
 
-    private void Start()
-    {
-        animator = gameObject.GetComponent<Animator>();
-    }
+    public int idleTurns;
+    public int idleChance = 2;
 
-    protected override void SetAnimationDirection(bool isRight)
+    private bool isFollowing = false;
+    private Vector2 lastPlayerPosition;
+    // Update is called once per frame
+    public void MoveEnemy()
     {
-        animator.SetBool("isRight", isRight);
-    }
-    protected override void SetAnimationMoving(bool isMoving)
-    {
-        animator.SetBool("isMoving", isMoving);
-    }
-     
-    protected override void OnMovementEnd()
-    {
-        if (!playerMovement.isMovingContinuously)
+        float distance = Vector2.Distance(transform.position, player.transform.position);
+        if (distance <= sightDistance)
         {
-            SetAnimationMoving(false);
+            if (IsPlayerInSight())
+            {
+                idleTurns = 0;
+                isFollowing = true;
+            }
+            else
+            {
+                isFollowing = false;
+                if (lastPlayerPosition != null)
+                    path = PathFinder.Instance.GeneratePath(transform.position, lastPlayerPosition);
+            }
+        }
+        if (isFollowing)
+        {
+            lastPlayerPosition = new Vector2(Mathf.Ceil(player.transform.position.x), Mathf.Ceil(player.transform.position.y));
+            path = PathFinder.Instance.GeneratePath(transform.position, lastPlayerPosition);
+        }
+        else
+        {
+            if (path.Count == 0)
+            {
+                if (Random.Range(0, 10) <= idleChance)
+                {
+                    idleTurns = Random.Range(1, 10);
+                }
+                while (path.Count == 0 && idleTurns == 0)
+                {
+                    path = PathFinder.Instance.GeneratePath(transform.position, GetRandomPosition());
+                }
+            }
+        }
+        if (idleTurns > 0)
+            idleTurns--;
+        else
+        {
+            if (path.Count != 0)
+                StartCoroutine(MoveToPosition(path[0]));
         }
     }
-
-    public override void GetDestination()
+    private Vector2 GetRandomPosition()
     {
-        if (isIdle && IsPlayerInSight())
+        int randX, randY;
+        do
         {
-            isIdle = false;
-            idleTurns = 0;
-        }
-        if (!isIdle)
-        {
-            if (!isPlayerTargeted && IsPlayerInSight())
-            {
-                isPlayerTargeted = true;
-                lastPlayerPosition = playerTransform.position;
-            }
-            else if (isPlayerTargeted && !IsPlayerInSight())
-            {
-                isPlayerTargeted = false;
-                if (path.Count == 0)
-                {
-                    Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-                    Vector2Int end = new Vector2Int((int)lastPlayerPosition.x, (int)lastPlayerPosition.y);
-                    path = MovementManager.Instance.GeneratePath(start, end);
-                }
-            }
-            if (isPlayerTargeted)
-            {
-                lastPlayerPosition = playerTransform.position;
-                path.Clear();
-                if (Vector3.Distance(playerTransform.position, transform.position) < 1.5f)
-                {
-                    if (!MovementManager.Instance.IsObstacle((int)transform.position.x, (int)playerTransform.position.y))
-                        path.Add(new Vector3(transform.position.x, playerTransform.position.y));
-                    else if (!MovementManager.Instance.IsObstacle((int)playerTransform.position.x, (int)transform.position.y))
-                        path.Add(new Vector3(playerTransform.position.x, transform.position.y));
-                }
-                else
-                {
-                    Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-                    Vector2Int end = new Vector2Int((int)playerTransform.position.x, (int)playerTransform.position.y);
-                    path = MovementManager.Instance.GeneratePath(start, end);
-                }
-            }
-            else if (path.Count == 0)
-            {
-                if (Random.Range(0, 10) < idleChance)
-                {
-                    idleTurns = Random.Range(1, 8);
-                    isIdle = true;
-                }
-                else
-                    GetRandomDestination();
-            }
-            if (!isIdle)
-                LockPosition();
-        }
+            randX = (int)(transform.position.x - sightDistance);
+            randY = (int)(transform.position.y - sightDistance);
+            randX += Random.Range(0, (int)sightDistance * 2 + 1);
+            randY += Random.Range(0, (int)sightDistance * 2 + 1);
+            randX = Mathf.Clamp(randX, 0, DungeonGenerator.instance.cols - 1);
+            randY = Mathf.Clamp(randY, 0, DungeonGenerator.instance.rows - 1);
+        } while (!DungeonGenerator.instance.dungeonMovementLayout[randY, randX] || (new Vector2(randX, randY) == (Vector2)transform.position));
+        return new Vector2(randX, randY);
     }
     private bool IsPlayerInSight()
     {
@@ -103,26 +84,25 @@ public class EnemyMovement : Movement
             return false;
     }
     private Vector3 GetDirection()
-    {       
-        Vector3 heading = playerTransform.position - transform.position;
-        float distance = playerTransform.position.magnitude;
+    {
+        Vector3 heading = player.transform.position - transform.position;
+        float distance = player.transform.position.magnitude;
         Vector3 direction = heading / distance;
         return direction;
     }
-    private void GetRandomDestination()
+
+    protected override void Flip(bool isRight)
     {
-        int randX, randY;
-        do
-        {
-            randX = (int)(transform.position.x - sightDistance);
-            randY = (int)(transform.position.y - sightDistance);
-            randX += Random.Range(0, (int)sightDistance * 2 + 1);
-            randY += Random.Range(0, (int)sightDistance * 2 + 1);
-            randX = Mathf.Clamp(randX, 0, DungeonGenerator.instance.cols - 1);
-            randY = Mathf.Clamp(randY, 0, DungeonGenerator.instance.rows - 1);
-        } while (!DungeonGenerator.instance.dungeonMovementLayout[randY, randX]);
-        Vector2Int start = new Vector2Int((int)transform.position.x, (int)transform.position.y);
-        Vector2Int end = new Vector2Int(randX, randY);
-        path = MovementManager.Instance.GeneratePath(start, end);
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.flipX = isRight;
+    }
+    protected override void OnMovementEnd()
+    {
+        if (path.Count == 0 || player.GetComponent<PlayerMovement>().path.Count == 0)
+            SetMoveAnimation(false);
+    }
+    protected override void SetMoveAnimation(bool isMoving)
+    {
+        animator.SetBool("isMoving", isMoving);
     }
 }
