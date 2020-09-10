@@ -17,7 +17,6 @@ public class Interactable : MonoBehaviour
     {
         if (EventSystem.current.IsPointerOverGameObject())
             return;
-        Debug.Log("clicked on " + transform.name);
         isFocused = true;
     }
     private void Start()

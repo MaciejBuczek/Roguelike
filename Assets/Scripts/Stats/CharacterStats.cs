@@ -6,7 +6,6 @@ public class CharacterStats : MonoBehaviour
     public IntRange damageMelee, damageRanged;
     public Stat armor, dodge, health, mana;
     public int currentHealth;
-    public Image healthBar;
     [SerializeField] private Canvas healthBarCanvas;
     private bool isHealthBarEnabled = true;
 
@@ -30,7 +29,8 @@ public class CharacterStats : MonoBehaviour
         damage -= armor.GetValue();
         Mathf.Clamp(damage, 0, int.MaxValue);
         currentHealth -= damage;
-        healthBar.fillAmount = currentHealth/health.GetValue();
+
+        //do health calc
         if (currentHealth <= 0)
             Die();
     }

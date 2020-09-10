@@ -8,6 +8,7 @@ public class Equippable : Item
     public IntRange damage;
     public int armorModifier;
     public int critChance;
+    public int speed;
 
     public override void Equip(InventorySolt inventorySlot)
     {
