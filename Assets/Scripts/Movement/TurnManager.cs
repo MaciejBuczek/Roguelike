@@ -41,7 +41,7 @@ public class TurnManager : MonoBehaviour
         {
             do
             {
-                while (!Input.GetKey(KeyCode.Mouse0))
+                while (InventoryUI.Instance.isInventoryOpen || !Input.GetKey(KeyCode.Mouse0))
                 {
                     yield return null;
                 }
