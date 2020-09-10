@@ -6,35 +6,36 @@ public class EnemyMovement : Movement
 {
     // Start is called before the first frame update
     public int sightDistance = 4;
-    public Transform playerTransform;
-    private bool isFollowing = false;
-    private Vector2 lastPlayerPosition;
+    public GameObject player;
+    public Animator animator;
     public LayerMask layerMask;
+
     public int idleTurns;
     public int idleChance = 2;
+
+    private bool isFollowing = false;
+    private Vector2 lastPlayerPosition;
     // Update is called once per frame
     public void MoveEnemy()
     {
-        float distance = Vector2.Distance(transform.position, playerTransform.position);
+        float distance = Vector2.Distance(transform.position, player.transform.position);
         if (distance <= sightDistance)
         {
             if (IsPlayerInSight())
             {
                 idleTurns = 0;
                 isFollowing = true;
-                Debug.Log("T");
             }
             else
             {
                 isFollowing = false;
-                if(lastPlayerPosition != null)
+                if (lastPlayerPosition != null)
                     path = PathFinder.Instance.GeneratePath(transform.position, lastPlayerPosition);
-                Debug.Log("N");
             }
         }
         if (isFollowing)
         {
-            lastPlayerPosition = new Vector2(Mathf.Ceil(playerTransform.position.x), Mathf.Ceil(playerTransform.position.y));
+            lastPlayerPosition = new Vector2(Mathf.Ceil(player.transform.position.x), Mathf.Ceil(player.transform.position.y));
             path = PathFinder.Instance.GeneratePath(transform.position, lastPlayerPosition);
         }
         else
@@ -84,9 +85,24 @@ public class EnemyMovement : Movement
     }
     private Vector3 GetDirection()
     {
-        Vector3 heading = playerTransform.position - transform.position;
-        float distance = playerTransform.position.magnitude;
+        Vector3 heading = player.transform.position - transform.position;
+        float distance = player.transform.position.magnitude;
         Vector3 direction = heading / distance;
         return direction;
+    }
+
+    protected override void Flip(bool isRight)
+    {
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+        spriteRenderer.flipX = isRight;
+    }
+    protected override void OnMovementEnd()
+    {
+        if (path.Count == 0 || player.GetComponent<PlayerMovement>().path.Count == 0)
+            SetMoveAnimation(false);
+    }
+    protected override void SetMoveAnimation(bool isMoving)
+    {
+        animator.SetBool("isMoving", isMoving);
     }
 }

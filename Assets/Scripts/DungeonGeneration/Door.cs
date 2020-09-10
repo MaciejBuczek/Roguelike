@@ -9,14 +9,12 @@ public class Door : MonoBehaviour
     {
         lastCollision = collision;
         gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
-        Debug.Log("a");
     }
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision == lastCollision)
         {
             gameObject.layer = LayerMask.NameToLayer("Background");
-            Debug.Log("b");
         }
     }
 }

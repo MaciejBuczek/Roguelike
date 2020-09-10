@@ -6,8 +6,8 @@ public abstract class Movement : MonoBehaviour
 {
 
     public float speed = 5.0f;
-    public List<Vector3> path;
-    public bool isMoving = false;
+    [HideInInspector] public List<Vector3> path;
+    [HideInInspector] public bool isMoving = false;
     // Start is called before the first frame update
     protected void Start()
     {
@@ -17,15 +17,21 @@ public abstract class Movement : MonoBehaviour
 
     protected IEnumerator MoveToPosition(Vector2 end)
     {
+        float distance;
+
         path.Remove(path[0]);
         if (!LockPosition(end))
         {
             path.Clear();
             yield break;
         }
-        
+        SetMoveAnimation(true);
+        if (end.x > transform.position.x)
+            Flip(false);
+        else if (end.x < transform.position.x)
+            Flip(true);
         isMoving = true;
-        float distance = ((Vector2)(transform.position) - end).sqrMagnitude;
+        distance = ((Vector2)(transform.position) - end).sqrMagnitude;
         while(distance > float.Epsilon)
         {
             transform.position = Vector2.MoveTowards(transform.position, end, speed * Time.deltaTime);
@@ -37,6 +43,7 @@ public abstract class Movement : MonoBehaviour
             yield return null;
         }
         isMoving = false;
+        OnMovementEnd();
     }
     protected virtual bool CheckForInterupt()
     {
@@ -53,5 +60,7 @@ public abstract class Movement : MonoBehaviour
         PathFinder.Instance.SetObstacle((int)position.x, (int)position.y, true);
         return true;
     }
-
+    protected abstract void Flip(bool isRight);
+    protected abstract void SetMoveAnimation(bool isMoving);
+    protected abstract void OnMovementEnd();
 }
