@@ -18,12 +18,12 @@ public class Equipment : MonoBehaviour
     }
     #endregion
 
-    public InventorySolt[] equipmentSlots;
+    public InventorySlot[] equipmentSlots;
 
     public delegate void OnEquipmentChanged(Equippable newItem, Equippable oldItem);
     public OnEquipmentChanged onEquipmentChanged;
     
-    public void EquipItemFromSlot(InventorySolt inventorySlot)
+    public void EquipItemFromSlot(InventorySlot inventorySlot)
     {
         Equippable newItem, oldItem;
         InventorySlotType inventorySlotType = inventorySlot.item.inventorySlotType;
@@ -35,7 +35,7 @@ public class Equipment : MonoBehaviour
             onEquipmentChanged.Invoke(newItem, oldItem);
         }
     }
-    public void UnequipItemFromSlot(InventorySolt inventorySlot)
+    public void UnequipItemFromSlot(InventorySlot inventorySlot)
     {
         Equippable newItem, oldItem;
         InventorySlotType inventorySlotType = inventorySlot.item.inventorySlotType;

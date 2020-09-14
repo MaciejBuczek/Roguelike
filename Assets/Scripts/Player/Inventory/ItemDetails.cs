@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class ItemDetails : MonoBehaviour
 {
-    InventorySolt inventorySolt;
+    InventorySlot inventorySolt;
     public Image image;
     public Text itemName;
     public Text itemDescription;
@@ -46,7 +46,7 @@ public class ItemDetails : MonoBehaviour
         return raycastResults.Count == 0;
 
     }
-    public void DisplayItemDetails(InventorySolt newInventorySlot)
+    public void DisplayItemDetails(InventorySlot newInventorySlot)
     {
         inventorySolt = newInventorySlot;
         itemName.text = inventorySolt.item.name;

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class CharacterStats : MonoBehaviour
 {
     public IntRange damageMelee, damageRanged;
-    public Stat armor, dodge, health, mana;
+    public Stat armor, dodge, health, mana, critChance;
     public int currentHealth;
     [SerializeField] private Canvas healthBarCanvas;
     private bool isHealthBarEnabled = true;

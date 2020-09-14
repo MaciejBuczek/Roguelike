@@ -7,7 +7,7 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public Item item;
     public Canvas canvas;
     public GameObject DragObject;
-    public InventorySolt inventorySlot;
+    public InventorySlot inventorySlot;
     private RectTransform rectTransform;
     private bool isDragging;
     [HideInInspector]
@@ -15,10 +15,10 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (GetComponent<InventorySolt>().slotButton.interactable)
+        if (GetComponent<InventorySlot>().slotButton.interactable)
         {
             Debug.Log("Begin Drag");
-            item = GetComponent<InventorySolt>().item;
+            item = GetComponent<InventorySlot>().item;
 
             DragObject.SetActive(true);
             DragObject.transform.position = transform.position;

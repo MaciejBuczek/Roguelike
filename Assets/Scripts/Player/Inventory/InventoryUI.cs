@@ -6,7 +6,7 @@ public class InventoryUI : MonoBehaviour
     public GameObject inventoryUI;
     public bool isInventoryOpen = false;
     Inventory inventory;
-    InventorySolt[] slots;
+    InventorySlot[] slots;
 
     #region Singleton
     public static InventoryUI Instance;
@@ -27,7 +27,7 @@ public class InventoryUI : MonoBehaviour
     {
         inventory = Inventory.instance;
         inventory.OnItemChangeCallBack += UpdateUI;
-        slots = itemSoltsParent.GetComponentsInChildren<InventorySolt>();
+        slots = itemSoltsParent.GetComponentsInChildren<InventorySlot>();
     }
 
     // Update is called once per frame

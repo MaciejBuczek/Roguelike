@@ -10,12 +10,12 @@ public class Equippable : Item
     public int critChance;
     public int speed;
 
-    public override void Equip(InventorySolt inventorySlot)
+    public override void Equip(InventorySlot inventorySlot)
     {
         base.Equip(inventorySlot);
         Equipment.instance.EquipItemFromSlot(inventorySlot);
     }
-    public override void Unequip(InventorySolt inventorySlot)
+    public override void Unequip(InventorySlot inventorySlot)
     {
         base.Unequip(inventorySlot);
         Equipment.instance.UnequipItemFromSlot(inventorySlot);

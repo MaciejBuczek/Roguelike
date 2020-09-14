@@ -2,7 +2,7 @@
 public class PlayerStats : CharacterStats
 {
     public Stat strength, dexterity, intelligence;
-    public int currentMana, currentExp = 0, nextLevelExp = 100, level;
+    public int currentMana, currentExp = 0, nextLevelExp = 100, level = 1;
     private IntRange unarmedDamage = new IntRange(1,2);
     public delegate void OnStatsChanged();
     public OnStatsChanged onStatsChanged;
@@ -18,10 +18,11 @@ public class PlayerStats : CharacterStats
             return;
         }
         instance = this;
-        strength.SetBaseValue(10);
-        dexterity.SetBaseValue(10);
-        intelligence.SetBaseValue(10);
+
+        SetBaseValues();
+
         CalculateAll();
+        currentHealth = health.GetValue();
         currentMana = mana.GetValue();
     }
 
@@ -40,13 +41,6 @@ public class PlayerStats : CharacterStats
             GainExp(2);
         }
     }
-    /*public override void TakeDamage(int damage)
-    {
-        int damageVal = damage - armor.GetValue();
-        Mathf.Clamp(damageVal, 0, int.MaxValue);
-        base.TakeDamage(damage);
-        CharacterPanel.Instance.SubtractHealth(damageVal);
-    }*/
     public void UseMana(int mana)
     {
         currentMana -= mana;
@@ -79,6 +73,14 @@ public class PlayerStats : CharacterStats
             onStatsChanged.Invoke();
         }
     }
+    private void SetBaseValues()
+    {
+        strength.SetBaseValue(10);
+        dexterity.SetBaseValue(10);
+        intelligence.SetBaseValue(10);
+        critChance.SetBaseValue(10);
+        damageMelee = unarmedDamage;
+    }
     void OnEquipmentChanged(Equippable newItem, Equippable oldItem)
     {
         if (newItem != null)
@@ -89,13 +91,12 @@ public class PlayerStats : CharacterStats
             {
                 if (newItem.inventorySlotType == InventorySlotType.MeleeWeapon)
                 {
-                    damageMelee.min = newItem.damage.min;
-                    damageMelee.max = newItem.damage.max;
+                    damageMelee = newItem.damage;
+                    critChance.SetBaseValue(newItem.critChance);
                 }
                 else
                 {
-                    damageRanged.min = newItem.damage.min;
-                    damageRanged.max = newItem.damage.max;
+                    damageRanged = newItem.damage;
                 }
             }
         }
@@ -107,8 +108,8 @@ public class PlayerStats : CharacterStats
             {
                 if (oldItem.inventorySlotType == InventorySlotType.MeleeWeapon)
                 {
-                    damageMelee.min = unarmedDamage.min;
-                    damageMelee.max = unarmedDamage.max;
+                    damageMelee = unarmedDamage;
+                    critChance.SetBaseValue(10);
                 }
                 else
                 {

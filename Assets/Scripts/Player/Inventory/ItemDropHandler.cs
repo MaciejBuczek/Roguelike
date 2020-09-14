@@ -4,7 +4,7 @@ using UnityEngine.EventSystems;
 public class ItemDropHandler : MonoBehaviour, IDropHandler
 {
     public InventorySlotType inventorySlotType;
-    public InventorySolt inventorySlot;
+    public InventorySlot inventorySlot;
     private ItemDragHandler itemDragHandler;
 
     public void OnDrop(PointerEventData eventData)
