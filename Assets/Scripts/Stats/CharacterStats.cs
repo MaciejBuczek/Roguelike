@@ -5,47 +5,30 @@ public class CharacterStats : MonoBehaviour
 {
     public IntRange damageMelee, damageRanged;
     public Stat armor, dodge, health, mana, critChance;
-    public int currentHealth;
-    [SerializeField] private Canvas healthBarCanvas;
-    private bool isHealthBarEnabled = true;
+    public Slider healthBar;
+    public int currentHealth, currentMana;
 
-    private void Start()
+    protected virtual void Start()
     {
         currentHealth = health.GetValue();
+        currentMana = mana.GetValue();
+        healthBar.maxValue = health.GetValue();
+        healthBar.value = health.GetValue();
     }
-    private void Update()
+    public virtual void ChangeHealth(int health)
     {
-        if (Input.GetKeyDown(KeyCode.H))
-        {
-            isHealthBarEnabled = !isHealthBarEnabled;
-            if (isHealthBarEnabled)
-                healthBarCanvas.enabled = true;
-            else
-                healthBarCanvas.enabled = false;
-        }
-    }
-    public virtual void TakeDamage(int damage)
-    {
-        damage -= armor.GetValue();
-        Mathf.Clamp(damage, 0, int.MaxValue);
-        currentHealth -= damage;
+        health -= armor.GetValue();
+        Mathf.Clamp(health, 0, int.MaxValue);
+        currentHealth -= health;
 
         //do health calc
         if (currentHealth <= 0)
             Die();
+        else
+            healthBar.value =currentHealth;
     }
     public virtual void Die()
     {
         Debug.Log(transform.name + " Died");
-    }
-    private void OnMouseOver()
-    {
-        if (!isHealthBarEnabled)
-            healthBarCanvas.enabled = true;
-    }
-    private void OnMouseExit()
-    {
-        if (!isHealthBarEnabled)
-            healthBarCanvas.enabled = false;
     }
 }

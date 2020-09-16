@@ -756,7 +756,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1323674639
-  m_SortingLayer: 5
+  m_SortingLayer: 6
   m_SortingOrder: 0
   m_Sprite: {fileID: 5041371431967476107, guid: edd2c8e78befef945987744f80033ca6,
     type: 3}
@@ -1335,9 +1335,8 @@ GameObject:
   - component: {fileID: 178814644}
   - component: {fileID: 178814646}
   - component: {fileID: 178814645}
-  - component: {fileID: 178814647}
   m_Layer: 5
-  m_Name: CharacterPanel
+  m_Name: CharacterStats
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1403,23 +1402,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 178814643}
   m_CullTransparentMesh: 0
---- !u!114 &178814647
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 178814643}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bbd6b93e5477e2b40a3625e12ff9b59d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  playerStats1: {fileID: 540222825}
-  playerStats2: {fileID: 733645325}
-  playerExp: {fileID: 1809005940}
-  AttributesUI: {fileID: 779862532}
-  ItemsUI: {fileID: 2072993308}
 --- !u!1 &245925795
 GameObject:
   m_ObjectHideFlags: 0
@@ -2924,6 +2906,7 @@ GameObject:
   - component: {fileID: 527980182}
   - component: {fileID: 527980185}
   - component: {fileID: 527980183}
+  - component: {fileID: 527980187}
   m_Layer: 10
   m_Name: Enemy
   m_TagString: Enemy
@@ -3092,8 +3075,9 @@ MonoBehaviour:
   critChance:
     baseValue: 0
     modifiers: 
+  healthBar: {fileID: 2062074542}
   currentHealth: 10
-  healthBarCanvas: {fileID: 2062074545}
+  currentMana: 0
 --- !u!61 &527980186
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -3120,6 +3104,20 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &527980187
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 527980179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae19b557885654d4d83148a89b909893, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 2062074542}
+  healthBarCanvas: {fileID: 2062074545}
 --- !u!1001 &533458106
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3464,7 +3462,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 607963566}
-  - component: {fileID: 607963567}
   m_Layer: 5
   m_Name: CharacterPanel
   m_TagString: Untagged
@@ -3493,23 +3490,6 @@ RectTransform:
   m_AnchoredPosition: {x: 210, y: -60}
   m_SizeDelta: {x: 280, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &607963567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 607963565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4ff4cb866b722a14b809b7fa2d9e1d26, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  statBars:
-  - {fileID: 1280607963}
-  - {fileID: 2143704892}
-  - {fileID: 1164173795}
-  characterLevel: {fileID: 2007393225}
 --- !u!1 &616229416
 GameObject:
   m_ObjectHideFlags: 0
@@ -6319,7 +6299,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 28, y: 0}
+  m_AnchoredPosition: {x: 30, y: 1}
   m_SizeDelta: {x: 48, y: 48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1129136507
@@ -6966,6 +6946,8 @@ GameObject:
   - component: {fileID: 1407319171}
   - component: {fileID: 1407319175}
   - component: {fileID: 1407319176}
+  - component: {fileID: 1407319177}
+  - component: {fileID: 1407319178}
   m_Layer: 5
   m_Name: CharacterUI
   m_TagString: Untagged
@@ -7088,6 +7070,39 @@ MonoBehaviour:
   - {fileID: 1063187571}
   - {fileID: 943856925}
   - {fileID: 339056291}
+--- !u!114 &1407319177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407319170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbd6b93e5477e2b40a3625e12ff9b59d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerStats1: {fileID: 540222825}
+  playerStats2: {fileID: 733645325}
+  playerLevelDetails: {fileID: 1809005940}
+  attributesUI: {fileID: 779862532}
+  itemsUI: {fileID: 2072993308}
+  playerLevel: {fileID: 2007393225}
+--- !u!114 &1407319178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1407319170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2fcb67f7924d3c40bc3815324ed535a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 1280607963}
+  manaBar: {fileID: 2143704892}
+  expBar: {fileID: 1164173795}
 --- !u!1 &1436842771
 GameObject:
   m_ObjectHideFlags: 0
@@ -9868,6 +9883,17 @@ PrefabInstance:
       propertyPath: inventorySlotType
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4798119821126175474, guid: 3d64f07a41ad5e444948f61c29e99a9d,
+        type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6536f8b53f2cfe94ca4be4866dd2cb3d,
+        type: 3}
+    - target: {fileID: 4798119821126175474, guid: 3d64f07a41ad5e444948f61c29e99a9d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4798119821126175473, guid: 3d64f07a41ad5e444948f61c29e99a9d,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -9885,17 +9911,6 @@ PrefabInstance:
     - target: {fileID: 4798119821126175472, guid: 3d64f07a41ad5e444948f61c29e99a9d,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4798119821126175474, guid: 3d64f07a41ad5e444948f61c29e99a9d,
-        type: 3}
-      propertyPath: m_Sprite
-      value: 
-      objectReference: {fileID: 21300000, guid: 6536f8b53f2cfe94ca4be4866dd2cb3d,
-        type: 3}
-    - target: {fileID: 4798119821126175474, guid: 3d64f07a41ad5e444948f61c29e99a9d,
-        type: 3}
-      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -10111,7 +10126,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 69
+  m_text: 99
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 067248613027b4c40990cff9957819f4, type: 2}
   m_sharedMaterial: {fileID: 6357815608561932962, guid: 067248613027b4c40990cff9957819f4,
@@ -10147,7 +10162,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_textAlignment: 513
+  m_textAlignment: 514
   m_characterSpacing: 0
   m_wordSpacing: 0
   m_lineSpacing: 0
@@ -10178,7 +10193,7 @@ MonoBehaviour:
   m_firstVisibleCharacter: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 7.5, y: 4, z: 0, w: 0}
+  m_margin: {x: 0, y: 4, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 2007393225}
     characterCount: 2
@@ -10502,7 +10517,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 28.6, y: 1}
+  m_AnchoredPosition: {x: 30, y: 3}
   m_SizeDelta: {x: 48, y: 48}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2041808332
@@ -10579,7 +10594,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0.6}
-  m_SizeDelta: {x: 1, y: 0.15}
+  m_SizeDelta: {x: 1, y: 0.1}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2062074542
 MonoBehaviour:
@@ -10688,7 +10703,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
-  m_SortingLayerID: 0
+  m_SortingLayerID: 2096784591
   m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!1 &2066577013 stripped
@@ -10796,8 +10811,9 @@ MonoBehaviour:
   critChance:
     baseValue: 0
     modifiers: 
+  healthBar: {fileID: 1280607963}
   currentHealth: 0
-  healthBarCanvas: {fileID: 0}
+  currentMana: 0
   strength:
     baseValue: 10
     modifiers: 
@@ -10807,7 +10823,6 @@ MonoBehaviour:
   intelligence:
     baseValue: 5
     modifiers: 
-  currentMana: 0
   currentExp: 0
   nextLevelExp: 100
   level: 1

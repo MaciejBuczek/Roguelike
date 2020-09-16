@@ -6,28 +6,45 @@ using UnityEngine.UI;
 
 public class PlayerStatsUI : MonoBehaviour
 {
-
-    public TextMeshProUGUI playerStats1, playerStats2, playerExp, AttributesUI, ItemsUI;
-
-    // Start is called before the first frame update
-    void Start()
+    #region Singleton
+    public static PlayerStatsUI Instance;
+    public void Awake()
     {
-        PlayerStats.instance.onStatsChanged += OnStatsChanged;
-        OnStatsChanged();
+        if (Instance != null)
+            Debug.LogError("More then one instance of PlayerStatsUI found");
+        else
+            Instance = this;
     }
+    #endregion
+    public TextMeshProUGUI playerStats1, playerStats2, playerLevelDetails, attributesUI, itemsUI, playerLevel;
 
-    public void OnStatsChanged()
+    public void ChangeAll()
     {
-        PlayerStats playerStats = PlayerStats.instance;
+        ChangeLevel();
+        ChangeLevelDetails();
+        ChangeStatistics();
+    }
+    public void ChangeLevel()
+    {
+        //Change player level
+        playerLevel.SetText(PlayerStats.Instance.level.ToString());
+    }
+    public void ChangeLevelDetails()
+    {
+        PlayerStats playerStats = PlayerStats.Instance;
+        //Change level details in character stats panel
+        playerLevelDetails.SetText(playerStats.level + " " + playerStats.currentExp + "/" + playerStats.nextLevelExp);
+    }
+    public void ChangeStatistics()
+    {
+        PlayerStats playerStats = PlayerStats.Instance;
 
         //Change Attrubutes
-        AttributesUI.SetText(playerStats.strength.GetValue() + "\n" + playerStats.intelligence.GetValue() + "\n" + playerStats.dexterity.GetValue());
-        //Display exp
-        playerExp.SetText(playerStats.level + " " + playerStats.currentExp + "/" + playerStats.nextLevelExp);
-        //Display damage melee, health, dodge, armor
+        attributesUI.SetText(playerStats.strength.GetValue() + "\n" + playerStats.intelligence.GetValue() + "\n" + playerStats.dexterity.GetValue());
+        //Change damage melee, health, dodge, armor
         playerStats1.SetText( playerStats.damageMelee.min + "-" + playerStats.damageMelee.max + "\n" + playerStats.currentHealth + "/" + playerStats.health.GetValue() + "\n" 
             + playerStats.dodge.GetValue() + "%\n" + playerStats.armor.GetValue());
-        //Display damage ranged, mana, crit chance
+        //Change damage ranged, mana, crit chance
         playerStats2.SetText(playerStats.damageRanged.min + "-" + playerStats.damageRanged.max + "\n" + playerStats.currentMana + "/" + playerStats.mana.GetValue() + "\n" +
            playerStats.critChance.GetValue() + "%");
     }

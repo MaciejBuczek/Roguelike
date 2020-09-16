@@ -17,7 +17,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     {
         if (GetComponent<InventorySlot>().slotButton.interactable)
         {
-            Debug.Log("Begin Drag");
             item = GetComponent<InventorySlot>().item;
 
             DragObject.SetActive(true);
@@ -60,7 +59,6 @@ public class ItemDragHandler : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             }              
             DragObject.SetActive(false);
             isDragging = false;
-            Debug.Log("End Drag");
         }
     }
 }

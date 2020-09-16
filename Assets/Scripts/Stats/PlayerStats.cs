@@ -2,58 +2,64 @@
 public class PlayerStats : CharacterStats
 {
     public Stat strength, dexterity, intelligence;
-    public int currentMana, currentExp = 0, nextLevelExp = 100, level = 1;
-    private IntRange unarmedDamage = new IntRange(1,2);
-    public delegate void OnStatsChanged();
-    public OnStatsChanged onStatsChanged;
-    public static PlayerStats instance;
+    public int currentExp = 0, nextLevelExp = 100, level = 1;
+    private IntRange unarmedDamage = new IntRange(1,5);
 
-    // Start is called before the first frame update
+    #region Singleton
+    public static PlayerStats Instance;
+
     void Awake()
     {
-        Equipment.instance.onEquipmentChanged += OnEquipmentChanged;
-        if (instance != null)
-        {
+        if (Instance != null)
             Debug.Log("more then one instance of player stats found");
-            return;
-        }
-        instance = this;
-
-        SetBaseValues();
-
+        else
+            Instance = this;
+    }
+    #endregion
+    
+    protected override void Start()
+    {
+        Equipment.instance.onEquipmentChanged += OnEquipmentChanged;
         CalculateAll();
-        currentHealth = health.GetValue();
-        currentMana = mana.GetValue();
+        PlayerBars.Instance.SetMaxExp(nextLevelExp);
+        damageMelee = unarmedDamage;
+        critChance.SetBaseValue(10);
+        PlayerStatsUI.Instance.ChangeAll();
+        base.Start();
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Z))
         {
-            TakeDamage(2);
+            ChangeHealth(2);
         }
         if (Input.GetKeyDown(KeyCode.X))
         {
-            UseMana(2);
+            ChangeMana(2);
         }
         if (Input.GetKeyDown(KeyCode.C))
         {
-            GainExp(2);
+            ChangeExp(2);
         }
     }
-    public void UseMana(int mana)
+    
+    public void ChangeMana(int mana)
     {
         currentMana -= mana;
-        CharacterPanel.Instance.SubtractMana(mana);
+        //CharacterPanel.Instance.SubtractMana(mana);
+        PlayerBars.Instance.SetMana(currentMana);
     }
-    public void GainExp(int exp)
+    public void ChangeExp(int exp)
     {
         currentExp += exp;
-        CharacterPanel.Instance.AddExp(exp);
+        //CharacterPanel.Instance.AddExp(exp);
+        PlayerBars.Instance.SetExp(currentExp);
     }
     private void CalculateHealth()
     {
         health.SetBaseValue(strength.GetValue() * 2);
+        currentHealth = health.GetValue();
     }
     private void CalculateDodge()
     {
@@ -62,24 +68,15 @@ public class PlayerStats : CharacterStats
     private void CalculateMana()
     {
         mana.SetBaseValue(intelligence.GetValue() * 2);
+        currentMana = mana.GetValue();
+        PlayerBars.Instance.SetMaxMana(mana.GetValue());
     }
     private void CalculateAll()
     {
         CalculateHealth();
         CalculateDodge();
         CalculateMana();
-        if(onStatsChanged != null)
-        {
-            onStatsChanged.Invoke();
-        }
-    }
-    private void SetBaseValues()
-    {
-        strength.SetBaseValue(10);
-        dexterity.SetBaseValue(10);
-        intelligence.SetBaseValue(10);
-        critChance.SetBaseValue(10);
-        damageMelee = unarmedDamage;
+        PlayerStatsUI.Instance.ChangeStatistics();
     }
     void OnEquipmentChanged(Equippable newItem, Equippable oldItem)
     {
@@ -118,10 +115,7 @@ public class PlayerStats : CharacterStats
                 }
             }
         }
-        if (onStatsChanged != null)
-        {
-            onStatsChanged.Invoke();
-        }
+        PlayerStatsUI.Instance.ChangeStatistics();
     }
     
 }

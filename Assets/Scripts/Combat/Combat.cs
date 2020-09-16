@@ -23,9 +23,9 @@ public abstract class Combat : MonoBehaviour
     }
     protected void ReceiveDamage(int Damage)
     {
-        if (Random.Range(0, 100) <= stats.dodge.GetValue())
+        /*if (Random.Range(0, 100) <= stats.dodge.GetValue())
             Debug.Log(transform.name + " dodged");
         else
-            stats.TakeDamage(Damage);
+            stats.TakeDamage(Damage);*/
     }
 }
