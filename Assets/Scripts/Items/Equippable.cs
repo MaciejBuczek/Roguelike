@@ -13,12 +13,12 @@ public class Equippable : Item
     public override void Equip(InventorySlot inventorySlot)
     {
         base.Equip(inventorySlot);
-        Equipment.instance.EquipItemFromSlot(inventorySlot);
+        Equipment.Instance.EquipItemFromSlot(inventorySlot);
     }
     public override void Unequip(InventorySlot inventorySlot)
     {
         base.Unequip(inventorySlot);
-        Equipment.instance.UnequipItemFromSlot(inventorySlot);
+        Equipment.Instance.UnequipItemFromSlot(inventorySlot);
     }
 }
 

@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 534e282b775d48f40b3aac6c9f4cb7ec, type: 3}
+  m_Name: SkeletonClub
+  m_EditorClassIdentifier: 
+  name: SkeletonClub
+  icon: {fileID: 8862367892933790531, guid: 92e60c4248fe9c84c8c5e685916eb4ad, type: 3}
+  expGain: 15
+  sightDistance: 6
+  animatorOverrideController: {fileID: 22100000, guid: 067dbe6aab9184348a4db25ab30da8bb,
+    type: 2}
+  armor:
+    baseValue: 2
+    modifiers: 
+  health:
+    baseValue: 10
+    modifiers: 
+  mana:
+    baseValue: 0
+    modifiers: 
+  dodge:
+    baseValue: 10
+    modifiers: 
+  critChance:
+    baseValue: 10
+    modifiers: 

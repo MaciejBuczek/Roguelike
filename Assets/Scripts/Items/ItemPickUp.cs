@@ -4,6 +4,10 @@ public class ItemPickUp : Interactable
 {
 
     public Item item;
+    private void Start()
+    {
+        transform.name = item.name;
+    }
 
     public override void Interact()
     {

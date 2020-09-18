@@ -15,9 +15,9 @@ public class ItemDropHandler : MonoBehaviour, IDropHandler
             if (inventorySlotType != InventorySlotType.Any && itemDragHandler.item.inventorySlotType != inventorySlotType)
                 return;
             if (inventorySlot.isEquipmentSlot)
-                Equipment.instance.EquipItemFromSlot(itemDragHandler.inventorySlot);
+                Equipment.Instance.EquipItemFromSlot(itemDragHandler.inventorySlot);
             else if (itemDragHandler.inventorySlot.isEquipmentSlot)
-                Equipment.instance.UnequipItemFromSlot(itemDragHandler.inventorySlot);
+                Equipment.Instance.UnequipItemFromSlot(itemDragHandler.inventorySlot);
             else if (inventorySlot.item == null)
                 itemDragHandler.inventorySlot.MoveItem(inventorySlot);
             else

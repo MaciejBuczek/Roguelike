@@ -5,16 +5,16 @@ using UnityEngine;
 public class Equipment : MonoBehaviour
 {
     #region Singleton
-    public static Equipment instance;
+    public static Equipment Instance;
 
     private void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
             Debug.Log("more then one instance of equipment found");
             return;
         }
-        instance = this;
+        Instance = this;
     }
     #endregion
 

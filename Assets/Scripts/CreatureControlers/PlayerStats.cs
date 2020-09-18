@@ -19,7 +19,7 @@ public class PlayerStats : CharacterStats
     
     protected override void Start()
     {
-        Equipment.instance.onEquipmentChanged += OnEquipmentChanged;
+        Equipment.Instance.onEquipmentChanged += OnEquipmentChanged;
         CalculateAll();
         PlayerBars.Instance.SetMaxExp(nextLevelExp);
         damageMelee = unarmedDamage;

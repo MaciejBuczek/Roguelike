@@ -5,7 +5,6 @@ using UnityEngine;
 public class EnemyMovement : Movement
 {
     // Start is called before the first frame update
-    public int sightDistance = 4;
     public GameObject player;
     public Animator animator;
     public LayerMask layerMask;
