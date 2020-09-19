@@ -7,6 +7,6 @@ public class PassiveCreature : ScriptableObject
     public Sprite icon;
     public int expGain;
     public int sightDistance;
-    public AnimatorOverrideController animatorOverrideController;
+    public AnimatorOverrideController mainAnimatorOverride;
     public Stat armor, health;  
 }

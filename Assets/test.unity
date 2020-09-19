@@ -2904,9 +2904,9 @@ GameObject:
   - component: {fileID: 527980184}
   - component: {fileID: 527980186}
   - component: {fileID: 527980182}
-  - component: {fileID: 527980185}
   - component: {fileID: 527980183}
   - component: {fileID: 527980187}
+  - component: {fileID: 527980185}
   m_Layer: 10
   m_Name: Enemy
   m_TagString: Enemy
@@ -3013,9 +3013,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  sightDistance: 6
   path: []
   isMoving: 0
-  sightDistance: 6
   player: {fileID: 2066577013}
   animator: {fileID: 527980184}
   layerMask:
@@ -3051,33 +3051,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 527980179}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 49632c971a1bb60479d82bb34758308e, type: 3}
+  m_Script: {fileID: 11500000, guid: 423471481bfdb1a4a985a2623b248c4d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMelee:
-    min: 4
-    max: 8
-  damageRanged:
-    min: 0
-    max: 0
-  armor:
-    baseValue: 2
-    modifiers: 
-  dodge:
-    baseValue: 2
-    modifiers: 
-  health:
-    baseValue: 10
-    modifiers: 
-  mana:
-    baseValue: 0
-    modifiers: 
-  critChance:
-    baseValue: 0
-    modifiers: 
-  healthBar: {fileID: 2062074542}
-  currentHealth: 10
-  currentMana: 0
+  creature: {fileID: 11400000, guid: 554fbb11d0074f744932af87866ae542, type: 2}
+  movement: {fileID: 527980183}
+  statBars: {fileID: 527980187}
 --- !u!61 &527980186
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5733,7 +5712,7 @@ PrefabInstance:
         type: 3}
       propertyPath: defaultIcon
       value: 
-      objectReference: {fileID: 21300000, guid: 86e53e2f708f7c14caff52c558fbd529,
+      objectReference: {fileID: 21300000, guid: 611646b12547765438c70429fd3267b2,
         type: 3}
     - target: {fileID: 201122118, guid: 3d64f07a41ad5e444948f61c29e99a9d, type: 3}
       propertyPath: DragObject
@@ -5752,7 +5731,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 86e53e2f708f7c14caff52c558fbd529,
+      objectReference: {fileID: 21300000, guid: 611646b12547765438c70429fd3267b2,
         type: 3}
     - target: {fileID: 4798119821126175474, guid: 3d64f07a41ad5e444948f61c29e99a9d,
         type: 3}
@@ -8663,6 +8642,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 7415491408940558492, guid: e7e7ef22dc1157a40babaa33f1e54b79,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2556163405436946314, guid: e7e7ef22dc1157a40babaa33f1e54b79,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -10641,7 +10625,7 @@ MonoBehaviour:
   m_Direction: 0
   m_MinValue: 0
   m_MaxValue: 1
-  m_WholeNumbers: 0
+  m_WholeNumbers: 1
   m_Value: 1
   m_OnValueChanged:
     m_PersistentCalls:
@@ -10725,6 +10709,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 5
+  sightDistance: 0
   path: []
   isMoving: 0
   cameraController: {fileID: 1032950049}
@@ -10787,45 +10772,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 2066577013}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 588870cd222bec9448f85e1e7581a782, type: 3}
+  m_Script: {fileID: 11500000, guid: 60c113ebcea2c7646a413356e1bed365, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageMelee:
-    min: 0
-    max: 0
-  damageRanged:
-    min: 0
-    max: 0
-  armor:
-    baseValue: 0
-    modifiers: 
-  dodge:
-    baseValue: 0
-    modifiers: 
-  health:
-    baseValue: 0
-    modifiers: 
-  mana:
-    baseValue: 0
-    modifiers: 
-  critChance:
-    baseValue: 0
-    modifiers: 
-  healthBar: {fileID: 1280607963}
-  currentHealth: 0
-  currentMana: 0
-  strength:
-    baseValue: 10
-    modifiers: 
-  dexterity:
-    baseValue: 8
-    modifiers: 
-  intelligence:
-    baseValue: 5
-    modifiers: 
+  creature: {fileID: 11400000, guid: d89fa926a18ff1d43b45c060ebba647b, type: 2}
+  movement: {fileID: 2066577014}
+  statBars: {fileID: 1407319178}
   currentExp: 0
-  nextLevelExp: 100
   level: 1
+  nextLevelReq: 100
+  headAnimator: {fileID: 746026524}
+  bodyAnimator: {fileID: 1275732139}
+  player: {fileID: 0}
 --- !u!212 &2066577019
 SpriteRenderer:
   m_ObjectHideFlags: 0

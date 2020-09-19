@@ -26,4 +26,12 @@ public class PassiveCreatureController : MonoBehaviour
     {
         Debug.Log(creature.name + " died");
     }
+    public virtual void ApplyAnimator()
+    {
+        GetComponent<Animator>().runtimeAnimatorController = creature.mainAnimatorOverride;
+    }
+    public int GetCurrentHealth()
+    {
+        return currentHealth;
+    }
 }

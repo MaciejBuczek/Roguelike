@@ -33,3 +33,11 @@ MonoBehaviour:
   critChance:
     baseValue: 10
     modifiers: 
+  damageMelee:
+    min: 4
+    max: 8
+  damageRanged:
+    min: 0
+    max: 0
+  attackSpeedMelee: 8
+  attackSpeedRanged: 0

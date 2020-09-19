@@ -4,11 +4,23 @@ using UnityEngine;
 
 public class PlayerController : AggressiveCreatureController
 {
-    private int currentExp = 0, level = 1, nextLevelReq = 100;
+    #region Singleton
+    public static PlayerController Instance;
+    private void Awake()
+    {
+        if (Instance != null)
+            Debug.LogError("More then one instance of player controller found");
+        else
+            Instance = this;
+    }
+    #endregion
+
+    [HideInInspector] public int currentExp = 0, level = 1, nextLevelReq = 100;
+    public Animator headAnimator, bodyAnimator;
     private readonly IntRange unarmedDamage = new IntRange(1, 5);
     private readonly int unarmedCritChance = 10, unarmedSpeed = 5;
 
-    private Player player;
+    [HideInInspector] public Player player;
     private PlayerBars playerStatBars;
 
     protected override void Start()
@@ -100,6 +112,15 @@ public class PlayerController : AggressiveCreatureController
             }
         }
         PlayerStatsUI.Instance.ChangeStatistics();
+    }
+    public override void ApplyAnimator()
+    {
+        headAnimator.runtimeAnimatorController = player.headAnimatorOverride;
+        bodyAnimator.runtimeAnimatorController = player.mainAnimatorOverride;
+    }
+    public int GetCurrentExp()
+    {
+        return currentExp;
     }
 
 }

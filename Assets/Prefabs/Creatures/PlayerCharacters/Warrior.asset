@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c798c28d1fb7ca4eaa67d91eafbd63d, type: 3}
+  m_Name: Warrior
+  m_EditorClassIdentifier: 
+  name: Warrior
+  icon: {fileID: 0}
+  expGain: 0
+  sightDistance: 6
+  mainAnimatorOverride: {fileID: 22100000, guid: 78615f21b8d8fdc4b910df8eafc40758,
+    type: 2}
+  armor:
+    baseValue: 0
+    modifiers: 
+  health:
+    baseValue: 0
+    modifiers: 
+  mana:
+    baseValue: 0
+    modifiers: 
+  dodge:
+    baseValue: 0
+    modifiers: 
+  critChance:
+    baseValue: 0
+    modifiers: 
+  damageMelee:
+    min: 0
+    max: 0
+  damageRanged:
+    min: 0
+    max: 0
+  attackSpeedMelee: 0
+  attackSpeedRanged: 0
+  strength:
+    baseValue: 8
+    modifiers: 
+  dexterity:
+    baseValue: 5
+    modifiers: 
+  intelligence:
+    baseValue: 2
+    modifiers: 
+  headAnimatorOverride: {fileID: 22100000, guid: 69154a7447d4df94d922d89054e8e6d3,
+    type: 2}

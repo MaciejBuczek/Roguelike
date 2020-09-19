@@ -5,5 +5,5 @@
 public class Player : AggressiveCreature
 {
     public Stat strength, dexterity, intelligence;
-
+    public AnimatorOverrideController headAnimatorOverride;
 }

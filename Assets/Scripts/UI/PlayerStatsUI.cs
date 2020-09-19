@@ -27,25 +27,27 @@ public class PlayerStatsUI : MonoBehaviour
     public void ChangeLevel()
     {
         //Change player level
-        playerLevel.SetText(PlayerStats.Instance.level.ToString());
+        playerLevel.SetText(PlayerController.Instance.level.ToString());
     }
     public void ChangeLevelDetails()
     {
-        PlayerStats playerStats = PlayerStats.Instance;
+        PlayerController playerStats = PlayerController.Instance;
         //Change level details in character stats panel
-        playerLevelDetails.SetText(playerStats.level + " " + playerStats.currentExp + "/" + playerStats.nextLevelExp);
+        playerLevelDetails.SetText(playerStats.level + " " + PlayerController.Instance.GetCurrentExp() + "/" + PlayerController.Instance.nextLevelReq);
     }
     public void ChangeStatistics()
     {
-        PlayerStats playerStats = PlayerStats.Instance;
+        PlayerController playerController = PlayerController.Instance;
 
         //Change Attrubutes
-        attributesUI.SetText(playerStats.strength.GetValue() + "\n" + playerStats.intelligence.GetValue() + "\n" + playerStats.dexterity.GetValue());
+        attributesUI.SetText(playerController.player.strength.GetValue() + "\n" + playerController.player.intelligence.GetValue() +
+            "\n" + playerController.player.dexterity.GetValue());
         //Change damage melee, health, dodge, armor
-        playerStats1.SetText( playerStats.damageMelee.min + "-" + playerStats.damageMelee.max + "\n" + playerStats.currentHealth + "/" + playerStats.health.GetValue() + "\n" 
-            + playerStats.dodge.GetValue() + "%\n" + playerStats.armor.GetValue());
+        playerStats1.SetText(playerController.player.damageMelee.min + "-" + playerController.player.damageMelee.max + "\n" +
+            playerController.GetCurrentHealth() + "/" + playerController.player.health.GetValue() + "\n" 
+            + playerController.player.dodge.GetValue() + "%\n" + playerController.player.armor.GetValue());
         //Change damage ranged, mana, crit chance
-        playerStats2.SetText(playerStats.damageRanged.min + "-" + playerStats.damageRanged.max + "\n" + playerStats.currentMana + "/" + playerStats.mana.GetValue() + "\n" +
-           playerStats.critChance.GetValue() + "%");
+        playerStats2.SetText(playerController.player.damageRanged.min + "-" + playerController.player.damageRanged.max + "\n" +
+            playerController.GetCurrentMana() + "/" + playerController.player.mana.GetValue() + "\n" + playerController.player.critChance.GetValue() + "%");
     }
 }

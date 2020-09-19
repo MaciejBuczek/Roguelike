@@ -12,8 +12,8 @@ public class AggressiveCreatureController : PassiveCreatureController
     {
         aggresiveCreature = (AggressiveCreature)creature;
         currentMana = aggresiveCreature.mana.GetValue();
-        statBars.SetMaxHealth(currentHealth);
-
+        statBars.SetMaxHealth(aggresiveCreature.health.GetValue());
+        statBars.SetHealth(aggresiveCreature.health.GetValue());
         base.Start();
     }
     protected override void ChangeHealth(int amount)
@@ -32,5 +32,9 @@ public class AggressiveCreatureController : PassiveCreatureController
         if (Random.Range(1, 101) <= aggresiveCreature.critChance.GetValue())
             damage *= 2;
         return damage;
+    }
+    public int GetCurrentMana()
+    {
+        return currentMana;
     }
 }
