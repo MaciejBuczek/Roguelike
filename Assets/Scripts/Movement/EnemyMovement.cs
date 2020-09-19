@@ -41,9 +41,9 @@ public class EnemyMovement : Movement
         {
             if (path.Count == 0)
             {
-                if (Random.Range(0, 10) <= idleChance)
+                if (Random.Range(1, 99) <= idleChance)
                 {
-                    idleTurns = Random.Range(1, 10);
+                    idleTurns = Random.Range(1, 11);
                 }
                 while (path.Count == 0 && idleTurns == 0)
                 {

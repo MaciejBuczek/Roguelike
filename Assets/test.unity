@@ -3022,7 +3022,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 2304
   idleTurns: 0
-  idleChance: 2
+  idleChance: 20
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
