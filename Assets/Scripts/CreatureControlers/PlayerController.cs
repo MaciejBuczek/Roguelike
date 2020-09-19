@@ -30,7 +30,7 @@ public class PlayerController : AggressiveCreatureController
         playerStatBars = (PlayerBars)statBars;
         playerStatBars.SetMaxExp(nextLevelReq);
         player.attackSpeedRanged = 0;
-        if(Equipment.Instance.equipmentSlots[(int)InventorySlotType.MeleeWeapon] == null)
+        if(Equipment.Instance.equipmentSlots[(int)InventorySlotType.MeleeWeapon].item == null)
         {
             player.damageMelee = unarmedDamage;
             player.critChance.SetBaseValue(unarmedCritChance);
