@@ -4,6 +4,10 @@ public class ItemPickUp : Interactable
 {
 
     public Item item;
+    private void Start()
+    {
+        transform.name = item.name;
+    }
 
     public override void Interact()
     {
@@ -18,7 +22,6 @@ public class ItemPickUp : Interactable
 
     void PickUp()
     {
-        Debug.Log("Picking up " + item.name);
         if (Inventory.instance.Add(item)) 
             Destroy(gameObject);
     }

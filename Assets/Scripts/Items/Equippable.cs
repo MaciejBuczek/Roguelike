@@ -8,16 +8,17 @@ public class Equippable : Item
     public IntRange damage;
     public int armorModifier;
     public int critChance;
+    public int speed;
 
-    public override void Equip(InventorySolt inventorySlot)
+    public override void Equip(InventorySlot inventorySlot)
     {
         base.Equip(inventorySlot);
-        Equipment.instance.EquipItemFromSlot(inventorySlot);
+        Equipment.Instance.EquipItemFromSlot(inventorySlot);
     }
-    public override void Unequip(InventorySolt inventorySlot)
+    public override void Unequip(InventorySlot inventorySlot)
     {
         base.Unequip(inventorySlot);
-        Equipment.instance.UnequipItemFromSlot(inventorySlot);
+        Equipment.Instance.UnequipItemFromSlot(inventorySlot);
     }
 }
 

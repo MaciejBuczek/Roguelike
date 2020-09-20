@@ -6,6 +6,7 @@ public abstract class Movement : MonoBehaviour
 {
 
     public float speed = 5.0f;
+    public int sightDistance;
     [HideInInspector] public List<Vector3> path;
     [HideInInspector] public bool isMoving = false;
     // Start is called before the first frame update

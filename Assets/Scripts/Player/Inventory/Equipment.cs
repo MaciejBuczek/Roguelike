@@ -5,25 +5,25 @@ using UnityEngine;
 public class Equipment : MonoBehaviour
 {
     #region Singleton
-    public static Equipment instance;
+    public static Equipment Instance;
 
     private void Awake()
     {
-        if (instance != null)
+        if (Instance != null)
         {
             Debug.Log("more then one instance of equipment found");
             return;
         }
-        instance = this;
+        Instance = this;
     }
     #endregion
 
-    public InventorySolt[] equipmentSlots;
+    public InventorySlot[] equipmentSlots;
 
     public delegate void OnEquipmentChanged(Equippable newItem, Equippable oldItem);
     public OnEquipmentChanged onEquipmentChanged;
     
-    public void EquipItemFromSlot(InventorySolt inventorySlot)
+    public void EquipItemFromSlot(InventorySlot inventorySlot)
     {
         Equippable newItem, oldItem;
         InventorySlotType inventorySlotType = inventorySlot.item.inventorySlotType;
@@ -35,7 +35,7 @@ public class Equipment : MonoBehaviour
             onEquipmentChanged.Invoke(newItem, oldItem);
         }
     }
-    public void UnequipItemFromSlot(InventorySolt inventorySlot)
+    public void UnequipItemFromSlot(InventorySlot inventorySlot)
     {
         Equippable newItem, oldItem;
         InventorySlotType inventorySlotType = inventorySlot.item.inventorySlotType;

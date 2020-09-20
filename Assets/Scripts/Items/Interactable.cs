@@ -11,13 +11,12 @@ public class Interactable : MonoBehaviour
 
     public virtual void Interact()
     {
-        Debug.Log("Interactig with " + transform.name);
+        
     }
     private void OnMouseDown()
     {
         if (EventSystem.current.IsPointerOverGameObject())
             return;
-        Debug.Log("clicked on " + transform.name);
         isFocused = true;
     }
     private void Start()
