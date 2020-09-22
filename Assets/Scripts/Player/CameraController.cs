@@ -4,79 +4,61 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    private Camera playerCamera;
-
     public float zoomSpeed = 0.5f;
-    private float cameraSize;
 
-    private int rows, cols;
     public float dragSpeed = 1.5f;      
-    private Vector3 dragOrigin;
-    private Vector3 lastMouseCoordinate;
     private bool shouldLerpToPlayer = false;
     private float lerpStartTime;
     private float lerpTime;
     Vector3 lerpTargetPosition;
 
-    // Use this for initialization
-    void Start()
-    {
-        initializeValues();
-    }
+    public PixelPerfectCameraHelper cameraHelper;
+
     // Update is called once per frame
     void Update()
     {
-        zoomCamera();
-        dragCamera();
-        moveCameraToPlayer();
+        //cameraHelper.MoveTo(transform.position);
+        ZoomCamera();
+        DragCamera();
+        MoveCameraToPlayer();
     }
-    void initializeValues()
-    {
-        playerCamera = GetComponent<Camera>();
-        rows = GameObject.Find("GameManager").GetComponent<DungeonGenerator>().rows;
-        cols = GameObject.Find("GameManager").GetComponent<DungeonGenerator>().cols;
-    }
-    void zoomCamera()
+    void ZoomCamera()
     {
         if (Input.GetAxis("Mouse ScrollWheel") > 0)
         {
-            cameraSize -= zoomSpeed;
-            cameraSize = Mathf.Clamp(cameraSize, 2f, 15f);
-            playerCamera.orthographicSize = cameraSize;
+            cameraHelper.ZoomIn();
         }
-        if (Input.GetAxis("Mouse ScrollWheel") < 0)
+        else if (Input.GetAxis("Mouse ScrollWheel") < 0)
         {
-            cameraSize += zoomSpeed;
-            cameraSize = Mathf.Clamp(cameraSize, 2f, 15f);
-            playerCamera.orthographicSize = cameraSize;
+            cameraHelper.ZoomOut();
         }
     }
-    void dragCamera()
+    void DragCamera()
     {
         if (Input.GetMouseButton(2))
         {
-            transform.Translate(-Input.GetAxisRaw("Mouse X") * Time.deltaTime * dragSpeed, -Input.GetAxisRaw("Mouse Y") * Time.deltaTime * dragSpeed, 0);
-            transform.position = new Vector3(Mathf.Clamp(transform.position.x, 0, cols), Mathf.Clamp(transform.position.y, 0, rows), transform.position.z);
+            Vector3 moveDir = new Vector3(-Input.GetAxisRaw("Mouse X"), -Input.GetAxisRaw("Mouse Y"), 0).normalized;
+            cameraHelper.Move(moveDir * dragSpeed * Time.deltaTime);
         }
     }
-    void moveCameraToPlayer()
+    void MoveCameraToPlayer()
     {
         if (shouldLerpToPlayer)
         {
             lerpTargetPosition = transform.parent.transform.position + new Vector3(0, 0, transform.position.z);
-            transform.position = startLerping();
+            transform.position = StartLerping();
             if (transform.position == lerpTargetPosition)
                 shouldLerpToPlayer = false;
         }
     }
-    private Vector3 startLerping()
+    private Vector3 StartLerping()
     {
         float timeSinceStarted = Time.time - lerpStartTime;
         float completePercentage = timeSinceStarted / lerpTime;
         Vector3 result = Vector3.Lerp(transform.position, lerpTargetPosition, completePercentage);
         return result;
     }
-    public void lerpToPosition(Vector3 lerpTargetPosition, float lerpStartTime, float lerpTime)
+    public void LerpToPosition(Vector3 lerpTargetPosition, float lerpStartTime, float lerpTime)
     {
         this.lerpStartTime = lerpStartTime;
         this.lerpTime = lerpTime;

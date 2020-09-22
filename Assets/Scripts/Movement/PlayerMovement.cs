@@ -44,7 +44,7 @@ public class PlayerMovement : Movement
     public void MoveCamera()
     {
         if((Vector2)cameraController.transform.position != (Vector2)transform.position)
-            cameraController.lerpToPosition(transform.position, Time.time, 0.15f);
+            cameraController.LerpToPosition(transform.position, Time.time, 0.15f);
     }
 
     protected override void Flip(bool isRight)

@@ -5875,7 +5875,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1773900414}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1773900415}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e7f8a51cde624594784b90f0ba64ffea, type: 3}
@@ -8647,6 +8647,16 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9193254660622114576, guid: e7e7ef22dc1157a40babaa33f1e54b79,
+        type: 3}
+      propertyPath: cameraHelper
+      value: 
+      objectReference: {fileID: 1773900416}
+    - target: {fileID: 9193254660622114576, guid: e7e7ef22dc1157a40babaa33f1e54b79,
+        type: 3}
+      propertyPath: dragSpeed
+      value: 17
+      objectReference: {fileID: 0}
     - target: {fileID: 2556163405436946314, guid: e7e7ef22dc1157a40babaa33f1e54b79,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -8723,10 +8733,39 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 11
       objectReference: {fileID: 0}
+    - target: {fileID: 7457605330188878825, guid: e7e7ef22dc1157a40babaa33f1e54b79,
+        type: 3}
+      propertyPath: orthographic size
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1764727383186020070, guid: e7e7ef22dc1157a40babaa33f1e54b79, type: 3}
     - {fileID: 6222345777640221915, guid: e7e7ef22dc1157a40babaa33f1e54b79, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: e7e7ef22dc1157a40babaa33f1e54b79, type: 3}
+--- !u!1 &1773900415 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 530578623237916982, guid: e7e7ef22dc1157a40babaa33f1e54b79,
+    type: 3}
+  m_PrefabInstance: {fileID: 1773900414}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1773900416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1773900415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1506500cca841c49a517a10803d9dfb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pixelsPerUnit: 24
+  zoomScaleMax: 10
+  zoomScaleStart: 1
+  smoovZoom: 0
+  smoovZoomDuration: 0.5
+  cameraPos: {x: 0, y: 0, z: 0}
 --- !u!1 &1784240431
 GameObject:
   m_ObjectHideFlags: 0
