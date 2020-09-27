@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class AggressiveCreatureController : PassiveCreatureController
 {
-    protected int currentMana;
     public CharacterBars statBars;
+    public Combat combat;
+    public bool isFighting;
+
+    protected int currentMana;
+
     private AggressiveCreature aggresiveCreature;
 
     protected override void Start()

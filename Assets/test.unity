@@ -3021,8 +3021,8 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 2304
-  idleTurns: 0
-  idleChance: 20
+  idleChance: 1
+  controller: {fileID: 527980185}
 --- !u!95 &527980184
 Animator:
   serializedVersion: 3
@@ -3051,12 +3051,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 527980179}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 423471481bfdb1a4a985a2623b248c4d, type: 3}
+  m_Script: {fileID: 11500000, guid: 901a54eae51b5964ba514164474d9908, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   creature: {fileID: 11400000, guid: 554fbb11d0074f744932af87866ae542, type: 2}
   movement: {fileID: 527980183}
+  isAvtive: 0
   statBars: {fileID: 527980187}
+  combat: {fileID: 0}
+  isFighting: 0
+  playerTransform: {fileID: 2066577020}
 --- !u!61 &527980186
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -8761,6 +8765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pixelsPerUnit: 24
+  pixelsPerUnitScale: 1
   zoomScaleMax: 10
   zoomScaleStart: 1
   smoovZoom: 0
@@ -9459,8 +9464,9 @@ MonoBehaviour:
   playerTurn: 1
   enemiesTurn: 0
   enemies:
-  - {fileID: 527980179}
-  player: {fileID: 2066577013}
+  - {fileID: 527980185}
+  player: {fileID: 2066577017}
+  creaturesInCombat: []
 --- !u!1 &1860227730
 GameObject:
   m_ObjectHideFlags: 0
@@ -10755,6 +10761,7 @@ MonoBehaviour:
   focuesedEnemy: {fileID: 0}
   animatorHead: {fileID: 746026524}
   animatorBody: {fileID: 1275732139}
+  controller: {fileID: 2066577017}
 --- !u!50 &2066577015
 Rigidbody2D:
   serializedVersion: 4
@@ -10816,12 +10823,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   creature: {fileID: 11400000, guid: d89fa926a18ff1d43b45c060ebba647b, type: 2}
   movement: {fileID: 2066577014}
+  isAvtive: 0
   statBars: {fileID: 1407319178}
+  combat: {fileID: 0}
+  isFighting: 0
+  headAnimator: {fileID: 746026524}
+  bodyAnimator: {fileID: 1275732139}
   currentExp: 0
   level: 1
   nextLevelReq: 100
-  headAnimator: {fileID: 746026524}
-  bodyAnimator: {fileID: 1275732139}
   player: {fileID: 0}
 --- !u!212 &2066577019
 SpriteRenderer:

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerController : AggressiveCreatureController
 {
@@ -15,18 +16,23 @@ public class PlayerController : AggressiveCreatureController
     }
     #endregion
 
-    [HideInInspector] public int currentExp = 0, level = 1, nextLevelReq = 100;
     public Animator headAnimator, bodyAnimator;
+    [HideInInspector]
+    public int currentExp = 0, level = 1, nextLevelReq = 100;
+    [HideInInspector]
+    public Player player;
     private readonly IntRange unarmedDamage = new IntRange(1, 5);
     private readonly int unarmedCritChance = 10, unarmedSpeed = 5;
-
-    [HideInInspector] public Player player;
     private PlayerBars playerStatBars;
+    private PlayerMovement playerMovement;
+
+    
 
     protected override void Start()
     {
         Equipment.Instance.onEquipmentChanged += OnEquipmentChanged;
         player = (Player)creature;
+        playerMovement = (PlayerMovement)movement;
         playerStatBars = (PlayerBars)statBars;
         playerStatBars.SetMaxExp(nextLevelReq);
         player.attackSpeedRanged = 0;
@@ -38,6 +44,59 @@ public class PlayerController : AggressiveCreatureController
         }
         CalculateAll();
         base.Start();
+    }
+    public override void MakeTurn()
+    {
+        StartCoroutine(GetPlayerInput());
+    }
+    IEnumerator GetPlayerInput()
+    {
+        if (playerMovement.path.Count == 0 && playerMovement.focuesedEnemy == null)
+        {
+            do
+            {
+                while (InventoryUI.Instance.isInventoryOpen || !Input.GetKey(KeyCode.Mouse0))
+                {
+                    yield return null;
+                }
+                GetTarget();
+                yield return null;
+            } while (!GetTarget());
+        }
+        if (playerMovement.path.Count > 0 || playerMovement.focuesedEnemy != null)
+            StartCoroutine(playerMovement.StartMovement());
+        else
+            OnTurnEnd();
+    }
+    bool GetTarget()
+    {
+        Input.ResetInputAxes();
+        GameObject focusedEnemy = null;
+        Vector2 end;
+
+        if (EventSystem.current.IsPointerOverGameObject())
+            return false;
+        if (Cursor.Instance.PointingAt != null && Cursor.Instance.PointingAt.CompareTag("Enemy"))
+        {
+            focusedEnemy = Cursor.Instance.PointingAt;
+            playerMovement.focuesedEnemy = focusedEnemy;
+            return true;
+        }
+
+        end = Cursor.Instance.position;
+
+        if (end == (Vector2)transform.position)
+            return true;
+
+        if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && PathFinder.Instance.IsObstacle((int)end.x, (int)end.y)))
+            return false;
+
+        playerMovement.SetPath(PathFinder.Instance.GeneratePath(transform.position, end));
+        return true;
+    }
+    public void OnTurnEnd()
+    {
+        TurnManager.Instance.OnPlayerTurnEnd();
     }
     public void ChangeMana(int amount)
     {
@@ -122,5 +181,6 @@ public class PlayerController : AggressiveCreatureController
     {
         return currentExp;
     }
+
 
 }

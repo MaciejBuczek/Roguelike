@@ -8,9 +8,11 @@ public class TurnManager : MonoBehaviour
     public bool playerTurn = true;
     public bool enemiesTurn = false;
 
-    public List<GameObject> enemies;
-    public GameObject player;
-    private PlayerMovement playerMovement;
+    //public List<GameObject> enemies;
+    public List<AggressiveCreatureController> enemies;
+    public PlayerController player;
+
+    public List<Combat> creaturesInCombat;
 
     public static TurnManager Instance;
 
@@ -22,8 +24,9 @@ public class TurnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerMovement = player.GetComponent<PlayerMovement>();
-        StartCoroutine(PlayerTurn());
+        player.MakeTurn();
+        creaturesInCombat = new List<Combat>();
+        List<int> creatures = new List<int>();
     }
     
     public void OnPlayerTurnEnd()
@@ -32,76 +35,58 @@ public class TurnManager : MonoBehaviour
     } 
     void EnemyTurn()
     {
-        StartCoroutine(MoveEnemies());
-        StartCoroutine(PlayerTurn());
+        StartCoroutine(EnemiesTurn());
+        player.MakeTurn();
     }
-    IEnumerator PlayerTurn()
-    {
-        if (playerMovement.path.Count == 0 && playerMovement.focuesedEnemy == null) 
-        {
-            do
-            {
-                while (InventoryUI.Instance.isInventoryOpen || !Input.GetKey(KeyCode.Mouse0))
-                {
-                    yield return null;
-                }
-                GetPlayerInput();
-                yield return null;
-            } while (!GetPlayerInput());
-        }
-        if (playerMovement.path.Count > 0 || playerMovement.focuesedEnemy != null)
-            StartCoroutine(playerMovement.StartMovement());
-        else
-            EnemyTurn();
-    }
-    IEnumerator MoveEnemies()
+    IEnumerator EnemiesTurn()
     {
         enemiesTurn = true;
-        foreach (GameObject enemy in enemies)
+        foreach (AggressiveCreatureController enemy in enemies)
         {
-            enemy.GetComponent<EnemyMovement>().MoveEnemy();
+            //enemy.GetComponent<EnemyMovement>().MoveEnemy();
+            enemy.MakeTurn();
         }
 
-        while (AreEnemiesMoving())
+        while (AreEnemiesActive())
         {
             yield return null;
         }
         enemiesTurn = false;
         playerTurn = true;
     }
-    private bool AreEnemiesMoving()
+    private bool AreEnemiesActive()
     {
-        foreach(GameObject enemy in enemies)
+        foreach(AggressiveCreatureController enemy in enemies)
         {
-            if (enemy.GetComponent<EnemyMovement>().isMoving)
+            if (enemy.isAvtive)
                 return true;
         }
         return false;
     }
-    bool GetPlayerInput()
+    private void GenerateCombatTurnOrder(List<Combat> creatures)
     {
-        Input.ResetInputAxes();
-        GameObject focusedEnemy = null;
-        Vector2 end;
-
-        if (EventSystem.current.IsPointerOverGameObject())
-            return false;
-        if (Cursor.Instance.PointingAt != null && Cursor.Instance.PointingAt.CompareTag("Enemy"))
+        int maxSpeed, previousSpeed, currentSpeed, currentSpeedCombined, shift;
+        creatures.Sort();
+        List<Combat> order = new List<Combat>();
+        maxSpeed = creatures[creatures.Count - 1].getCreature().attackSpeedMelee;
+        order.Add(creatures[creatures.Count - 1]);
+        for(int i=creatures.Count - 2; i>=0; i--)
         {
-            focusedEnemy = Cursor.Instance.PointingAt;
-            playerMovement.focuesedEnemy = focusedEnemy;
-            return true;
+            previousSpeed = creatures[i + 1].getCreature().attackSpeedMelee;
+            currentSpeed = creatures[i].getCreature().attackSpeedMelee;
+            currentSpeedCombined = 0;
+            shift = 0;
+            for(int j=0; j<maxSpeed / currentSpeed; j++)
+            {
+                if (currentSpeedCombined >= previousSpeed)
+                {
+                    shift = currentSpeedCombined / currentSpeed + 1;
+                    previousSpeed = order[shift].getCreature().attackSpeedMelee;
+                    currentSpeedCombined = 0;
+                }
+                order.Insert(shift,creatures[i]);
+                currentSpeedCombined += currentSpeed;
+            }
         }
-
-        end = Cursor.Instance.position;
-
-        if (end == (Vector2)playerMovement.transform.position)
-            return true;
-
-        if (DungeonGenerator.instance.IsPositionOutOfBounds(end) || (focusedEnemy == null && PathFinder.Instance.IsObstacle((int)end.x, (int)end.y)))
-            return false;
-
-        playerMovement.SetPath(PathFinder.Instance.GeneratePath(player.transform.position, end));
-        return true;
     }
 }

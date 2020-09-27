@@ -8,17 +8,17 @@ public class EnemyMovement : Movement
     public GameObject player;
     public Animator animator;
     public LayerMask layerMask;
-
-    public int idleTurns;
     public int idleChance = 2;
+    public EnemyController controller;
 
     private bool isFollowing = false;
     private Vector2 lastPlayerPosition;
+    private int idleTurns;
+
     // Update is called once per frame
-    public void MoveEnemy()
+    public void MoveEnemy(float distanceToPlayer)
     {
-        float distance = Vector2.Distance(transform.position, player.transform.position);
-        if (distance <= sightDistance)
+        if (distanceToPlayer <= sightDistance)
         {
             if (IsPlayerInSight())
             {
@@ -58,6 +58,8 @@ public class EnemyMovement : Movement
             if (path.Count != 0)
                 StartCoroutine(MoveToPosition(path[0]));
         }
+        if (idleTurns > 0)
+            OnMovementEnd();
     }
     private Vector2 GetRandomPosition()
     {
@@ -73,22 +75,6 @@ public class EnemyMovement : Movement
         } while (!DungeonGenerator.instance.dungeonMovementLayout[randY, randX] || (new Vector2(randX, randY) == (Vector2)transform.position));
         return new Vector2(randX, randY);
     }
-    private bool IsPlayerInSight()
-    {
-        Vector3 direction = GetDirection();
-        RaycastHit2D raycast = Physics2D.Raycast(transform.position, direction, sightDistance, layerMask);
-        if (raycast.collider != null && raycast.collider.CompareTag("Player"))
-            return true;
-        else
-            return false;
-    }
-    private Vector3 GetDirection()
-    {
-        Vector3 heading = player.transform.position - transform.position;
-        float distance = player.transform.position.magnitude;
-        Vector3 direction = heading / distance;
-        return direction;
-    }
 
     protected override void Flip(bool isRight)
     {
@@ -99,9 +85,26 @@ public class EnemyMovement : Movement
     {
         if (path.Count == 0 || player.GetComponent<PlayerMovement>().path.Count == 0)
             SetMoveAnimation(false);
+        controller.OnTurnEnd();
     }
     protected override void SetMoveAnimation(bool isMoving)
     {
         animator.SetBool("isMoving", isMoving);
+    }
+    private Vector3 GetDirection()
+    {
+        Vector3 heading = player.transform.position - transform.position;
+        float distance = player.transform.position.magnitude;
+        Vector3 direction = heading / distance;
+        return direction;
+    }
+    private bool IsPlayerInSight()
+    {
+        Vector3 direction = GetDirection();
+        RaycastHit2D raycast = Physics2D.Raycast(transform.position, direction, sightDistance, layerMask);
+        if (raycast.collider != null && raycast.collider.CompareTag("Player"))
+            return true;
+        else
+            return false;
     }
 }

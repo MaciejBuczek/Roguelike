@@ -7,6 +7,7 @@ public class PlayerMovement : Movement
     public CameraController cameraController;
     public GameObject focuesedEnemy;
     public Animator animatorHead, animatorBody;
+    public PlayerController controller;
     // Update is called once per frame
     public IEnumerator StartMovement()
     {
@@ -21,8 +22,11 @@ public class PlayerMovement : Movement
         yield return new WaitUntil(() => TurnManager.Instance.enemiesTurn == false);
         TurnManager.Instance.playerTurn = false;
         if (focuesedEnemy != null && Vector2.Distance(transform.position, focuesedEnemy.transform.position) == 1)
+        {
             focuesedEnemy = null;
-        OnTurnEnd();
+            OnMovementEnd();
+        }
+        controller.OnTurnEnd();
     }
     protected override bool CheckForInterupt()
     {
@@ -32,10 +36,6 @@ public class PlayerMovement : Movement
             return true;
         }
         return false;
-    }
-    private void OnTurnEnd()
-    {
-        TurnManager.Instance.OnPlayerTurnEnd();
     }
     public void SetPath(List<Vector3> path)
     {

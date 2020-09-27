@@ -6,12 +6,18 @@ public class PassiveCreatureController : MonoBehaviour
 {
     public PassiveCreature creature;
     public Movement movement;
+    public bool isAvtive;
     protected int currentHealth;
 
     protected virtual void Start()
     {
         currentHealth = creature.health.GetValue();
         movement.sightDistance = creature.sightDistance;
+        isAvtive = false;
+    }
+    public virtual void MakeTurn()
+    {
+        
     }
     protected virtual void ChangeHealth(int amount)
     {
